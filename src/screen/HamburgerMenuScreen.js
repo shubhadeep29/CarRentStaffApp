@@ -9,6 +9,14 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import DashboardScreen from './DashboardScreen';
 import MyProfileScreen from './MyProfileScreen';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
+import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
+import Constants from '../utils/Constants';
+import LoaderView from '../component/LoaderView'
+import Links from '../utils/Links';
+import Utils from '../utils/Utils';
+
 
 
 
@@ -17,6 +25,7 @@ export default class HamburgerMenuScreen extends Component {
         super(props)
         this.state = {
             isModalVisible: false,
+            isLoading: false,
             alertMessage: "",
             buttonText: "",
             menuList: [
@@ -34,25 +43,26 @@ export default class HamburgerMenuScreen extends Component {
     }
 
     componentDidMount = async () => {
-
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
     }
-
-    // onmenu() {
-    //     this.props.navigation.closeDrawer();
-    // }
 
     onMenuClick(screen) {
         if (screen != "") {
             this.props.navigation.closeDrawer();
-            this.props.navigation.reset({
-                index: 0,
-                routes: [{
-                    name: screen,
-                    // params: {
-                    //     userType: "student"
-                    // }
-                }],
-            });
+            if (screen == "logout") {
+                this.callLogout();
+            } else {
+                this.props.navigation.reset({
+                    index: 0,
+                    routes: [{
+                        name: screen,
+                        // params: {
+                        //     userType: "student"
+                        // }
+                    }],
+                });
+            }
         }
         else {
             this.props.navigation.closeDrawer();
@@ -66,6 +76,85 @@ export default class HamburgerMenuScreen extends Component {
                 }],
             });
         }
+    }
+
+    callLogout() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.callLogoutApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+
+    callLogoutApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call Logout API Link ========>  ", Links.LOGOUT);
+            console.log("Call Logout Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.LOGOUT, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                    // "Content-Type": "multipart/form-data",
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Logout Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    this.setState({ isLoading: false });
+
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+
+                    this.props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'LoginScreen' }],
+                    });
+
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+
     }
 
     renderRowItem = ({ item, index }) => {
@@ -95,7 +184,7 @@ export default class HamburgerMenuScreen extends Component {
             screen = "ChangePasswordScreen"
         }
         else if (item.flag === "logout") {
-            screen = ""
+            screen = "logout"
         }
         else {
             screen = ""
@@ -134,6 +223,7 @@ export default class HamburgerMenuScreen extends Component {
         return (
             <SafeAreaView style={styles.container}>
                 <AdaptiveStatusBar />
+                {this.state.isLoading && <LoaderView />}
 
                 <View style={styles.mainContainer}>
                     <View style={styles.topViewContainer}>
@@ -170,8 +260,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingVertical: 20,
     },
-    mainContainer:{
-        flex: 1 
+    mainContainer: {
+        flex: 1
     },
     topViewContainer: {
         flexDirection: 'row',

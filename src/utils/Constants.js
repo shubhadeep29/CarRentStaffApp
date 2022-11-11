@@ -8,13 +8,13 @@ import strings from './Localization';
 
 export default class Constants {
   static WEATHER_APPID ="2e35119060054c4c7dd752a2f6b77ae4"
-  //static WEATHER_APPID = "cc1ede411d41a15bce91cc8839bc408d"
   static COLOR_STATUS_BAR = '#ffffff';
   static COLOR_NAVIGATION_BAR = "#FFFFFF";
   static COLOR_PRIMARY_BACKGROUND = "#FFFFFF";
   static COLOR_LIST_ITEM_HOVER = "#F0F9FC";
   static COLOR_ERROR_TEXT = "red";
-  static COLOR_LOADER = "#2B6CB4";
+  // static COLOR_LOADER = "#2B6CB4";
+  static COLOR_LOADER = "#610613";
   static COLOR_LOADER_BACKGROUND = "rgba(0,0,0,0.1)";
   static COLOR_BUTTON_BACKGROUND = "#2B6CB4";
 
@@ -27,10 +27,11 @@ export default class Constants {
 
   static STORAGE_KEY_USER_ID = "user_id";
   static STORAGE_KEY_API_KEY = "api_key";
-  static STORAGE_KEY_LANGUAGE = "language";
   static STORAGE_KEY_NAME = "name";
   static STORAGE_KEY_EMAIL= "email";
-  static STORAGE_PUSH_ALARM_STATUS= "push_alarm";
+  static STORAGE_KEY_MOBILEL= "mobile";
+  // static STORAGE_KEY_LANGUAGE = "language";
+  // static STORAGE_PUSH_ALARM_STATUS= "push_alarm";
 
   
   
