@@ -63,6 +63,7 @@ render() {
               multiline={false}
               keyboardType="email-address"
               placeholderTextColor={Colors.placeholderColor}
+              height={48}
               // placeholder={strings.pleaseSelectTheTypeOfInquiry}
               placeholder="Email Id"
               value={this.state.email}
@@ -77,6 +78,7 @@ render() {
               style={styles.emailIdEditTextStyle}
               autoCapitalize="none"
               multiline={false}
+              height={48}
               secureTextEntry
               placeholderTextColor={Colors.placeholderColor}
               // placeholder={strings.pleaseSelectTheTypeOfInquiry}
