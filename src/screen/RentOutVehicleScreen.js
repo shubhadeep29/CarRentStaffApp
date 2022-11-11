@@ -181,7 +181,7 @@ export default class RentOutVehicleScreen extends React.Component {
                             />
 
                             <Image
-                                source={require('../images/hamburgericon.png')}
+                                source={require('../images/ic_search.png')}
                                 style={styles.searchIcon}
                             />
                         </View>
