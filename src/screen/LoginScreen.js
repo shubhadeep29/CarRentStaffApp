@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Image, ImageBackground,
+  Image, ImageBackground,Keyboard,
   Text,
   View,
   StyleSheet,
@@ -35,18 +35,28 @@ export default class LoginScreen extends React.Component {
   }
 
   callLoginValidation() {
-    try {
-      NetInfo.fetch().then(state => {
-        if (state.isConnected) {
-          this.callLoginApi();
-        }
-        else {
-          Utils.showMessageAlert("No internet connection")
-        }
-      });
+    Keyboard.dismiss();
+    if (!Utils.emailValidate(this.state.email)) {
+      Toast.show("Please enter email", Toast.SHORT);
+      
     }
-    catch (error) {
-      console.log("Error in webservice call : " + error);
+    else if (this.state.password == "") {
+      Toast.show("Please enter password", Toast.SHORT);
+    }
+    else {
+      try {
+        NetInfo.fetch().then(state => {
+          if (state.isConnected) {
+            this.callLoginApi();
+          }
+          else {
+            Utils.showMessageAlert("No internet connection")
+          }
+        });
+      }
+      catch (error) {
+        console.log("Error in webservice call : " + error);
+      }
     }
   }
 
@@ -142,11 +152,10 @@ export default class LoginScreen extends React.Component {
       index: 0,
       routes: [{ name: 'MainDrawerScreen' }],
     });
-    // this.props.navigation.navigate('MainDrawerScreen')
   }
 
   goToForgotPassword() {
-    this.props.navigation.navigate('ChangePasswordScreen')
+    // this.props.navigation.navigate('ChangePasswordScreen')
   }
 
   render() {
@@ -177,6 +186,7 @@ export default class LoginScreen extends React.Component {
                 style={styles.emailIdEditTextStyle}
                 autoCapitalize="none"
                 multiline={false}
+                caretHidden={false}
                 keyboardType="email-address"
                 placeholderTextColor={Colors.placeholderColor}
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}
@@ -200,6 +210,7 @@ export default class LoginScreen extends React.Component {
                 value={this.state.password}
                 onChangeText={(value) => this.setState({ password: value })}
                 ref={(input) => { this.passwordTextInput = input; }}
+                onSubmitEditing={() => { this.callLoginValidation() }}
                 blurOnSubmit={false}
               />
             </View>

@@ -153,15 +153,8 @@ export default class ReturnInVehicleScreen extends React.Component {
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                {/* <View style={styles.appbarContainer}>
-                    <Image
-                        source={require('../images/hamburgericon.png')}
-                        style={styles.hambergerIcon}
-                    />
-                    <Text numberOfLines={1} style={styles.titleText} >Return In Vehicle</Text>
-                </View> */}
 
-        <AppBarWithMenu title="Return In Vehicle" navigation={this.props.navigation} />
+                <AppBarWithMenu title="Return In Vehicle" navigation={this.props.navigation} />
 
                 <View style={styles.bottomViewContainer}>
 
@@ -182,7 +175,7 @@ export default class ReturnInVehicleScreen extends React.Component {
                             />
 
                             <Image
-                                source={require('../images/hamburgericon.png')}
+                                source={require('../images/ic_search.png')}
                                 style={styles.searchIcon}
                             />
                         </View>
@@ -294,7 +287,7 @@ const styles = StyleSheet.create({
         color: Colors.white,
         paddingHorizontal: 20,
         paddingVertical: 3,
-        alignSelf:'center'
+        alignSelf: 'center'
     },
     nameAndRentUniqueIdContainer: {
         flexDirection: 'row',
@@ -355,15 +348,15 @@ const styles = StyleSheet.create({
         alignSelf: 'baseline'
     },
     rowView: {
-        flexDirection: 'row', 
+        flexDirection: 'row',
     },
     dateTextStyle: {
         fontSize: 13,
         // fontFamily: fontSelector("bold"),
         color: 'blue',
         marginStart: 4,
-        textAlignVertical:'center',
-        flex:1
+        textAlignVertical: 'center',
+        flex: 1
     },
     filterMainContainer: {
         paddingTop: 25,
@@ -391,13 +384,13 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
     },
     searchIcon: {
-        width: 12,
-        height: 12,
+        width: 15,
+        height: 15,
         resizeMode: 'contain',
         alignSelf: 'center',
         marginStart: 10
     },
-    downloadIcon:{
+    downloadIcon: {
         width: 25,
         height: 25,
         resizeMode: 'contain',

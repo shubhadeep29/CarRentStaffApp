@@ -152,15 +152,7 @@ export default class RentOutVehicleScreen extends React.Component {
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                {/* <View style={styles.appbarContainer}>
-                    <Image
-                        source={require('../images/hamburgericon.png')}
-                        style={styles.hambergerIcon}
-                    />
-                    <Text numberOfLines={1} style={styles.titleText} >Rent Out Vehicle</Text>
-                </View> */}
-
-    <AppBarWithMenu title="Rent Out Vehicle" navigation={this.props.navigation} />
+                <AppBarWithMenu title="Rent Out Vehicle" navigation={this.props.navigation} />
 
                 <View style={styles.bottomViewContainer}>
 
@@ -181,7 +173,7 @@ export default class RentOutVehicleScreen extends React.Component {
                             />
 
                             <Image
-                                source={require('../images/hamburgericon.png')}
+                                source={require('../images/ic_search.png')}
                                 style={styles.searchIcon}
                             />
                         </View>
@@ -389,8 +381,8 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
     },
     searchIcon: {
-        width: 12,
-        height: 12,
+        width: 15,
+        height: 15,
         resizeMode: 'contain',
         alignSelf: 'center',
         marginStart: 10

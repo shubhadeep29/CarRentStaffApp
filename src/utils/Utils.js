@@ -24,19 +24,22 @@ export default class Utils {
   }
 
   static emailValidate(text) {
+    var result = false;
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
     if (text.trim() == "") {
-        return false;
+        result = false;
+        return result;
     }
     else {
         if (reg.test(text) === false) {
             // alert("Email is Not Correct")
-            return false;
+            result = false;   
         }
         else {
             // alert("Email is Correct")
-            return true;
+            result = true;
         }
+        return result; 
     }
     // Keyboard.dismiss();
 }

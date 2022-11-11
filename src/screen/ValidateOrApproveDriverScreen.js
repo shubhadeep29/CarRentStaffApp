@@ -104,7 +104,7 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
 
                     <TouchableOpacity style={styles.validateContainer} onPress={() => this.goToValidatedScreen()}>
                         <Image
-                            source={require('../images/hamburgericon.png')}
+                            source={require('../images/ic_edit_white.png')}
                             style={styles.validateIcon}
                         />
                         <Text style={styles.validateTextStyle}>Validate</Text>
