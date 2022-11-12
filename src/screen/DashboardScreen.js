@@ -179,7 +179,7 @@ export default class DashboardScreen extends React.Component {
                             <View style={styles.allEditTextContainer}>
                                 <Text numberOfLines={1} style={styles.filterText} >All</Text>
                                 <Image
-                                    source={require('../images/hamburgericon.png')}
+                                    source={require('../images/down_arow.png')}
                                     style={styles.dropdownIcon}
                                 />
                             </View>
@@ -199,7 +199,7 @@ export default class DashboardScreen extends React.Component {
                                 />
 
                                 <Image
-                                    source={require('../images/hamburgericon.png')}
+                                    source={require('../images/ic_search.png')}
                                     style={styles.searchIcon}
                                 />
                             </View>
