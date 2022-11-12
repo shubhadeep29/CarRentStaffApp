@@ -23,7 +23,10 @@ export default function AppBarWithMenu({ title, navigation }) {
                         />
                     </TouchableOpacity>
 
-                    <Text numberOfLines={1} style={styles.titleText} >{title}</Text>
+                    <View style={styles.mainContainer}>
+                        <Text numberOfLines={1} style={styles.titleText} >{title}</Text>
+                    </View>
+
                 </View>
             </View>
         </View>
@@ -32,10 +35,8 @@ export default function AppBarWithMenu({ title, navigation }) {
 const styles = StyleSheet.create({
     headercontainer: {
         height: Constants.APPBAR_HEIGHT,
-        flexDirection: 'row',
         backgroundColor: Colors.splashScreenBgColor,
-        alignContent: 'center',
-        alignItems: 'center',
+    
         // shadowColor: '#000',
         // elevation: 4,
         // shadowOffset: { width: 0, height: 0.5 },
@@ -44,7 +45,9 @@ const styles = StyleSheet.create({
         // marginBottom: 1,
         // paddingLeft: 15
     },
-
+    mainContainer: {
+        flex: 1,
+    },
     appbarContainer: {
         flexDirection: 'row',
         paddingVertical: 15,
@@ -54,16 +57,18 @@ const styles = StyleSheet.create({
         width: 23,
         height: 23,
         resizeMode: 'contain',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        flex: 1,
     },
     titleText: {
-        fontSize: 22,
+        fontSize: 20,
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor1,
-        alignItems: "center",
-        textAlign: 'center',
         textAlignVertical: 'center',
-        flex: 1,
-        fontWeight: 'bold'
+        alignSelf: 'center',     
+        alignItems: "center",
+        alignContent: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
     },
 });

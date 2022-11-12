@@ -10,8 +10,16 @@ import {
 } from 'react-native';
 import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
-import Loader from '../component/Loader';
 import AppBarWithMenu from '../component/AppBarWithMenu';
+import LoaderView from '../component/LoaderView'
+import Loader from '../component/Loader';
+import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
+import Constants from '../utils/Constants';
+import Links from '../utils/Links';
+import Utils from '../utils/Utils';
+
 
 
 export default class ChangePasswordScreen extends React.Component {
@@ -26,21 +34,100 @@ export default class ChangePasswordScreen extends React.Component {
         }
     }
 
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+    }
+
     onClickSubmitButton() {
+        if (this.state.oldPassword == "") {
+            Toast.show("Please enter old password", Toast.SHORT);
+        }
+        else if (this.state.newPassword == "") {
+            Toast.show("Please enter new password", Toast.SHORT);
+        }
+        else if (this.state.confirmNewPassword == "") {
+            Toast.show("Please enter confirm password", Toast.SHORT);
+        } 
+        else if (this.state.newPassword != this.state.confirmNewPassword) {
+            Toast.show("Confirm password is not matched with new password", Toast.SHORT);
+        }
+        else {
+            try {
+                NetInfo.fetch().then(state => {
+                    if (state.isConnected) {
+                        this.callChangePasswordApi();
+                    }
+                    else {
+                        Utils.showMessageAlert("No internet connection")
+                    }
+                });
+            }
+            catch (error) {
+                console.log("Error in webservice call : " + error);
+            }
+        }
+    }
+
+    callChangePasswordApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+            old_password: this.state.oldPassword,
+            new_password: this.state.newPassword,
+        });
+
+
+        try {
+            console.log("Call Change password API Link ========>  ", Links.LOGOUT);
+            console.log("Change password Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.CHANGE_PASSWORD, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Change password Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    this.setState({ isLoading: false });
+
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+
+                    this.props.navigation.goBack();
+
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
 
     }
+
 
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                {/* <View style={styles.appbarContainer}>
-                    <Image
-                        source={require('../images/hamburgericon.png')}
-                        style={styles.hambergerIcon}
-                    />
-                    <Text numberOfLines={1} style={styles.titleText} >Change Password</Text>
-                </View> */}
-
+                {this.state.isLoading && <LoaderView />}
                 <AppBarWithMenu title="Change Password" navigation={this.props.navigation} />
 
                 <View style={styles.bottomViewContainer}>
@@ -125,27 +212,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
-    // appbarContainer: {
-    //     flexDirection: 'row',
-    //     paddingVertical: 15,
-    //     paddingHorizontal: 15
-    // },
-    // hambergerIcon: {
-    //     width: 23,
-    //     height: 23,
-    //     resizeMode: 'contain',
-    //     alignSelf: 'center'
-    // },
-    // titleText: {
-    //     fontSize: 22,
-    //     // fontFamily: fontSelector("regular"),
-    //     color: Colors.textColor1,
-    //     alignItems: "center",
-    //     textAlign: 'center',
-    //     textAlignVertical: 'center',
-    //     flex: 1,
-    //     fontWeight: 'bold'
-    // },
     bottomViewContainer: {
         flex: 1,
         backgroundColor: Colors.white,
