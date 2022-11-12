@@ -223,7 +223,7 @@ export default class HamburgerMenuScreen extends Component {
         return (
             <SafeAreaView style={styles.container}>
                 <AdaptiveStatusBar />
-                {this.state.isLoading && <LoaderView />}
+                {/* {this.state.isLoading && <LoaderView />} */}
 
                 <View style={styles.mainContainer}>
                     <View style={styles.topViewContainer}>
