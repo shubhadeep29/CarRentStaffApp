@@ -203,6 +203,7 @@ export default class LoginScreen extends React.Component {
                 style={styles.emailIdEditTextStyle}
                 autoCapitalize="none"
                 multiline={false}
+                height={48}
                 secureTextEntry
                 placeholderTextColor={Colors.placeholderColor}
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}

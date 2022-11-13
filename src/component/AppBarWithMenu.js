@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     },
     appbarContainer: {
         flexDirection: 'row',
-        paddingVertical: 15,
+        paddingVertical: 10,
         paddingHorizontal: 20,
     },
     hambergerIcon: {
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     titleText: {
-        fontSize: 20,
+        fontSize: 16,
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor1,
         textAlignVertical: 'center',

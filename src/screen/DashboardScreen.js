@@ -246,11 +246,6 @@ export default class DashboardScreen extends React.Component {
             </SafeAreaView>
         );
     }
-
-
-
-
-
 }
 const styles = StyleSheet.create({
     container: {
@@ -300,6 +295,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
+        alignSelf:'center',
         textAlign: 'center',
         textAlignVertical: 'center',
     },
