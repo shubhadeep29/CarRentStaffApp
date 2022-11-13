@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         flex:1
     },
     titleText: {
-        fontSize: 22,
+        fontSize: 16,
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor1,
         alignItems: "center",
