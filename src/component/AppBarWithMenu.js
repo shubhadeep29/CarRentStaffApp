@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     },
     appbarContainer: {
         flexDirection: 'row',
-        paddingVertical: 10,
+        paddingVertical: 15,
         paddingHorizontal: 20,
     },
     hambergerIcon: {
