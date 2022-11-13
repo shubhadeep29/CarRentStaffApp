@@ -128,7 +128,7 @@ export default class ChangePasswordScreen extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <AppBarWithMenu title="Change Password" navigation={this.props.navigation} />
+                <AppBarWithMenu title="Change Password" navigation={this.props.navigation}  />
 
                 <View style={styles.bottomViewContainer}>
 
@@ -138,6 +138,7 @@ export default class ChangePasswordScreen extends React.Component {
                             style={styles.emailIdEditTextStyle}
                             autoCapitalize="none"
                             multiline={false}
+                            height={48}
                             secureTextEntry
                             placeholderTextColor={Colors.placeholderColor}
                             // placeholder="Email Id"
@@ -155,6 +156,7 @@ export default class ChangePasswordScreen extends React.Component {
                             style={styles.emailIdEditTextStyle}
                             autoCapitalize="none"
                             multiline={false}
+                            height={48}
                             secureTextEntry
                             placeholderTextColor={Colors.placeholderColor}
                             // placeholder="Email Id"
@@ -173,6 +175,7 @@ export default class ChangePasswordScreen extends React.Component {
                             style={styles.emailIdEditTextStyle}
                             autoCapitalize="none"
                             multiline={false}
+                            height={48}
                             secureTextEntry
                             placeholderTextColor={Colors.placeholderColor}
                             // placeholder="Email Id"
