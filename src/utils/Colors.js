@@ -1,10 +1,6 @@
 export const white = '#FFFFFF';
 export const black = '#000000';
-
-// export const borderColor ='#D4D4D4'
-// export const textColor2 ='#8E8E8E'
-// export const textColor3 ='#0D0D0D'
-
+export const borderColor ='#D4D4D4'
 export const splashScreenBgColor ='#f8ecd1'
 export const modalContainerBackgroundColor = '#000000aa';
 export const textColor1 ='#610613'
