@@ -250,7 +250,7 @@ export default class DashboardScreen extends React.Component {
         this.setState({ isCarDetailsViewModalVisible: value })
     }
 
-    onClickDropdownItem (){
+    onClickDropdownItem() {
         this.setState({ isDropdownVisible: false })
     }
 
@@ -263,7 +263,7 @@ export default class DashboardScreen extends React.Component {
 
                     <View style={styles.bottomViewContainer}>
                         <View style={styles.filterMainContainer}>
-                            <TouchableOpacity style={styles.allEditTextContainer} onPress={() => this.setState({isDropdownVisible : true})}>
+                            <TouchableOpacity style={styles.allEditTextContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
                                 <Text numberOfLines={1} style={styles.filterText} >All</Text>
                                 <Image
                                     source={require('../images/down_arow.png')}
@@ -318,30 +318,30 @@ export default class DashboardScreen extends React.Component {
                         </View>
 
                         {this.state.isDropdownVisible ?
-                        <View style={styles.dropdownContainer}>
-                            <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 1")} >
-                                <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 1</Text>
-                            </TouchableOpacity>
+                            <View style={styles.dropdownContainer}>
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 1")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 1</Text>
+                                </TouchableOpacity>
 
-                            <View style={styles.divider} />
+                                <View style={styles.divider} />
 
-                            <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 2")} >
-                                <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 2</Text>
-                            </TouchableOpacity>
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 2")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 2</Text>
+                                </TouchableOpacity>
 
-                            <View style={styles.divider} />
+                                <View style={styles.divider} />
 
-                            <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 3")} >
-                                <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 3</Text>
-                            </TouchableOpacity>
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 3")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 3</Text>
+                                </TouchableOpacity>
 
-                            <View style={styles.divider} />
+                                <View style={styles.divider} />
 
-                            <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 4")} >
-                                <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 4</Text>
-                            </TouchableOpacity>
-                        </View>
-                        : null }
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 4")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 4</Text>
+                                </TouchableOpacity>
+                            </View>
+                            : null}
 
 
 
