@@ -14,7 +14,7 @@ export default class Utils {
 
   static showMessageAlert(message) {
     Alert.alert(
-      "strings.alert",
+      "Alert",
       message,
       [
         { text: strings.ok, onPress: () => console.log("OK Pressed") }

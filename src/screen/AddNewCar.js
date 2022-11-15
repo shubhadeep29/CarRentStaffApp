@@ -20,7 +20,8 @@ import Toast from 'react-native-simple-toast';
 import Constants from '../utils/Constants';
 import Links from '../utils/Links';
 import Utils from '../utils/Utils';
-import LoaderView from '../component/LoaderView'
+import LoaderView from '../component/LoaderView';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 
 export default class AddNewCar extends React.Component {
@@ -43,6 +44,11 @@ export default class AddNewCar extends React.Component {
             carId: "1",
             isHybridChecked: false,
             isCarStatusChecked: false,
+            resourcePath: {},
+            imageUri: null,
+            imageName: "",
+            imageSize: "",
+            imageType: ""
         }
     }
 
@@ -55,6 +61,44 @@ export default class AddNewCar extends React.Component {
     onClickSubmitButton() {
 
     }
+
+    openImageGallery() {
+        let options = {
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+        // ImagePicker.launchImageLibrary(options, (res) => {
+        launchImageLibrary(options, (res) => {
+            console.log('Response = ', res);
+            if (res.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (res.error) {
+                console.log('ImagePicker Error: ', res.error);
+            } else if (res.customButton) {
+                console.log('User tapped custom button: ', res.customButton);
+                alert(res.customButton);
+            } else {
+                const source = { uri: res.uri };
+                console.log('response', JSON.stringify(res));
+                this.setState({
+                    resourcePath: res,
+                    imageUri: res.assets[0].uri,
+                    imageName: res.assets[0].fileName,
+                    imageSize: res.assets[0].fileSize,
+                    imageType: res.assets[0].type
+                });
+
+                console.log('fileData', JSON.stringify(res.assets[0].fileName));
+                console.log('fileUri', JSON.stringify(res.assets[0].uri));
+
+
+            }
+        });
+    }
+
+
 
     callAddNewCarValidation() {
         Keyboard.dismiss();
@@ -174,12 +218,11 @@ export default class AddNewCar extends React.Component {
                                 style={styles.emailIdEditTextStyle}
                                 autoCapitalize="none"
                                 multiline={false}
-                                secureTextEntry
                                 placeholderTextColor={Colors.placeholderColor}
                                 // placeholder="Email Id"
-                                value={this.state.oldPassword}
-                                onChangeText={(value) => this.setState({ oldPassword: value })}
-                                onSubmitEditing={() => { this.newPasswordTextInput.focus() }}
+                                value={this.state.carNo}
+                                onChangeText={(value) => this.setState({ carNo: value })}
+                                onSubmitEditing={() => { this.modelTextInput.focus() }}
                                 blurOnSubmit={false}
                             />
                         </View>
@@ -191,13 +234,12 @@ export default class AddNewCar extends React.Component {
                                 style={styles.emailIdEditTextStyle}
                                 autoCapitalize="none"
                                 multiline={false}
-                                secureTextEntry
                                 placeholderTextColor={Colors.placeholderColor}
                                 // placeholder="Email Id"
-                                value={this.state.newPassword}
-                                onChangeText={(value) => this.setState({ newPassword: value })}
-                                onSubmitEditing={() => { this.confirmNewPasswordTextInput.focus() }}
-                                ref={(input) => { this.newPasswordTextInput = input; }}
+                                value={this.state.model}
+                                onChangeText={(value) => this.setState({ model: value })}
+                                onSubmitEditing={() => { this.fuelTypeTextInput.focus() }}
+                                ref={(input) => { this.modelTextInput = input; }}
                                 blurOnSubmit={false}
                             />
                         </View>
@@ -210,13 +252,17 @@ export default class AddNewCar extends React.Component {
                                 style={styles.emailIdEditTextStyle}
                                 autoCapitalize="none"
                                 multiline={false}
-                                secureTextEntry
                                 placeholderTextColor={Colors.placeholderColor}
                                 // placeholder="Email Id"
-                                value={this.state.oldPassword}
-                                onChangeText={(value) => this.setState({ oldPassword: value })}
-                                onSubmitEditing={() => { this.newPasswordTextInput.focus() }}
+                                value={this.state.fuleType}
+                                onChangeText={(value) => this.setState({ fuleType: value })}
+                                onSubmitEditing={() => { this.makeTextInput.focus() }}
+                                ref={(input) => { this.fuelTypeTextInput = input; }}
                                 blurOnSubmit={false}
+                            />
+                            <Image
+                                source={require('../images/down_arow.png')}
+                                style={styles.calenderIcon}
                             />
                         </View>
 
@@ -228,12 +274,12 @@ export default class AddNewCar extends React.Component {
                                 style={styles.emailIdEditTextStyle}
                                 autoCapitalize="none"
                                 multiline={false}
-                                secureTextEntry
                                 placeholderTextColor={Colors.placeholderColor}
                                 // placeholder="Email Id"
-                                value={this.state.oldPassword}
-                                onChangeText={(value) => this.setState({ oldPassword: value })}
-                                onSubmitEditing={() => { this.newPasswordTextInput.focus() }}
+                                value={this.state.make}
+                                onChangeText={(value) => this.setState({ make: value })}
+                                onSubmitEditing={() => { this.yearTextInput.focus() }}
+                                ref={(input) => { this.makeTextInput = input; }}
                                 blurOnSubmit={false}
                             />
                         </View>
@@ -246,12 +292,12 @@ export default class AddNewCar extends React.Component {
                                 style={styles.emailIdEditTextStyle}
                                 autoCapitalize="none"
                                 multiline={false}
-                                secureTextEntry
                                 placeholderTextColor={Colors.placeholderColor}
                                 placeholder="DD/MM/YYYY"
-                                value={this.state.oldPassword}
-                                onChangeText={(value) => this.setState({ oldPassword: value })}
-                                onSubmitEditing={() => { this.newPasswordTextInput.focus() }}
+                                value={this.state.year}
+                                onChangeText={(value) => this.setState({ year: value })}
+                                onSubmitEditing={() => { this.insuranceExpireDateTextInput.focus() }}
+                                ref={(input) => { this.yearTextInput = input; }}
                                 blurOnSubmit={false}
                             />
 
@@ -268,12 +314,12 @@ export default class AddNewCar extends React.Component {
                                 style={styles.emailIdEditTextStyle}
                                 autoCapitalize="none"
                                 multiline={false}
-                                secureTextEntry
                                 placeholderTextColor={Colors.placeholderColor}
                                 placeholder="DD/MM/YYYY"
-                                value={this.state.confirmNewPassword}
-                                onChangeText={(value) => this.setState({ confirmNewPassword: value })}
-                                ref={(input) => { this.confirmNewPasswordTextInput = input; }}
+                                value={this.state.insuranceExpireDate}
+                                onChangeText={(value) => this.setState({ insuranceExpireDate: value })}
+                                onSubmitEditing={() => { this.regoExpireDateTextInput.focus() }}
+                                ref={(input) => { this.insuranceExpireDateTextInput = input; }}
                                 blurOnSubmit={false}
                             />
 
@@ -289,12 +335,11 @@ export default class AddNewCar extends React.Component {
                                 style={styles.emailIdEditTextStyle}
                                 autoCapitalize="none"
                                 multiline={false}
-                                secureTextEntry
                                 placeholderTextColor={Colors.placeholderColor}
                                 placeholder="DD/MM/YYYY"
-                                value={this.state.confirmNewPassword}
-                                onChangeText={(value) => this.setState({ confirmNewPassword: value })}
-                                ref={(input) => { this.confirmNewPasswordTextInput = input; }}
+                                value={this.state.regoExpireDate}
+                                onChangeText={(value) => this.setState({ regoExpireDate: value })}
+                                ref={(input) => { this.regoExpireDateTextInput = input; }}
                                 blurOnSubmit={false}
                             />
 
@@ -305,38 +350,29 @@ export default class AddNewCar extends React.Component {
                         </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo</Text>
-                        <View style={{
-                            borderColor: '#f1f1f1',
-                            borderWidth: 2,
-                            borderRadius: 10,
-                            height: 125,
-                            marginTop: 8,
-                            marginLeft: 40,
-                            marginRight: 40,
-                            justifyContent: 'center',
-                            alignContent: 'center',
-                            alignItems: 'center',
-                            flex: 1,
-
-                        }}>
-
-                            <Image
-                                source={require('../images/ic_add_camera.png')}
-                                style={styles.logoIcon}
-                            />
-
-                            <Text numberOfLines={1} style={styles.uploadPhotoText} >Upload Photo</Text>
-                        </View>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                            {this.state.imageUri != null ?
+                                <Image
+                                    source={{ uri: this.state.imageUri }}
+                                    style={styles.logoIcon}
+                                />
+                                : <Image
+                                    source={require('../images/ic_add_camera.png')}
+                                    style={styles.logoIcon}
+                                />
+                            }
 
 
-                        <View style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                            alignContent: 'center',
-                            alignItems: 'center',
-                            marginTop: 25,
-                            paddingHorizontal: 50
-                        }}>
+                            {this.state.fileName != "" ?
+                                <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.imageName}</Text>
+                                : <Text numberOfLines={1} style={styles.uploadPhotoText} >Upload Photo</Text>
+
+                            }
+
+                        </TouchableOpacity>
+
+
+                        <View style={styles.rowViewOptionStyle}>
                             <Text numberOfLines={1} style={styles.headingTextStyleTwo} >Hybrid</Text>
 
                             <TouchableOpacity onPress={() => this.setState({ isHybridChecked: !this.state.isHybridChecked })}>
@@ -357,14 +393,7 @@ export default class AddNewCar extends React.Component {
                         </View>
 
 
-                        <View style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                            alignContent: 'center',
-                            alignItems: 'center',
-                            marginTop: 25,
-                            paddingHorizontal: 50
-                        }}>
+                        <View style={styles.rowViewOptionStyle}>
                             <Text numberOfLines={1} style={styles.headingTextStyleTwo} >Car Status</Text>
 
                             <TouchableOpacity onPress={() => this.setState({ isCarStatusChecked: !this.state.isCarStatusChecked })}>
@@ -384,32 +413,14 @@ export default class AddNewCar extends React.Component {
                             <Text numberOfLines={1} style={styles.optionTextStyle} >INACTIVE</Text>
                         </View>
 
-
-                        <View style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                            alignContent: 'center',
-                            alignItems: 'center',
-                            marginTop: 25,
-                            paddingHorizontal: 40
-                        }}>
-                            <TouchableOpacity style={{
-                                backgroundColor: Colors.textColor1,
-                                borderRadius: 30,
-                                paddingVertical: 10,
-                                marginEnd: 10,
-                                flex: 1,
-                            }}
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={styles.approveButtonContainer}
                                 onPress={() => this.callAddNewCarValidation()}>
                                 <Text numberOfLines={1} style={styles.buttonText}>SUBMIT</Text>
                             </TouchableOpacity>
+                            <View style={styles.boxGap} />
 
-                            <TouchableOpacity style={{
-                                backgroundColor: '#EB4655',
-                                borderRadius: 30,
-                                paddingVertical: 10,
-                                flex: 1,
-                            }}
+                            <TouchableOpacity style={styles.cancelButtonContainer}
                                 onPress={() => this.onClickSubmitButton()}>
                                 <Text numberOfLines={1} style={styles.buttonText}>CANCLE</Text>
                             </TouchableOpacity>
@@ -537,6 +548,12 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor2,
     },
+    uploadImageNameText:{
+        fontSize: 11,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.textColor2,
+        paddingHorizontal: 15
+    },
     checkUncheckIcon: {
         width: 20,
         height: 20,
@@ -544,5 +561,49 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginStart: 20,
         marginEnd: 5
-    }
+    },
+    addImageViewStyle: {
+        borderColor: '#f1f1f1',
+        borderWidth: 2,
+        borderRadius: 10,
+        height: 125,
+        marginTop: 8,
+        marginLeft: 40,
+        marginRight: 40,
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+    },
+
+    rowViewOptionStyle: {
+        flex: 1,
+        flexDirection: 'row',
+        alignContent: 'center',
+        alignItems: 'center',
+        marginTop: 25,
+        paddingHorizontal: 50
+    },
+    buttonContainer: {
+        marginHorizontal: 30,
+        flexDirection: 'row',
+        marginTop: 100,
+        marginBottom: 20
+    },
+
+    approveButtonContainer: {
+        backgroundColor: Colors.textColor1,
+        borderRadius: 30,
+        paddingVertical: 13,
+        flex: 1
+    },
+    cancelButtonContainer: {
+        backgroundColor: Colors.pink,
+        borderRadius: 30,
+        paddingVertical: 13,
+        flex: 1
+    },
+    boxGap: {
+        width: 15
+    },
 });
