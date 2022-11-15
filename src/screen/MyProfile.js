@@ -28,32 +28,120 @@ export default class MyProfile extends React.Component{
         super(props);
         this.state={
             isNetworkAvailable: true,
-            isLoading: false
+            isLoading: false,
+        }
+
+        //this.callMyProfile();
+    }
+
+    callMyProfile() {
+        try {
+
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.callMyProfileApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
             
+            console.log("Error in webservice call : " + error);
         }
     }
+
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        this.callMyProfile();
+    }
+
+    callMyProfileApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call MyProfile API Link ========>  ", Links.MY_PROFILE);
+            console.log("Call MyProfile Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.MY_PROFILE, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                    // "Content-Type": "multipart/form-data",
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Logout Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    this.setState({ isLoading: false });
+
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+
+
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+
+    }
+
+
     render() {
         return (
-            <ScrollView style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <AppBarWithMenu title="My Profile" navigation={this.props.navigation}  />
+                <AppBarWithMenu title="My Account" navigation={this.props.navigation}  />
 
                 <View style={styles.bottomViewContainer}>
                 <View style={styles.rowView}>
                     <View style={styles.bottomViewContainer}>
-                            <Image
-                                source={require('../images/rounded_img.png')}
-                                style={styles.viewImage}
-                            />
+                    <Text numberOfLines={1} style={styles.headingTextStyle} ></Text>
+                        
                         </View>
 
                         <View style={styles.column}>
-                        <Text numberOfLines={1} style={styles.headingTextStyle} >Karan Singh</Text>
+                        <Image
+                                source={require('../images/rounded_img.png')}
+                                style={styles.viewImage}
+                            />
+                        <Text numberOfLines={1} style={styles.headingBigTextStyle} >Karan Singh</Text>
                         <Text numberOfLines={1} style={styles.headingTextStyle} >+91 87777889988</Text>
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >karansingh@gmail.com</Text>
                     
                         </View>
                         
-                        <TouchableOpacity style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('AddNewCar')}>    
+                        <TouchableOpacity style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('EditProfile')}>    
                         <View style={styles.rowViewEdit}>
                         <Image
                                 source={require('../images/ic_edit.png')}
@@ -64,84 +152,42 @@ export default class MyProfile extends React.Component{
                             
                         </TouchableOpacity>
                     </View>
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >Role</Text>
                     
-                    <View style={styles.filterMainContainer}>
-                        <View style={styles.searchEditTextContainer}>
-                            <TextInput
-                                numberOfLines={1}
-                                style={styles.searchEditTextStyle}
-                                autoCapitalize="none"
-                        
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                placeholder="Select Role"
-                                editable={false}
-                                value={this.state.searchText}
-                                onChangeText={(value) => this.setState({ searchText: value })}
-                                onSubmitEditing={() => { this.passwordTextInput.focus() }}
-                                blurOnSubmit={false}
-                            />
-
-                            <Image
-                                source={require('../images/down_arow.png')}
-                                style={styles.searchIcon}
-                            />
-                        </View>
-                    </View>
                     
+                    
+                <View style={styles.searchEditTextContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>Role :</Text>
+                    <Text style={styles.infoTextStyle}>Driver Manager</Text>
+                </View>
 
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >Your Email</Text>
-                    <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >karan@gmail.com</Text>
+                <View style={styles.largeTextContainer}>
+                    <Text numberOfLines={1} style={styles.filterText} >Full Address</Text>
+                    
+                    <Text numberOfLines={1} style={styles.filterText} >Peskar lane, salkia howrah 6</Text>
                     
                     </View>
 
 
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >Full Address</Text>
-                    <View style={styles.largeTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >karan@gmail.com</Text>
-                    
-                    </View>
+                <View style={styles.searchEditTextContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>Gender</Text>
+                    <Text style={styles.infoTextStyle}>Male</Text>
+                </View>
 
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >Gender</Text>
-                    <View style={styles.filterMainContainer}>
-                        <View style={styles.searchEditTextContainer}>
-                            <TextInput
-                                numberOfLines={1}
-                                style={styles.searchEditTextStyle}
-                                autoCapitalize="none"
-                        
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                placeholder="Male"
-                                editable={false}
-                                value={this.state.searchText}
-                                onChangeText={(value) => this.setState({ searchText: value })}
-                                onSubmitEditing={() => { this.passwordTextInput.focus() }}
-                                blurOnSubmit={false}
-                            />
 
-                            <Image
-                                source={require('../images/down_arow.png')}
-                                style={styles.searchIcon}
-                            />
-                        </View>
-                    </View>
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >ABN</Text>
-                    <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >ABN</Text>
-                    
-                    </View>
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >TBN</Text>
-                    <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >TBN</Text>
-                    
-                    </View>
+                <View style={styles.searchEditTextContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>ABN</Text>
+                    <Text style={styles.infoTextStyle}>ABN</Text>
+                </View>
+
+
+                <View style={styles.searchEditTextContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>TBN</Text>
+                    <Text style={styles.infoTextStyle}>TBN</Text>
+                </View>
 
                     
                 </View>
-            </ScrollView>
+            </SafeAreaView>
         );
     }
 
@@ -182,7 +228,15 @@ const styles = StyleSheet.create({
         alignItems: "flex-start",
         
     },
-   
+    editRightTextStyle: {
+        fontSize: 8,
+        // fontFamily: fontSelector("bold"),
+        color: Colors.white,
+        paddingHorizontal: 0,
+        paddingVertical: 0,
+        alignItems: "flex-end",
+        
+    },
     mainContainer: {
         flex: 1,
     },
@@ -218,6 +272,14 @@ const styles = StyleSheet.create({
         fontSize: 15,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
+    },
+    headingBigTextStyle: {
+        fontSize: 22,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.textColor1,
+        paddingHorizontal: 40,
+        marginTop: 15,
+        marginBottom:10,
     },
     headingTextStyle: {
         fontSize: 15,
@@ -278,6 +340,27 @@ const styles = StyleSheet.create({
     },filterMainContainer: {
         paddingBottom: 12,
     },
+    infoContainer: {
+        flexDirection: 'row',
+        flex: 1,
+        marginTop: 3,
+    },
+    infoContainerTwo: {
+        flexDirection: 'row',
+        marginTop: 3,
+    },
+    infoHeadingTextStyleTwo: {
+        fontSize: 13,
+        // fontFamily: fontSelector("bold"),
+        color: '#7F8C8D',
+    },
+    
+    infoHeadingTextStyle: {
+        fontSize: 13,
+        // fontFamily: fontSelector("bold"),
+        color: '#7F8C8D',
+        flex: 1
+    },
     searchEditTextContainer: {
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 30,
@@ -285,12 +368,14 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         flexDirection: 'row',
         height: 48,
-        paddingBottom:10
+        paddingTop:15,
+         marginTop:10,
+         marginBottom:10
     },largeTextContainer: {
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 15,
-        paddingHorizontal: 15,
-        marginHorizontal: 30,
+        paddingHorizontal: 18,
+        marginHorizontal: 20,
         textAlign:'center',
         height: 100,
     },
@@ -298,7 +383,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
-        flex: 1
     },
     searchIcon: {
         width: 12,
