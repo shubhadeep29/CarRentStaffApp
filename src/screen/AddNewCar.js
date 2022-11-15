@@ -20,7 +20,8 @@ import Toast from 'react-native-simple-toast';
 import Constants from '../utils/Constants';
 import Links from '../utils/Links';
 import Utils from '../utils/Utils';
-import LoaderView from '../component/LoaderView'
+import LoaderView from '../component/LoaderView';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 
 export default class AddNewCar extends React.Component {
@@ -43,6 +44,11 @@ export default class AddNewCar extends React.Component {
             carId: "1",
             isHybridChecked: false,
             isCarStatusChecked: false,
+            resourcePath: {},
+            imageUri: null,
+            imageName: "",
+            imageSize: "",
+            imageType: ""
         }
     }
 
@@ -55,6 +61,44 @@ export default class AddNewCar extends React.Component {
     onClickSubmitButton() {
 
     }
+
+    openImageGallery() {
+        let options = {
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+        // ImagePicker.launchImageLibrary(options, (res) => {
+        launchImageLibrary(options, (res) => {
+            console.log('Response = ', res);
+            if (res.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (res.error) {
+                console.log('ImagePicker Error: ', res.error);
+            } else if (res.customButton) {
+                console.log('User tapped custom button: ', res.customButton);
+                alert(res.customButton);
+            } else {
+                const source = { uri: res.uri };
+                console.log('response', JSON.stringify(res));
+                this.setState({
+                    resourcePath: res,
+                    imageUri: res.assets[0].uri,
+                    imageName: res.assets[0].fileName,
+                    imageSize: res.assets[0].fileSize,
+                    imageType: res.assets[0].type
+                });
+
+                console.log('fileData', JSON.stringify(res.assets[0].fileName));
+                console.log('fileUri', JSON.stringify(res.assets[0].uri));
+
+
+            }
+        });
+    }
+
+
 
     callAddNewCarValidation() {
         Keyboard.dismiss();
@@ -306,15 +350,26 @@ export default class AddNewCar extends React.Component {
                         </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo</Text>
-                        <View style={styles.addImageViewStyle}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                            {this.state.imageUri != null ?
+                                <Image
+                                    source={{ uri: this.state.imageUri }}
+                                    style={styles.logoIcon}
+                                />
+                                : <Image
+                                    source={require('../images/ic_add_camera.png')}
+                                    style={styles.logoIcon}
+                                />
+                            }
 
-                            <Image
-                                source={require('../images/ic_add_camera.png')}
-                                style={styles.logoIcon}
-                            />
 
-                            <Text numberOfLines={1} style={styles.uploadPhotoText} >Upload Photo</Text>
-                        </View>
+                            {this.state.fileName != "" ?
+                                <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.imageName}</Text>
+                                : <Text numberOfLines={1} style={styles.uploadPhotoText} >Upload Photo</Text>
+
+                            }
+
+                        </TouchableOpacity>
 
 
                         <View style={styles.rowViewOptionStyle}>
@@ -357,7 +412,6 @@ export default class AddNewCar extends React.Component {
                             </TouchableOpacity>
                             <Text numberOfLines={1} style={styles.optionTextStyle} >INACTIVE</Text>
                         </View>
-
 
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity style={styles.approveButtonContainer}
@@ -493,6 +547,12 @@ const styles = StyleSheet.create({
         fontSize: 15,
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor2,
+    },
+    uploadImageNameText:{
+        fontSize: 11,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.textColor2,
+        paddingHorizontal: 15
     },
     checkUncheckIcon: {
         width: 20,

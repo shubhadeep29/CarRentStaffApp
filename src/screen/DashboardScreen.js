@@ -13,7 +13,15 @@ import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import CarDetailsViewModal from '../component/CarDetailsViewModal';
 import AppBarWithMenu from '../component/AppBarWithMenu';
+import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
+import Constants from '../utils/Constants';
+import Links from '../utils/Links';
+import Utils from '../utils/Utils';
+import LoaderView from '../component/LoaderView'
 
+const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
 
 export default class DashboardScreen extends React.Component {
     constructor(props) {
@@ -23,73 +31,146 @@ export default class DashboardScreen extends React.Component {
             isLoading: false,
             searchText: "",
             isCarDetailsViewModalVisible: false,
-            data: [
-                {
-                    id: 1,
-                    car_image: '../images/car_img.jpg',
-                    car_number: "WB16 M9876",
-                    serial_number: "K02315",
-                    year: "2021",
-                    fuel_type: "LPG",
-                    is_available: true
-                },
-                {
-                    id: 2,
-                    car_image: '../images/car_img.jpg',
-                    car_number: "WB16 M9876",
-                    serial_number: "K02315",
-                    year: "2022",
-                    fuel_type: "Petrol",
-                    is_available: false
-                },
-                {
-                    id: 3,
-                    car_image: '../images/car_img.jpg',
-                    car_number: "WB16 M9876",
-                    serial_number: "K02315",
-                    year: "2020",
-                    fuel_type: "Diesel",
-                    is_available: false
-                },
-                {
-                    id: 4,
-                    car_image: '../images/car_img.jpg',
-                    car_number: "WB16 M9876",
-                    serial_number: "K02315",
-                    year: "2021",
-                    fuel_type: "Petrol",
-                    is_available: true
-                },
-                {
-                    id: 5,
-                    car_image: '../images/car_img.jpg',
-                    car_number: "WB16 M9876",
-                    serial_number: "K02315",
-                    year: "2020",
-                    fuel_type: "LPG",
-                    is_available: true
-                },
-                {
-                    id: 6,
-                    car_image: '../images/car_img.jpg',
-                    car_number: "WB16 M9876",
-                    serial_number: "K02315",
-                    year: "2021",
-                    fuel_type: "Petrol",
-                    is_available: false
-                },
-                {
-                    id: 7,
-                    car_image: '../images/car_img.jpg',
-                    car_number: "WB16 M9876",
-                    serial_number: "K02315",
-                    year: "2020",
-                    fuel_type: "Diesel",
-                    is_available: true
-                },
-            ],
+            data: [],
+            isDropdownVisible: false,
+            // data: [
+            //     {
+            //         id: 1,
+            //         car_image: '../images/car_img.jpg',
+            //         car_number: "WB16 M9876",
+            //         serial_number: "K02315",
+            //         year: "2021",
+            //         fuel_type: "LPG",
+            //         is_available: true
+            //     },
+            //     {
+            //         id: 2,
+            //         car_image: '../images/car_img.jpg',
+            //         car_number: "WB16 M9876",
+            //         serial_number: "K02315",
+            //         year: "2022",
+            //         fuel_type: "Petrol",
+            //         is_available: false
+            //     },
+            //     {
+            //         id: 3,
+            //         car_image: '../images/car_img.jpg',
+            //         car_number: "WB16 M9876",
+            //         serial_number: "K02315",
+            //         year: "2020",
+            //         fuel_type: "Diesel",
+            //         is_available: false
+            //     },
+            //     {
+            //         id: 4,
+            //         car_image: '../images/car_img.jpg',
+            //         car_number: "WB16 M9876",
+            //         serial_number: "K02315",
+            //         year: "2021",
+            //         fuel_type: "Petrol",
+            //         is_available: true
+            //     },
+            //     {
+            //         id: 5,
+            //         car_image: '../images/car_img.jpg',
+            //         car_number: "WB16 M9876",
+            //         serial_number: "K02315",
+            //         year: "2020",
+            //         fuel_type: "LPG",
+            //         is_available: true
+            //     },
+            //     {
+            //         id: 6,
+            //         car_image: '../images/car_img.jpg',
+            //         car_number: "WB16 M9876",
+            //         serial_number: "K02315",
+            //         year: "2021",
+            //         fuel_type: "Petrol",
+            //         is_available: false
+            //     },
+            //     {
+            //         id: 7,
+            //         car_image: '../images/car_img.jpg',
+            //         car_number: "WB16 M9876",
+            //         serial_number: "K02315",
+            //         year: "2020",
+            //         fuel_type: "Diesel",
+            //         is_available: true
+            //     },
+            // ],
         }
     }
+
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        this.loadingCarList()
+    }
+
+    loadingCarList() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.callLoadingCarListApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    callLoadingCarListApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call car list API Link ========>  ", Links.LOGOUT);
+            console.log("Car list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.CAR_LIST, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Car list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    this.setState({ isLoading: false });
+
+                    if (responseJSON.hasOwnProperty("car_list") && responseJSON.car_list != null) {
+                        this.setState({ data: responseJSON.car_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
 
     openViewModal = () => {
         this.setState({ isCarDetailsViewModalVisible: true });
@@ -103,11 +184,12 @@ export default class DashboardScreen extends React.Component {
             >
                 <View >
                     <Image
-                        source={require('../images/car_img.jpg')}
+                        // source={require('../images/car_img.jpg')}
+                        source={{ uri: imageUrl }}
                         style={styles.carImage}
                     />
                     <View style={styles.indicatorContainer}>
-                        {item.is_available ?
+                        {item.status == "0" ?
                             <View style={styles.activeIndicator} />
                             :
                             <View style={styles.inactiveIndicator} />
@@ -130,19 +212,19 @@ export default class DashboardScreen extends React.Component {
                     </View>
                 </View>
 
-                {item.is_available ?
+                {item.status == "0" ?
                     <View style={styles.activeCarNumberContainer}>
-                        <Text numberOfLines={1} style={styles.activeCarNumberTextStyle}>{item.car_number}</Text>
+                        <Text numberOfLines={1} style={styles.activeCarNumberTextStyle}>{item.car_no}</Text>
                     </View>
                     :
                     <View style={styles.inactiveCarNumberContainer}>
-                        <Text numberOfLines={1} style={styles.inactiveCarNumberTextStyle}>{item.car_number}</Text>
+                        <Text numberOfLines={1} style={styles.inactiveCarNumberTextStyle}>{item.car_no}</Text>
                     </View>
                 }
 
 
                 <View style={styles.carInfoContainer}>
-                    <Text numberOfLines={1} style={styles.serialNumberTextStyle}>{item.serial_number}  |</Text>
+                    <Text numberOfLines={1} style={styles.serialNumberTextStyle}>{item.model}  |</Text>
                     <Text numberOfLines={1} style={styles.yearTextStyle}>{item.year}</Text>
                     <Text numberOfLines={1} style={styles.serialNumberTextStyle}>|  {item.fuel_type}</Text>
                 </View>
@@ -168,6 +250,11 @@ export default class DashboardScreen extends React.Component {
         this.setState({ isCarDetailsViewModalVisible: value })
     }
 
+    onClickDropdownItem() {
+        this.setState({ isDropdownVisible: false })
+    }
+
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
@@ -176,13 +263,13 @@ export default class DashboardScreen extends React.Component {
 
                     <View style={styles.bottomViewContainer}>
                         <View style={styles.filterMainContainer}>
-                            <View style={styles.allEditTextContainer}>
+                            <TouchableOpacity style={styles.allEditTextContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
                                 <Text numberOfLines={1} style={styles.filterText} >All</Text>
                                 <Image
                                     source={require('../images/down_arow.png')}
                                     style={styles.dropdownIcon}
                                 />
-                            </View>
+                            </TouchableOpacity>
 
                             <View style={styles.searchEditTextContainer}>
                                 <TextInput
@@ -203,6 +290,7 @@ export default class DashboardScreen extends React.Component {
                                     style={styles.searchIcon}
                                 />
                             </View>
+
                         </View>
 
                         <View style={styles.mainContainer}>
@@ -228,6 +316,35 @@ export default class DashboardScreen extends React.Component {
                                 null
                             }
                         </View>
+
+                        {this.state.isDropdownVisible ?
+                            <View style={styles.dropdownContainer}>
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 1")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 1</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 2")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 2</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 3")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 3</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 4")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 4</Text>
+                                </TouchableOpacity>
+                            </View>
+                            : null}
+
+
+
                     </View>
                 </View>
 
@@ -295,7 +412,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
-        alignSelf:'center',
+        alignSelf: 'center',
         textAlign: 'center',
         textAlignVertical: 'center',
     },
@@ -372,12 +489,12 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 20,
         marginTop: 8,
-        backgroundColor: '#D6EAF8'
+        backgroundColor: Colors.blueBackground
     },
     activeCarNumberTextStyle: {
         fontSize: 12,
         // fontFamily: fontSelector("bold"),
-        color: 'blue',
+        color: Colors.blue,
         fontWeight: 'bold',
         paddingHorizontal: 13,
         paddingVertical: 4
@@ -386,12 +503,12 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 20,
         marginTop: 8,
-        backgroundColor: '#FCF3CF'
+        backgroundColor: Colors.yellowBackground
     },
     inactiveCarNumberTextStyle: {
         fontSize: 12,
         // fontFamily: fontSelector("bold"),
-        color: '#F39C12',
+        color: Colors.yellow,
         fontWeight: 'bold',
         paddingHorizontal: 13,
         paddingVertical: 4
@@ -412,14 +529,14 @@ const styles = StyleSheet.create({
     activeIndicator: {
         width: 10,
         height: 10,
-        backgroundColor: 'blue',
+        backgroundColor: Colors.blue,
         borderRadius: 20,
         alignSelf: 'center',
     },
     inactiveIndicator: {
         width: 10,
         height: 10,
-        backgroundColor: '#F39C12',
+        backgroundColor: Colors.yellow,
         borderRadius: 20,
         alignSelf: 'center',
     },
@@ -451,5 +568,30 @@ const styles = StyleSheet.create({
         height: 14,
         resizeMode: 'contain',
         alignSelf: 'center'
+    },
+    dropdownContainer: {
+        width: 100,
+        // height: 150,
+        backgroundColor: 'white',
+        marginStart: 20,
+        borderRadius: 8,
+        elevation: 4,
+        position: 'absolute',
+        left: 0,
+        top: 70,
+        right: 0
+    },
+    dropdownItemTextContainer: {
+        paddingVertical: 15
+    },
+    dropdownItemTextStyle: {
+        fontSize: 11,
+        // fontFamily: fontSelector("bold"),
+        color: Colors.black,
+        alignSelf: 'center'
+    },
+    divider: {
+        backgroundColor: Colors.borderColor,
+        height: 0.5
     }
 });
