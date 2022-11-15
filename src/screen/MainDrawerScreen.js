@@ -6,7 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import HamburgerMenuScreen from './HamburgerMenuScreen';
 import DashboardScreen from './DashboardScreen';
-import MyProfileScreen from './MyProfileScreen';
+import MyProfileScreen from './MyProfile';
 import ValidateOrApproveDriverScreen from './ValidateOrApproveDriverScreen';
 import RentOutVehicleScreen from './RentOutVehicleScreen';
 import ReturnInVehicleScreen from './ReturnInVehicleScreen';
@@ -45,7 +45,7 @@ export default class MainDrawerScreen extends React.Component {
         drawerStyle={{ width: Dimensions.get('window').width * .80 }}
         drawerContent={props => <HamburgerMenuScreen  {...props} />} >
         <MyDrawer.Screen name="DashboardScreen" component={DashboardScreen} />
-        <MyDrawer.Screen name="MyProfileScreen" component={MyProfileScreen} />
+        <MyDrawer.Screen name="MyProfile" component={MyProfileScreen} />
         <MyDrawer.Screen name="ValidateOrApproveDriverScreen" component={ValidateOrApproveDriverScreen} />
         <MyDrawer.Screen name="RentOutVehicleScreen" component={RentOutVehicleScreen} />
         <MyDrawer.Screen name="ReturnInVehicleScreen" component={ReturnInVehicleScreen} />

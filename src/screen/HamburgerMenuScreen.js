@@ -7,7 +7,7 @@ import strings from '../utils/Localization';
 import * as Colors from '../utils/Colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import DashboardScreen from './DashboardScreen';
-import MyProfileScreen from './MyProfileScreen';
+import MyProfileScreen from './MyProfile';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -163,7 +163,7 @@ export default class HamburgerMenuScreen extends Component {
             screen = "DashboardScreen"
         }
         else if (item.flag === "profile") {
-            screen = "MyProfileScreen"
+            screen = "MyProfile"
         }
         else if (item.flag === "carMaintaince") {
             screen = ""
