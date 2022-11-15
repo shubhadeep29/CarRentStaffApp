@@ -12,7 +12,7 @@ import ValidateOrApproveDriverScreen from './src/screen/ValidateOrApproveDriverS
 import RentOutVehicleScreen from './src/screen/RentOutVehicleScreen';
 import ReturnInVehicleScreen from './src/screen/ReturnInVehicleScreen';
 import HamburgerMenuScreen from './src/screen/HamburgerMenuScreen';
-import MyProfileScreen from './src/screen/MyProfileScreen';
+import MyProfileScreen from './src/screen/MyProfile';
 import MainDrawerScreen from './src/screen/MainDrawerScreen';
 import AddNewCar from './src/screen/AddNewCar';
 import ValidateStepOneScreen from './src/screen/ValidateStepOneScreen';
