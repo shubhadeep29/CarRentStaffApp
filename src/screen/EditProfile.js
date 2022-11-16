@@ -22,6 +22,7 @@ import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 export default class MyProfile extends React.Component{
     constructor(props){
@@ -35,42 +36,105 @@ export default class MyProfile extends React.Component{
             email:"",
             gender:"",
             abn:"",
+            deviceType:"1",
             tfn:"",
             imageUrl:"",
+            imageName:"No choosen file",
             address:""
             
         }
     }
     componentDidMount = async () => {
-        this.state={
-            isNetworkAvailable: true,
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        
+        this.setState({ 
             isLoading: false,
-            
-        userId : await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID),
-        apiKey : await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY),
-        fullName:await AsyncStorage.getItem(Constants.STORAGE_KEY_NAME),
-        mobile : await AsyncStorage.getItem(Constants.STORAGE_KEY_MOBILEL),
-        address : await AsyncStorage.getItem(Constants.STORAGE_KEY_ADDRESS),
-        role:await AsyncStorage.getItem(Constants.STORAGE_KEY_ROLE),
-        gender:await AsyncStorage.getItem(Constants.STORAGE_KEY_GENDER),
-        abn : await AsyncStorage.getItem(Constants.STORAGE_KEY_ABN),
-        tfn : await AsyncStorage.getItem(Constants.STORAGE_KEY_TFN),
-        imageUrl:await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_IMAGE)
-        
-        }
-        
-        this.setState({ isLoading: false });
-        this.setState({ fullName: await AsyncStorage.getItem(Constants.STORAGE_KEY_NAME)});
-        this.setState({ mobile: await AsyncStorage.getItem(Constants.STORAGE_KEY_MOBILEL)});
-        this.setState({ role: await AsyncStorage.getItem(Constants.STORAGE_KEY_ROLE)});
-        this.setState({ email: await AsyncStorage.getItem(Constants.STORAGE_KEY_EMAIL)});
-        this.setState({ address: await AsyncStorage.getItem(Constants.STORAGE_KEY_ADDRESS)});
-        this.setState({ gender: await AsyncStorage.getItem(Constants.STORAGE_KEY_GENDER)});
-        this.setState({ abn: await AsyncStorage.getItem(Constants.STORAGE_KEY_ABN)});
-        this.setState({ tfn: await AsyncStorage.getItem(Constants.STORAGE_KEY_TFN)});
-        this.setState({ imageUrl: await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_IMAGE)});
-        
+            fullName: await AsyncStorage.getItem(Constants.STORAGE_KEY_NAME),
+            mobile: await AsyncStorage.getItem(Constants.STORAGE_KEY_MOBILEL),
+            role: await AsyncStorage.getItem(Constants.STORAGE_KEY_ROLE),
+            email: await AsyncStorage.getItem(Constants.STORAGE_KEY_EMAIL),
+            address: await AsyncStorage.getItem(Constants.STORAGE_KEY_ADDRESS),
+            gender: await AsyncStorage.getItem(Constants.STORAGE_KEY_GENDER),
+            abn: await AsyncStorage.getItem(Constants.STORAGE_KEY_ABN),
+            tfn: await AsyncStorage.getItem(Constants.STORAGE_KEY_TFN),
+            imageUrl: await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_IMAGE)
+        });
+
     }
+
+    onClickCancelButton=async ()=>{
+        this.props.navigation.goBack()
+    }
+
+    callMyProfileApi = async () => {
+        this.setState({ isLoading: true });
+
+
+        var formData = new FormData();
+        formData.append('device_type', this.state.deviceType);
+        formData.append('user_id', this.userId)
+        formData.append('token_key', this.apiKey);
+        
+        formData.append('full_name', this.state.fullName);
+        formData.append('email', this.state.email);
+        formData.append('mobile_no', this.state.mobile);
+        formData.append('gender', this.state.gender);
+        formData.append('abn', this.state.abn);
+        formData.append('tfn', this.state.tfn);
+        formData.append('address', this.state.address);
+        formData.append('user_image', this.state.imageName);
+
+
+
+
+        try {
+            console.log("Call MyProfile API Link ========>  ", Links.EDIT_PROFILE);
+            console.log("Call MyProfile Input ========>  ", JSON.stringify(formData));
+            const res = await fetch(Links.EDIT_PROFILE, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    Accept: "application/json",
+                    //'Content-Type': 'application/json',
+                     "Content-Type": "multipart/form-data",
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Logout Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+                    this.props.navigation.goBack()
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }else{
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+
+    }
+
 
     openImageGallery() {
         let options = {
@@ -94,7 +158,7 @@ export default class MyProfile extends React.Component{
                 console.log('response', JSON.stringify(res));
                 this.setState({
                     resourcePath: res,
-                    imageUri: res.assets[0].uri,
+                    imageUrl: res.assets[0].uri,
                     imageName: res.assets[0].fileName,
                     imageSize: res.assets[0].fileSize,
                     imageType: res.assets[0].type
@@ -122,7 +186,7 @@ export default class MyProfile extends React.Component{
                 <View style={styles.rowView}>
                     <View style={styles.bottomViewContainer}>
                             <Image
-                                source={require('../images/rounded_img.png')}
+                                source={{uri:this.state.imageUrl}}
                                 style={styles.viewImage}
                             />
                         </View>
@@ -137,7 +201,7 @@ export default class MyProfile extends React.Component{
                                 <Text numberOfLines={1} style={styles.editTextStyle} >Choose File</Text>
                         
                             </View>
-                        <Text numberOfLines={1} style={styles.filterText} >No file choosen      </Text>
+                        <Text numberOfLines={1} style={styles.filterText} >{this.state.imageName}      </Text>
                     </View>
                     </TouchableOpacity>
                     </View>
@@ -230,7 +294,16 @@ export default class MyProfile extends React.Component{
                             
                     <Text numberOfLines={1} style={styles.headingTextStyle} >ABN</Text>
                     <View style={styles.searchEditTextContainer}>
-                    <TextInput numberOfLines={1} style={styles.filterInputText} >{this.state.abn}</TextInput>
+                    <TextInput
+                     style={styles.filterInputText} 
+                      autoCapitalize="none"
+                      multiline={false}
+                      placeholderTextColor={Colors.placeholderColor}
+                    //   placeholder="DD/MM/YYYY"
+                      value={this.state.abn}
+                      onChangeText={(value) => this.setState({ abn: value })}
+                      blurOnSubmit={false}
+                      />
                     
                     </View>
                     <Text numberOfLines={1} style={styles.headingTextStyle} >TFN</Text>
@@ -253,7 +326,7 @@ export default class MyProfile extends React.Component{
                                 paddingVertical: 10,
                                 flex: 1,
                             }}
-                                onPress={() => this.onClickSubmitButton()}>
+                                onPress={() => this.onClickCancelButton()}>
                                 <Text numberOfLines={1} style={styles.buttonText}>CANCLE</Text>
                             </TouchableOpacity>
                         
@@ -264,7 +337,7 @@ export default class MyProfile extends React.Component{
                                 marginStart: 10,
                                 flex: 1,
                             }}
-                                onPress={() => this.callAddNewCarValidation()}>
+                                onPress={() => this.callMyProfileApi()}>
                                 <Text numberOfLines={1} style={styles.buttonText}>SAVE</Text>
                             </TouchableOpacity>
 
@@ -283,11 +356,12 @@ const styles = StyleSheet.create({
         margin: 0,
     },
     viewImage: {
-        width: 80,
+        width: 100,
         height: 100,
-        resizeMode: 'contain',
+        resizeMode: 'cover',
         alignSelf: 'center',
-        marginStart:0
+        marginStart:0,
+        borderRadius:50
     },
     viewIcon: {
         width: 20,
@@ -393,7 +467,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
         height:48,
-        paddingTop:15
+        paddingTop:15, width:120
         
     },
     filterInputText: {
@@ -401,7 +475,8 @@ const styles = StyleSheet.create({
         color: Colors.black,
         alignItems:'center',
         justifyContent:'center',
-        height:48
+        height:48,
+        flex:1
         
     },
     dropdownIcon: {

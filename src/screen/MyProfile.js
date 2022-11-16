@@ -119,7 +119,7 @@ export default class MyProfile extends React.Component{
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_GENDER, this.state.gender);
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_ROLE, this.state.role);
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_IMAGE, imageUrl);
-                    console.log("MyProfile AsyncStorageResponse ===========>  ", JSON.stringify(fullName));
+                   // console.log("MyProfile AsyncStorageResponse ===========>  ", JSON.stringify(fullName));
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
