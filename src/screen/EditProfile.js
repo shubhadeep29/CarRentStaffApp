@@ -28,9 +28,89 @@ export default class MyProfile extends React.Component{
         super(props);
         this.state={
             isNetworkAvailable: true,
-            isLoading: false
+            isLoading: false,
+            fullName:"",
+            mobile:"",
+            role:"",
+            email:"",
+            gender:"",
+            abn:"",
+            tfn:"",
+            imageUrl:"",
+            address:""
             
         }
+    }
+    componentDidMount = async () => {
+        this.state={
+            isNetworkAvailable: true,
+            isLoading: false,
+            
+        userId : await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID),
+        apiKey : await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY),
+        fullName:await AsyncStorage.getItem(Constants.STORAGE_KEY_NAME),
+        mobile : await AsyncStorage.getItem(Constants.STORAGE_KEY_MOBILEL),
+        address : await AsyncStorage.getItem(Constants.STORAGE_KEY_ADDRESS),
+        role:await AsyncStorage.getItem(Constants.STORAGE_KEY_ROLE),
+        gender:await AsyncStorage.getItem(Constants.STORAGE_KEY_GENDER),
+        abn : await AsyncStorage.getItem(Constants.STORAGE_KEY_ABN),
+        tfn : await AsyncStorage.getItem(Constants.STORAGE_KEY_TFN),
+        imageUrl:await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_IMAGE)
+        
+        }
+        
+        this.setState({ isLoading: false });
+        this.setState({ fullName: await AsyncStorage.getItem(Constants.STORAGE_KEY_NAME)});
+        this.setState({ mobile: await AsyncStorage.getItem(Constants.STORAGE_KEY_MOBILEL)});
+        this.setState({ role: await AsyncStorage.getItem(Constants.STORAGE_KEY_ROLE)});
+        this.setState({ email: await AsyncStorage.getItem(Constants.STORAGE_KEY_EMAIL)});
+        this.setState({ address: await AsyncStorage.getItem(Constants.STORAGE_KEY_ADDRESS)});
+        this.setState({ gender: await AsyncStorage.getItem(Constants.STORAGE_KEY_GENDER)});
+        this.setState({ abn: await AsyncStorage.getItem(Constants.STORAGE_KEY_ABN)});
+        this.setState({ tfn: await AsyncStorage.getItem(Constants.STORAGE_KEY_TFN)});
+        this.setState({ imageUrl: await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_IMAGE)});
+        
+    }
+
+    openImageGallery() {
+        let options = {
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+        // ImagePicker.launchImageLibrary(options, (res) => {
+        launchImageLibrary(options, (res) => {
+            console.log('Response = ', res);
+            if (res.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (res.error) {
+                console.log('ImagePicker Error: ', res.error);
+            } else if (res.customButton) {
+                console.log('User tapped custom button: ', res.customButton);
+                alert(res.customButton);
+            } else {
+                const source = { uri: res.uri };
+                console.log('response', JSON.stringify(res));
+                this.setState({
+                    resourcePath: res,
+                    imageUri: res.assets[0].uri,
+                    imageName: res.assets[0].fileName,
+                    imageSize: res.assets[0].fileSize,
+                    imageType: res.assets[0].type
+                });
+
+                console.log('fileData', JSON.stringify(res.assets[0].fileName));
+                console.log('fileUri', JSON.stringify(res.assets[0].uri));
+
+
+            }
+        });
+    }
+
+    onClickDropdownItem=(value)=> {
+        this.setState({ isDropdownVisible: false })
+        this.setState({gender:value})
     }
     render() {
         return (
@@ -50,6 +130,8 @@ export default class MyProfile extends React.Component{
                         <View style={styles.column}>
                         <Text numberOfLines={1} style={styles.headingSmallTextStyle} >Upload New Photo</Text>
                         <View style={styles.searchEditSmallTextContainer}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        
                         <View style={styles.rowView}>
                             <View style={styles.buttonContainer}>
                                 <Text numberOfLines={1} style={styles.editTextStyle} >Choose File</Text>
@@ -57,63 +139,48 @@ export default class MyProfile extends React.Component{
                             </View>
                         <Text numberOfLines={1} style={styles.filterText} >No file choosen      </Text>
                     </View>
+                    </TouchableOpacity>
                     </View>
+                    
                     
                         </View>
                         
                     </View>
                     <Text numberOfLines={1} style={styles.headingTextStyle} >Name</Text>
                     <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >Karan Singh</Text>
+                    <TextInput numberOfLines={1} style={styles.filterInputText} placeholder={"enter full name"} >{this.state.fullName}</TextInput>
                     
                     </View>
                     <Text numberOfLines={1} style={styles.headingTextStyle} >Phone</Text>
                     <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >8777370943</Text>
+                    <TextInput numberOfLines={1} style={styles.filterInputText} placeholder={"enter mobile number"}>{this.state.mobile}</TextInput>
                     
                     </View>
 
                     <Text numberOfLines={1} style={styles.headingTextStyle} >Role</Text>
                     
-                    <View style={styles.filterMainContainer}>
-                        <View style={styles.searchEditTextContainer}>
-                            <TextInput
-                                numberOfLines={1}
-                                style={styles.searchEditTextStyle}
-                                autoCapitalize="none"
-                        
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                placeholder="Select Role"
-                                editable={false}
-                                value={this.state.searchText}
-                                onChangeText={(value) => this.setState({ searchText: value })}
-                                onSubmitEditing={() => { this.passwordTextInput.focus() }}
-                                blurOnSubmit={false}
-                            />
-
-                            <Image
-                                source={require('../images/down_arow.png')}
-                                style={styles.searchIcon}
-                            />
-                        </View>
+                    <View style={styles.searchEditTextContainer}>
+                    <Text numberOfLines={1} style={styles.filterText} placeholder={"Role"}>{this.state.role}</Text>
+                    
                     </View>
                     
 
                     <Text numberOfLines={1} style={styles.headingTextStyle} >Your Email</Text>
                     <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >karan@gmail.com</Text>
+                    <Text numberOfLines={1} style={styles.filterText} >{this.state.email}</Text>
                     
                     </View>
 
 
                     <Text numberOfLines={1} style={styles.headingTextStyle} >Full Address</Text>
                     <View style={styles.largeTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >karan@gmail.com</Text>
+                    <TextInput numberOfLines={1} style={styles.filterText} >{this.state.address}</TextInput>
                     
                     </View>
 
                     <Text numberOfLines={1} style={styles.headingTextStyle} >Gender</Text>
+                    <TouchableOpacity style={styles.filterMainContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
+                           
                     <View style={styles.filterMainContainer}>
                         <View style={styles.searchEditTextContainer}>
                             <TextInput
@@ -125,7 +192,7 @@ export default class MyProfile extends React.Component{
                                 placeholderTextColor={Colors.placeholderColor}
                                 placeholder="Male"
                                 editable={false}
-                                value={this.state.searchText}
+                                value={this.state.gender}
                                 onChangeText={(value) => this.setState({ searchText: value })}
                                 onSubmitEditing={() => { this.passwordTextInput.focus() }}
                                 blurOnSubmit={false}
@@ -136,15 +203,39 @@ export default class MyProfile extends React.Component{
                                 style={styles.searchIcon}
                             />
                         </View>
+                        
                     </View>
+</TouchableOpacity>
+                    {this.state.isDropdownVisible ?
+                            <View style={styles.dropdownContainer}>
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Male")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Male</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Female")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Female</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Trans Gender")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Trans Gender</Text>
+                                </TouchableOpacity>
+
+                                
+                            </View>
+                            : null}
+                            
                     <Text numberOfLines={1} style={styles.headingTextStyle} >ABN</Text>
                     <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >ABN</Text>
+                    <TextInput numberOfLines={1} style={styles.filterInputText} >{this.state.abn}</TextInput>
                     
                     </View>
                     <Text numberOfLines={1} style={styles.headingTextStyle} >TFN</Text>
                     <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >TFN</Text>
+                    <TextInput numberOfLines={1} style={styles.filterInputText} >{this.state.tfn}</TextInput>
                     
                     </View>
 
@@ -305,6 +396,14 @@ const styles = StyleSheet.create({
         paddingTop:15
         
     },
+    filterInputText: {
+        fontSize: 12,
+        color: Colors.black,
+        alignItems:'center',
+        justifyContent:'center',
+        height:48
+        
+    },
     dropdownIcon: {
         width: 12,
         height: 12,
@@ -355,7 +454,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
-        flex: 1
+        flex: 1, paddingTop:5
     },
     searchIcon: {
         width: 12,
@@ -364,5 +463,21 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginStart: 10
     },
+    dropdownItemTextContainer: {
+        paddingVertical: 15
+    },
+    dropdownItemTextStyle: {
+        fontSize: 11,
+        // fontFamily: fontSelector("bold"),
+        color: Colors.black,
+        alignSelf: 'flex-start',
+        marginStart:40
+    },
+    divider: {
+        backgroundColor: Colors.borderColor,
+        height: 0.5,
+        marginStart:40, 
+        marginEnd:40
+    }
     
 });
