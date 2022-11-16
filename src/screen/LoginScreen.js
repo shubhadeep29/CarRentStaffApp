@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  Platform,
 } from 'react-native';
 import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
@@ -189,7 +190,6 @@ export default class LoginScreen extends React.Component {
                 caretHidden={false}
                 keyboardType="email-address"
                 placeholderTextColor={Colors.placeholderColor}
-                height={48}
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}
                 placeholder="Email Id"
                 value={this.state.email}
@@ -204,7 +204,6 @@ export default class LoginScreen extends React.Component {
                 style={styles.emailIdEditTextStyle}
                 autoCapitalize="none"
                 multiline={false}
-                height={48}
                 secureTextEntry
                 placeholderTextColor={Colors.placeholderColor}
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}
@@ -316,6 +315,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     // fontFamily: fontSelector("regular"),
     color: Colors.black,
+    paddingVertical: Platform.OS == "ios" ? 12 : 8
   },
   editTextContainer: {
     backgroundColor: Colors.editTextBgColor,

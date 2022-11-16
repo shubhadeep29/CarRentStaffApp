@@ -180,7 +180,7 @@ export default class MyProfile extends React.Component{
         return (
             <ScrollView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <AppBarWithMenu title="Edit My Account" navigation={this.props.navigation}  />
+                <CommonAppBar title="Edit My Account" navigation={this.props.navigation} />
 
                 <View style={styles.bottomViewContainer}>
                 <View style={styles.rowView}>
