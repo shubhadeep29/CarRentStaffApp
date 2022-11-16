@@ -587,6 +587,7 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         resizeMode: 'contain',
+        borderRadius: 50
     },
     centerView: {
         flex: 1,
