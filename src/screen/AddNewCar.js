@@ -9,6 +9,7 @@ import {
     SafeAreaView,
     TextInput,
     ScrollView,
+    Platform,
 } from 'react-native';
 import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
@@ -21,7 +22,9 @@ import Constants from '../utils/Constants';
 import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView';
+import DatePickerModel from '../component/DatePickerModel';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 export default class AddNewCar extends React.Component {
@@ -37,9 +40,9 @@ export default class AddNewCar extends React.Component {
             make: "Tata1",
             isHybrid: 0,
             status: 0,
-            year: "2011",
-            regoExpireDate: "30/11/2023",
-            insuranceExpireDate: "30/10/2023",
+            year: "",
+            regoExpireDate: "",
+            insuranceExpireDate: "",
             carImage: null,
             carId: "1",
             isHybridChecked: false,
@@ -48,10 +51,53 @@ export default class AddNewCar extends React.Component {
             imageUri: null,
             imageName: "",
             imageSize: "",
-            imageType: ""
+            imageType: "",
+            isDisplayYear: false,
+            isDisplayRegoExpireDate: false,
+            isDisplayInsuranceExpireDate: false,
+            isDropdownVisible: false,
+
         }
     }
 
+    setYear = (event, selectedDate) => {
+        console.log("selectedDate" + selectedDate)
+        this.setState({
+            isDisplayYear: false,
+            year: "" + selectedDate.getFullYear()
+        });
+    }
+    setRegoExpireDate = (event, selectedDate) => {
+        console.log("selectedDate" + selectedDate)
+        this.setState({
+            isDisplayRegoExpireDate: false,
+            regoExpireDate: selectedDate.getDate() + "/" + (selectedDate.getMonth() + 1) + "/" + selectedDate.getFullYear()
+        });
+
+    }
+    setInsuranceExpireDate = (event, selectedDate) => {
+        console.log("selectedDate" + selectedDate)
+        this.setState({
+            isDisplayInsuranceExpireDate: false,
+            insuranceExpireDate: selectedDate.getDate() + "/" + (selectedDate.getMonth() + 1) + "/" + selectedDate.getFullYear()
+        });
+    }
+
+    showYear = () => {
+        this.setState({
+            isDisplayYear: true,
+        });
+    }
+    showRegoExpireDate = () => {
+        this.setState({
+            isDisplayRegoExpireDate: true,
+        });
+    }
+    showInsuranceExpireDate = () => {
+        this.setState({
+            isDisplayInsuranceExpireDate: true,
+        });
+    }
 
     componentDidMount = async () => {
         this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
@@ -61,6 +107,14 @@ export default class AddNewCar extends React.Component {
     onClickSubmitButton() {
 
     }
+
+    onClickDropdownItem(fuleType) {
+        this.setState({
+            isDropdownVisible: false,
+            fuleType: fuleType,
+        })
+    }
+
 
     openImageGallery() {
         let options = {
@@ -247,24 +301,55 @@ export default class AddNewCar extends React.Component {
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Fuel Type</Text>
-                        <View style={styles.editTextContainer}>
-                            <TextInput
-                                style={styles.emailIdEditTextStyle}
-                                autoCapitalize="none"
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                // placeholder="Email Id"
-                                value={this.state.fuleType}
-                                onChangeText={(value) => this.setState({ fuleType: value })}
-                                onSubmitEditing={() => { this.makeTextInput.focus() }}
-                                ref={(input) => { this.fuelTypeTextInput = input; }}
-                                blurOnSubmit={false}
-                            />
-                            <Image
-                                source={require('../images/down_arow.png')}
-                                style={styles.calenderIcon}
-                            />
-                        </View>
+
+
+                        <TouchableOpacity onPress={() => this.setState({ isDropdownVisible: true })}>
+                            <View style={styles.editTextContainer}>
+                                <TextInput
+                                    style={styles.emailIdEditTextStyle}
+                                    autoCapitalize="none"
+                                    multiline={false}
+                                    placeholderTextColor={Colors.placeholderColor}
+                                    // placeholder="Email Id"
+                                    value={this.state.fuleType}
+                                    onChangeText={(value) => this.setState({ fuleType: value })}
+                                    onSubmitEditing={() => { this.makeTextInput.focus() }}
+                                    ref={(input) => { this.fuelTypeTextInput = input; }}
+                                    blurOnSubmit={false}
+                                />
+                                <Image
+                                    source={require('../images/down_arow.png')}
+                                    style={styles.calenderIcon}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+                        {this.state.isDropdownVisible ?
+                            <View style={styles.dropdownContainer}>
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Petrol")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Petrol</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Diesel")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Diesel</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Roller")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Roller</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("LPG")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >LPG</Text>
+                                </TouchableOpacity>
+                            </View>
+                            : null}
+
 
 
 
@@ -287,67 +372,108 @@ export default class AddNewCar extends React.Component {
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Year</Text>
-                        <View style={styles.editTextContainer}>
-                            <TextInput
-                                style={styles.emailIdEditTextStyle}
-                                autoCapitalize="none"
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                placeholder="DD/MM/YYYY"
-                                value={this.state.year}
-                                onChangeText={(value) => this.setState({ year: value })}
-                                onSubmitEditing={() => { this.insuranceExpireDateTextInput.focus() }}
-                                ref={(input) => { this.yearTextInput = input; }}
-                                blurOnSubmit={false}
-                            />
 
-                            <Image
-                                source={require('../images/calendar.png')}
-                                style={styles.calenderIcon}
+                        <TouchableOpacity onPress={this.showYear}>
+
+                            <View style={styles.editTextContainer}>
+                                <TextInput
+                                    style={styles.emailIdEditTextStyle}
+                                    autoCapitalize="none"
+                                    multiline={false}
+                                    placeholderTextColor={Colors.placeholderColor}
+                                    placeholder="DD/MM/YYYY"
+                                    value={this.state.year}
+                                    onChangeText={(value) => this.setState({ year: value })}
+                                    onSubmitEditing={() => { this.insuranceExpireDateTextInput.focus() }}
+                                    ref={(input) => { this.yearTextInput = input; }}
+                                    blurOnSubmit={false}
+                                />
+
+                                <Image
+                                    source={require('../images/calendar.png')}
+                                    style={styles.calenderIcon}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+
+                        {this.state.isDisplayYear &&
+                            <DateTimePicker
+                                testID="dateTimePicker"
+                            value={new Date()}
+                                mode='date'
+                                display="default"
+                            onChange={this.setYear}
                             />
-                        </View>
+                        }
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Insurance Expire Date *</Text>
-                        <View style={styles.editTextContainer}>
-                            <TextInput
-                                style={styles.emailIdEditTextStyle}
-                                autoCapitalize="none"
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                placeholder="DD/MM/YYYY"
-                                value={this.state.insuranceExpireDate}
-                                onChangeText={(value) => this.setState({ insuranceExpireDate: value })}
-                                onSubmitEditing={() => { this.regoExpireDateTextInput.focus() }}
-                                ref={(input) => { this.insuranceExpireDateTextInput = input; }}
-                                blurOnSubmit={false}
-                            />
+                        <TouchableOpacity onPress={this.showInsuranceExpireDate}>
+                            <View style={styles.editTextContainer}>
+                                <TextInput
+                                    style={styles.emailIdEditTextStyle}
+                                    autoCapitalize="none"
+                                    multiline={false}
+                                    placeholderTextColor={Colors.placeholderColor}
+                                    placeholder="DD/MM/YYYY"
+                                    value={this.state.insuranceExpireDate}
+                                    onChangeText={(value) => this.setState({ insuranceExpireDate: value })}
+                                    onSubmitEditing={() => { this.regoExpireDateTextInput.focus() }}
+                                    ref={(input) => { this.insuranceExpireDateTextInput = input; }}
+                                    blurOnSubmit={false}
+                                />
 
-                            <Image
-                                source={require('../images/calendar.png')}
-                                style={styles.calenderIcon}
+                                <Image
+                                    source={require('../images/calendar.png')}
+                                    style={styles.calenderIcon}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+                        {this.state.isDisplayInsuranceExpireDate &&
+                            <DateTimePicker
+                                testID="dateTimePicker"
+                                value={new Date()}
+                                mode='date'
+                                display="default"
+                                onChange={this.setInsuranceExpireDate}
                             />
-                        </View>
+                        }
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Rego Expire Date *</Text>
-                        <View style={styles.editTextContainer}>
-                            <TextInput
-                                style={styles.emailIdEditTextStyle}
-                                autoCapitalize="none"
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                placeholder="DD/MM/YYYY"
-                                value={this.state.regoExpireDate}
-                                onChangeText={(value) => this.setState({ regoExpireDate: value })}
-                                ref={(input) => { this.regoExpireDateTextInput = input; }}
-                                blurOnSubmit={false}
-                            />
+                        <TouchableOpacity onPress={this.showRegoExpireDate}>
+                            <View style={styles.editTextContainer}>
+                                <TextInput
+                                    style={styles.emailIdEditTextStyle}
+                                    autoCapitalize="none"
+                                    multiline={false}
+                                    placeholderTextColor={Colors.placeholderColor}
+                                    placeholder="DD/MM/YYYY"
+                                    value={this.state.regoExpireDate}
+                                    onChangeText={(value) => this.setState({ regoExpireDate: value })}
+                                    ref={(input) => { this.regoExpireDateTextInput = input; }}
+                                    blurOnSubmit={false}
+                                />
 
-                            <Image
-                                source={require('../images/calendar.png')}
-                                style={styles.calenderIcon}
+                                <Image
+                                    source={require('../images/calendar.png')}
+                                    style={styles.calenderIcon}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+
+                        {this.state.isDisplayRegoExpireDate &&
+                            <DateTimePicker
+                                testID="dateTimePicker"
+                                value={new Date()}
+                                mode='date'
+                                display="default"
+                                onChange={this.setRegoExpireDate}
                             />
-                        </View>
+                        }
+
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
@@ -548,7 +674,7 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor2,
     },
-    uploadImageNameText:{
+    uploadImageNameText: {
         fontSize: 11,
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor2,
@@ -606,4 +732,37 @@ const styles = StyleSheet.create({
     boxGap: {
         width: 15
     },
+    dropdownIcon: {
+        width: 15,
+        height: 15,
+        resizeMode: 'contain',
+        alignSelf: 'center',
+        marginStart: 10
+    },
+
+    dropdownContainer: {
+        width: 150,
+        // height: 150,
+        backgroundColor: 'white',
+        marginHorizontal: 20,
+        borderRadius: 8,
+        elevation: 4,
+        position: 'absolute',
+        left: 0,
+        top: 15,
+        right: 0
+    },
+    dropdownItemTextContainer: {
+        paddingVertical: 15
+    },
+    dropdownItemTextStyle: {
+        fontSize: 11,
+        // fontFamily: fontSelector("bold"),
+        color: Colors.black,
+        alignSelf: 'center'
+    },
+    divider: {
+        backgroundColor: Colors.borderColor,
+        height: 0.5
+    }
 });
