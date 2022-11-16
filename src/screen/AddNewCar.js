@@ -9,6 +9,7 @@ import {
     SafeAreaView,
     TextInput,
     ScrollView,
+    Platform,
 } from 'react-native';
 import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
@@ -21,7 +22,9 @@ import Constants from '../utils/Constants';
 import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView';
+import DatePickerModel from '../component/DatePickerModel';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 export default class AddNewCar extends React.Component {
@@ -37,7 +40,7 @@ export default class AddNewCar extends React.Component {
             make: "Tata1",
             isHybrid: 0,
             status: 0,
-            year: "2011",
+            year: new Date(),
             regoExpireDate: "30/11/2023",
             insuranceExpireDate: "30/10/2023",
             carImage: null,
@@ -48,10 +51,24 @@ export default class AddNewCar extends React.Component {
             imageUri: null,
             imageName: "",
             imageSize: "",
-            imageType: ""
+            imageType: "",
+            isDisplayDate: false,
         }
     }
 
+    setDate = (event, selectedDate) => {
+        currentDate = selectedDate || this.state.year;
+        this.setState({
+            isDisplayDate: false,
+            year: currentDate.getFullYear()
+        });
+    }
+
+    show = () => {
+        this.setState({
+            isDisplayDate: true,
+        });
+    }
 
     componentDidMount = async () => {
         this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
@@ -287,25 +304,40 @@ export default class AddNewCar extends React.Component {
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Year</Text>
-                        <View style={styles.editTextContainer}>
-                            <TextInput
-                                style={styles.emailIdEditTextStyle}
-                                autoCapitalize="none"
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                placeholder="DD/MM/YYYY"
-                                value={this.state.year}
-                                onChangeText={(value) => this.setState({ year: value })}
-                                onSubmitEditing={() => { this.insuranceExpireDateTextInput.focus() }}
-                                ref={(input) => { this.yearTextInput = input; }}
-                                blurOnSubmit={false}
-                            />
 
-                            <Image
-                                source={require('../images/calendar.png')}
-                                style={styles.calenderIcon}
+                        <TouchableOpacity onPress={this.show}>
+
+                            <View style={styles.editTextContainer}>
+                                <TextInput
+                                    style={styles.emailIdEditTextStyle}
+                                    autoCapitalize="none"
+                                    multiline={false}
+                                    placeholderTextColor={Colors.placeholderColor}
+                                    placeholder="DD/MM/YYYY"
+                                    value={this.state.year}
+                                    onChangeText={(value) => this.setState({ year: value })}
+                                    onSubmitEditing={() => { this.insuranceExpireDateTextInput.focus() }}
+                                    ref={(input) => { this.yearTextInput = input; }}
+                                    blurOnSubmit={false}
+                                />
+
+                                <Image
+                                    source={require('../images/calendar.png')}
+                                    style={styles.calenderIcon}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+
+                        {this.state.isDisplayDate &&
+                            <DateTimePicker
+                                testID="dateTimePicker"
+                                value={this.state.year}
+                                mode='date'
+                                display="default"
+                                onChange={this.setDate}
                             />
-                        </View>
+                        }
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Insurance Expire Date *</Text>
@@ -548,7 +580,7 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor2,
     },
-    uploadImageNameText:{
+    uploadImageNameText: {
         fontSize: 11,
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor2,
