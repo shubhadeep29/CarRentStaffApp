@@ -22,6 +22,8 @@ import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import { ScrollView } from 'react-native-gesture-handler';
 
+const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
+
 
 export default class MyProfile extends React.Component{
     constructor(props){
@@ -29,9 +31,18 @@ export default class MyProfile extends React.Component{
         this.state={
             isNetworkAvailable: true,
             isLoading: false,
+            data: {},
+            fullName:"kk",
+            email:"kk@gmail.com",
+            mobile:"8787878787",
+            role:"Driver Manager",
+            address:"Salkia Howrah-711106 ",
+            gender:"Male",
+            abn:"ABN",
+            tfn:"TFN"
         }
+                    
 
-        //this.callMyProfile();
     }
 
     callMyProfile() {
@@ -85,20 +96,42 @@ export default class MyProfile extends React.Component{
             if (responseJSON) {
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
                     this.setState({ isLoading: false });
+                    this.setState({ data: responseJSON.profile_details });
+                    this.setState({ fullName: responseJSON.profile_details.full_name});
+                    this.setState({ email: responseJSON.profile_details.email });
+                    this.setState({ mobile: responseJSON.profile_details.mobile_no });
+                    this.setState({ role: responseJSON.profile_details.role_name });
+                    this.setState({ gender: responseJSON.profile_details.gender });
+                    this.setState({ address: responseJSON.profile_details.address });
+                    this.setState({ abn: responseJSON.profile_details.abn });
+                    this.setState({ tfn: responseJSON.profile_details.tfn });
+                    this.setState({ imageUrl: Links.BASEURL+responseJSON.profile_details.user_image });
+                    //console.log("MyProfile Response ===========>  ", JSON.stringify(fullName));
+            
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, this.state.fullName);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, this.state.email);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, this.state.mobile);
 
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_ADDRESS, this.state.address);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_ABN, this.state.abn);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_TFN, this.state.tfn);
 
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_GENDER, this.state.gender);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_ROLE, this.state.role);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_IMAGE, imageUrl);
+                    console.log("MyProfile AsyncStorageResponse ===========>  ", JSON.stringify(fullName));
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
-
-
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }else{
                     this.setState({ isLoading: false });
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
@@ -116,7 +149,6 @@ export default class MyProfile extends React.Component{
 
     }
 
-
     render() {
         return (
             <SafeAreaView style={styles.container}>
@@ -124,24 +156,10 @@ export default class MyProfile extends React.Component{
                 <AppBarWithMenu title="My Account" navigation={this.props.navigation}  />
 
                 <View style={styles.bottomViewContainer}>
-                <View style={styles.rowView}>
-                    <View style={styles.bottomViewContainer}>
-                    <Text numberOfLines={1} style={styles.headingTextStyle} ></Text>
-                        
-                        </View>
-
-                        <View style={styles.column}>
-                        <Image
-                                source={require('../images/rounded_img.png')}
-                                style={styles.viewImage}
-                            />
-                        <Text numberOfLines={1} style={styles.headingBigTextStyle} >Karan Singh</Text>
-                        <Text numberOfLines={1} style={styles.headingTextStyle} >+91 87777889988</Text>
-                        <Text numberOfLines={1} style={styles.headingTextStyle} >karansingh@gmail.com</Text>
                     
-                        </View>
+                <View style={styles.headingEditTextStyle} >
                         
-                        <TouchableOpacity style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('EditProfile')}>    
+                <TouchableOpacity style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('EditProfile')}>    
                         <View style={styles.rowViewEdit}>
                         <Image
                                 source={require('../images/ic_edit.png')}
@@ -152,37 +170,50 @@ export default class MyProfile extends React.Component{
                             
                         </TouchableOpacity>
                     </View>
+                       <View style={styles.column}>
+                        <View style={styles.rowView}>
+                        
+                        <Image
+                                source={{ uri: imageUrl }}
+                                style={styles.viewImage}
+                            />
+
+                            </View>
+                        <Text numberOfLines={1} style={styles.headingBigTextStyle} >{this.state.fullName}</Text>
+                        <Text numberOfLines={1} style={styles.headingSmallTextStyle} >{this.state.mobile}</Text>
+                        <Text numberOfLines={1} style={styles.headingSmallTextStyle} >{this.state.email}</Text>
                     
+                        </View>
+                        
+                        
                     
                     
                 <View style={styles.searchEditTextContainer}>
                     <Text style={styles.infoHeadingTextStyle}>Role :</Text>
-                    <Text style={styles.infoTextStyle}>Driver Manager</Text>
+                    <Text style={styles.infoTextStyle}>{this.state.role}</Text>
                 </View>
 
                 <View style={styles.largeTextContainer}>
                     <Text numberOfLines={1} style={styles.filterText} >Full Address</Text>
-                    
-                    <Text numberOfLines={1} style={styles.filterText} >Peskar lane, salkia howrah 6</Text>
-                    
-                    </View>
+                    <Text numberOfLines={1} style={styles.filterText} >{this.state.address}</Text>                    
+                </View>
 
 
                 <View style={styles.searchEditTextContainer}>
                     <Text style={styles.infoHeadingTextStyle}>Gender</Text>
-                    <Text style={styles.infoTextStyle}>Male</Text>
+                    <Text style={styles.infoTextStyle}>{this.state.gender}</Text>
                 </View>
 
 
                 <View style={styles.searchEditTextContainer}>
                     <Text style={styles.infoHeadingTextStyle}>ABN</Text>
-                    <Text style={styles.infoTextStyle}>ABN</Text>
+                    <Text style={styles.infoTextStyle}>{this.state.abn}</Text>
                 </View>
 
 
                 <View style={styles.searchEditTextContainer}>
                     <Text style={styles.infoHeadingTextStyle}>TBN</Text>
-                    <Text style={styles.infoTextStyle}>TBN</Text>
+                    <Text style={styles.infoTextStyle}>{this.state.tfn}</Text>
                 </View>
 
                     
@@ -201,7 +232,7 @@ const styles = StyleSheet.create({
     },
     viewImage: {
         width: 80,
-        height: 100,
+        height: 80,
         resizeMode: 'contain',
         alignSelf: 'center'
     },
@@ -273,13 +304,34 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
     },
+    headingEditTextStyle: {
+        fontSize: 22,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.textColor1,
+        paddingHorizontal: 20,
+        marginTop: 15,
+        marginBottom:10,
+        alignSelf:'flex-end',
+        textAlign:'center'
+    },
     headingBigTextStyle: {
         fontSize: 22,
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor1,
-        paddingHorizontal: 40,
+        paddingHorizontal: 20,
         marginTop: 15,
         marginBottom:10,
+        textAlign:'center'
+    },
+    headingSmallTextStyle: {
+        fontSize: 15,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.black,
+        paddingHorizontal: 20,
+        marginTop: 15,
+        marginBottom:10,
+
+        textAlign:'center'
     },
     headingTextStyle: {
         fontSize: 15,
@@ -295,13 +347,12 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         marginHorizontal: 10,
         marginTop: 35,
-        position: 'relative',
-    
         width:70,
         height:20,
         bottom: 20,
         left: 0,
-        right: 0
+        right: 0,
+        justifyContent:"center"
     },
     buttonText: {
         fontSize: 15,
@@ -326,7 +377,9 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
     },
     rowView: {
+        alignItems:'center',
         flexDirection: 'row',
+        alignSelf:'center'
     },
     rowViewEdit:{
         flexDirection:'row',

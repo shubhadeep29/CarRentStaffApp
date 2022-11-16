@@ -189,6 +189,7 @@ export default class LoginScreen extends React.Component {
                 caretHidden={false}
                 keyboardType="email-address"
                 placeholderTextColor={Colors.placeholderColor}
+                height={48}
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}
                 placeholder="Email Id"
                 value={this.state.email}

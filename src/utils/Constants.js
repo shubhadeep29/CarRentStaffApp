@@ -30,7 +30,12 @@ export default class Constants {
   static STORAGE_KEY_NAME = "name";
   static STORAGE_KEY_EMAIL= "email";
   static STORAGE_KEY_MOBILEL= "mobile";
-  // static STORAGE_KEY_LANGUAGE = "language";
+  static STORAGE_KEY_ABN = "abn";
+  static STORAGE_KEY_TFN = "tfn";
+  static STORAGE_KEY_GENDER = "gender";
+  static STORAGE_KEY_ADDRESS = "address";
+  static STORAGE_KEY_ROLE= "role";
+  static STORAGE_KEY_USER_IMAGE = "user_image";
   // static STORAGE_PUSH_ALARM_STATUS= "push_alarm";
 
   
