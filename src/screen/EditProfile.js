@@ -23,6 +23,7 @@ import Utils from '../utils/Utils';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import CommonAppBar from '../component/CommonAppBar';
 
 export default class MyProfile extends React.Component{
     constructor(props){
@@ -173,15 +174,18 @@ export default class MyProfile extends React.Component{
     }
 
     onClickDropdownItem=(value)=> {
-        this.setState({ isDropdownVisible: false })
-        this.setState({gender:value})
+        this.setState({ isDropdownVisible: false, gender:value })
+    }
+
+    onClickDropdownItem1=(value)=> {
+        this.setState({ isDropdownVisible1:false, abn:value })
     }
     render() {
         return (
-            <ScrollView style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <AppBarWithMenu title="Edit My Account" navigation={this.props.navigation}  />
-
+                <CommonAppBar title="Edit My Account" navigation={this.props.navigation}  />
+                <ScrollView style={styles.bottomViewContainer}>
                 <View style={styles.bottomViewContainer}>
                 <View style={styles.rowView}>
                     <View style={styles.bottomViewContainer}>
@@ -293,6 +297,8 @@ export default class MyProfile extends React.Component{
                             : null}
                             
                     <Text numberOfLines={1} style={styles.headingTextStyle} >ABN</Text>
+                    <TouchableOpacity style={styles.filterMainContainer} onPress={() => this.setState({ isDropdownVisible1: true })}>
+                    
                     <View style={styles.searchEditTextContainer}>
                     <TextInput
                      style={styles.filterInputText} 
@@ -305,7 +311,38 @@ export default class MyProfile extends React.Component{
                       blurOnSubmit={false}
                       />
                     
+                    <Image
+                                source={require('../images/down_arow.png')}
+                                style={styles.searchIcon}
+                            />
                     </View>
+                    </TouchableOpacity>
+                    {this.state.isDropdownVisible1 ?
+                            <View style={styles.dropdownContainer}>
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem1("Petrol")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Petrol</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem1("Diesel")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Diesel</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem1("Roller")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Roller</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem1("LPG")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >LPG</Text>
+                                </TouchableOpacity>
+                                
+                            </View>
+                            : null}
                     <Text numberOfLines={1} style={styles.headingTextStyle} >TFN</Text>
                     <View style={styles.searchEditTextContainer}>
                     <TextInput numberOfLines={1} style={styles.filterInputText} >{this.state.tfn}</TextInput>
@@ -344,6 +381,7 @@ export default class MyProfile extends React.Component{
                             </View>
                 </View>
             </ScrollView>
+            </SafeAreaView>
         );
     }
 

@@ -21,7 +21,7 @@ import Constants from '../utils/Constants';
 import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import { Dimensions } from 'react-native';
 const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
 
 
@@ -154,7 +154,7 @@ export default class MyProfile extends React.Component{
             <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
                 <AppBarWithMenu title="My Account" navigation={this.props.navigation}  />
-
+                <ScrollView style={styles.bottomViewContainer}>
                 <View style={styles.bottomViewContainer}>
                     
                 <View style={styles.headingEditTextStyle} >
@@ -218,6 +218,7 @@ export default class MyProfile extends React.Component{
 
                     
                 </View>
+            </ScrollView>
             </SafeAreaView>
         );
     }
@@ -228,13 +229,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.splashScreenBgColor,
-        margin: 0,
+        margin: 0
     },
     viewImage: {
-        width: 80,
-        height: 80,
-        resizeMode: 'contain',
-        alignSelf: 'center'
+        width: 100,
+        height: 100,
+        resizeMode: 'cover',
+        alignSelf: 'center',
+        marginStart:0,
+        borderRadius:50
     },
     viewIcon: {
         width: 20,
@@ -282,7 +285,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
         borderTopEndRadius: 40,
         borderTopStartRadius: 40,
-        paddingVertical: 10
+        paddingVertical: 10,
+        height: Dimensions.get('window').height
     },
 
     editTextContainer: {
