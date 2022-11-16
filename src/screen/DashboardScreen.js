@@ -134,7 +134,7 @@ export default class DashboardScreen extends React.Component {
 
 
         try {
-            console.log("Call car list API Link ========>  ", Links.LOGOUT);
+            console.log("Call car list API Link ========>  ", Links.CAR_LIST);
             console.log("Car list Input ========>  ", JSON.stringify(inputBody));
             const res = await fetch(Links.CAR_LIST, {
                 method: 'POST',

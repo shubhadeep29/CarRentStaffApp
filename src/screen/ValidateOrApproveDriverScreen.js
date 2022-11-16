@@ -12,6 +12,13 @@ import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import AppBarWithMenu from '../component/AppBarWithMenu';
+import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
+import Constants from '../utils/Constants';
+import Links from '../utils/Links';
+import Utils from '../utils/Utils';
+import LoaderView from '../component/LoaderView'
 
 
 export default class ValidateOrApproveDriverScreen extends React.Component {
@@ -21,70 +28,143 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
         this.state = {
             isNetworkAvailable: true,
             isLoading: false,
-            data: [
-                {
-                    id: 1,
-                    status: "Active",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 2,
-                    status: "Pending",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 3,
-                    status: "Active",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 4,
-                    status: "Pending",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 5,
-                    status: "Active",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 6,
-                    status: "Pending",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-            ],
+            data:[],
+            // data: [
+            //     {
+            //         id: 1,
+            //         status: "Active",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 2,
+            //         status: "Pending",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 3,
+            //         status: "Active",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 4,
+            //         status: "Pending",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 5,
+            //         status: "Active",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 6,
+            //         status: "Pending",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            // ],
         }
     }
+
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        this.loadingDriverList()
+    }
+
+    loadingDriverList() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.callDriverListApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    callDriverListApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call driver list API Link ========>  ", Links.DRIVER_LIST);
+            console.log("Driver list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.DRIVER_LIST, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    this.setState({ isLoading: false });
+
+                    if (responseJSON.hasOwnProperty("car_list") && responseJSON.car_list != null) {
+                        this.setState({ data: responseJSON.car_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
+
 
     goToValidatedScreen = () =>{
         this.props.navigation.navigate('ValidateStepOneScreen')
@@ -148,7 +228,6 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
             </View>
         );
     }
-
 
     render() {
         return (
@@ -233,26 +312,26 @@ const styles = StyleSheet.create({
     statusContainer: {
         // flex: 1,
         borderRadius: 20,
-        backgroundColor: '#D6EAF8',
+        backgroundColor: Colors.blueBackground,
         alignSelf: 'baseline'
     },
     statusTextStyle: {
         fontSize: 12,
         // fontFamily: fontSelector("bold"),
-        color: 'blue',
+        color: Colors.blue,
         fontWeight: 'bold',
         paddingHorizontal: 15,
         paddingVertical: 3
     },
     pendingStatusContainer: {
         borderRadius: 20,
-        backgroundColor: '#FCF3CF',
+        backgroundColor: Colors.yellowBackground,
         alignSelf: 'baseline'
     },
     pendingStatusTextStyle: {
         fontSize: 12,
         // fontFamily: fontSelector("bold"),
-        color: '#F39C12',
+        color: Colors.yellow,
         fontWeight: 'bold',
         paddingHorizontal: 15,
         paddingVertical: 3

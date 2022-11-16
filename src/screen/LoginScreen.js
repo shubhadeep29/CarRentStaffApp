@@ -76,6 +76,7 @@ export default class LoginScreen extends React.Component {
 
 
     try {
+      console.log("Call car list API Link ========>  ", Links.LOGIN);
       console.log("Call Login API ========>  ", JSON.stringify(inputBody));
       const res = await fetch(Links.LOGIN, {
         method: 'POST',

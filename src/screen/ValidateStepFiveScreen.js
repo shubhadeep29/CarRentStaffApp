@@ -33,6 +33,10 @@ export default class ValidateStepFiveScreen extends React.Component {
 
     }
 
+    onClickSubmitButton(){
+        
+    }
+
     render() {
         return (
             <SafeAreaView style={styles.container}>

@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     dateTextStyle: {
         fontSize: 13,
         // fontFamily: fontSelector("bold"),
-        color: 'blue',
+        color: Colors.blue,
         marginStart: 4,
         textAlignVertical: 'center',
         flex: 1
