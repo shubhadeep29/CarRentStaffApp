@@ -22,38 +22,144 @@ import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import { ScrollView } from 'react-native-gesture-handler';
 
+const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
+
 
 export default class MyProfile extends React.Component{
     constructor(props){
         super(props);
         this.state={
             isNetworkAvailable: true,
-            isLoading: false
+            isLoading: false,
+            data: {},
+            fullName:"kk",
+            email:"kk@gmail.com",
+            mobile:"8787878787",
+            role:"Driver Manager",
+            address:"Salkia Howrah-711106 ",
+            gender:"Male",
+            abn:"ABN",
+            tfn:"TFN"
+        }
+                    
+
+    }
+
+    callMyProfile() {
+        try {
+
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.callMyProfileApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
             
+            console.log("Error in webservice call : " + error);
         }
     }
+
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        this.callMyProfile();
+    }
+
+    callMyProfileApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call MyProfile API Link ========>  ", Links.MY_PROFILE);
+            console.log("Call MyProfile Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.MY_PROFILE, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                    // "Content-Type": "multipart/form-data",
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Logout Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    this.setState({ isLoading: false });
+                    this.setState({ data: responseJSON.profile_details });
+                    this.setState({ fullName: responseJSON.profile_details.full_name});
+                    this.setState({ email: responseJSON.profile_details.email });
+                    this.setState({ mobile: responseJSON.profile_details.mobile_no });
+                    this.setState({ role: responseJSON.profile_details.role_name });
+                    this.setState({ gender: responseJSON.profile_details.gender });
+                    this.setState({ address: responseJSON.profile_details.address });
+                    this.setState({ abn: responseJSON.profile_details.abn });
+                    this.setState({ tfn: responseJSON.profile_details.tfn });
+                    this.setState({ imageUrl: Links.BASEURL+responseJSON.profile_details.user_image });
+                    //console.log("MyProfile Response ===========>  ", JSON.stringify(fullName));
+            
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, this.state.fullName);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, this.state.email);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, this.state.mobile);
+
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_ADDRESS, this.state.address);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_ABN, this.state.abn);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_TFN, this.state.tfn);
+
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_GENDER, this.state.gender);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_ROLE, this.state.role);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_IMAGE, imageUrl);
+                   // console.log("MyProfile AsyncStorageResponse ===========>  ", JSON.stringify(fullName));
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }else{
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+
+    }
+
     render() {
         return (
-            <ScrollView style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <AppBarWithMenu title="My Profile" navigation={this.props.navigation}  />
+                <AppBarWithMenu title="My Account" navigation={this.props.navigation}  />
 
                 <View style={styles.bottomViewContainer}>
-                <View style={styles.rowView}>
-                    <View style={styles.bottomViewContainer}>
-                            <Image
-                                source={require('../images/rounded_img.png')}
-                                style={styles.viewImage}
-                            />
-                        </View>
-
-                        <View style={styles.column}>
-                        <Text numberOfLines={1} style={styles.headingTextStyle} >Karan Singh</Text>
-                        <Text numberOfLines={1} style={styles.headingTextStyle} >+91 87777889988</Text>
                     
-                        </View>
+                <View style={styles.headingEditTextStyle} >
                         
-                        <TouchableOpacity style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('AddNewCar')}>    
+                <TouchableOpacity style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('EditProfile')}>    
                         <View style={styles.rowViewEdit}>
                         <Image
                                 source={require('../images/ic_edit.png')}
@@ -64,84 +170,55 @@ export default class MyProfile extends React.Component{
                             
                         </TouchableOpacity>
                     </View>
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >Role</Text>
-                    
-                    <View style={styles.filterMainContainer}>
-                        <View style={styles.searchEditTextContainer}>
-                            <TextInput
-                                numberOfLines={1}
-                                style={styles.searchEditTextStyle}
-                                autoCapitalize="none"
+                       <View style={styles.column}>
+                        <View style={styles.rowView}>
                         
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                placeholder="Select Role"
-                                editable={false}
-                                value={this.state.searchText}
-                                onChangeText={(value) => this.setState({ searchText: value })}
-                                onSubmitEditing={() => { this.passwordTextInput.focus() }}
-                                blurOnSubmit={false}
+                        <Image
+                                source={{ uri: imageUrl }}
+                                style={styles.viewImage}
                             />
 
-                            <Image
-                                source={require('../images/down_arow.png')}
-                                style={styles.searchIcon}
-                            />
+                            </View>
+                        <Text numberOfLines={1} style={styles.headingBigTextStyle} >{this.state.fullName}</Text>
+                        <Text numberOfLines={1} style={styles.headingSmallTextStyle} >{this.state.mobile}</Text>
+                        <Text numberOfLines={1} style={styles.headingSmallTextStyle} >{this.state.email}</Text>
+                    
                         </View>
-                    </View>
-                    
-
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >Your Email</Text>
-                    <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >karan@gmail.com</Text>
-                    
-                    </View>
-
-
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >Full Address</Text>
-                    <View style={styles.largeTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >karan@gmail.com</Text>
-                    
-                    </View>
-
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >Gender</Text>
-                    <View style={styles.filterMainContainer}>
-                        <View style={styles.searchEditTextContainer}>
-                            <TextInput
-                                numberOfLines={1}
-                                style={styles.searchEditTextStyle}
-                                autoCapitalize="none"
                         
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                placeholder="Male"
-                                editable={false}
-                                value={this.state.searchText}
-                                onChangeText={(value) => this.setState({ searchText: value })}
-                                onSubmitEditing={() => { this.passwordTextInput.focus() }}
-                                blurOnSubmit={false}
-                            />
+                        
+                    
+                    
+                <View style={styles.searchEditTextContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>Role :</Text>
+                    <Text style={styles.infoTextStyle}>{this.state.role}</Text>
+                </View>
 
-                            <Image
-                                source={require('../images/down_arow.png')}
-                                style={styles.searchIcon}
-                            />
-                        </View>
-                    </View>
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >ABN</Text>
-                    <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >ABN</Text>
-                    
-                    </View>
-                    <Text numberOfLines={1} style={styles.headingTextStyle} >TBN</Text>
-                    <View style={styles.searchEditTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >TBN</Text>
-                    
-                    </View>
+                <View style={styles.largeTextContainer}>
+                    <Text numberOfLines={1} style={styles.filterText} >Full Address</Text>
+                    <Text numberOfLines={1} style={styles.filterText} >{this.state.address}</Text>                    
+                </View>
+
+
+                <View style={styles.searchEditTextContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>Gender</Text>
+                    <Text style={styles.infoTextStyle}>{this.state.gender}</Text>
+                </View>
+
+
+                <View style={styles.searchEditTextContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>ABN</Text>
+                    <Text style={styles.infoTextStyle}>{this.state.abn}</Text>
+                </View>
+
+
+                <View style={styles.searchEditTextContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>TBN</Text>
+                    <Text style={styles.infoTextStyle}>{this.state.tfn}</Text>
+                </View>
 
                     
                 </View>
-            </ScrollView>
+            </SafeAreaView>
         );
     }
 
@@ -155,7 +232,7 @@ const styles = StyleSheet.create({
     },
     viewImage: {
         width: 80,
-        height: 100,
+        height: 80,
         resizeMode: 'contain',
         alignSelf: 'center'
     },
@@ -182,7 +259,15 @@ const styles = StyleSheet.create({
         alignItems: "flex-start",
         
     },
-   
+    editRightTextStyle: {
+        fontSize: 8,
+        // fontFamily: fontSelector("bold"),
+        color: Colors.white,
+        paddingHorizontal: 0,
+        paddingVertical: 0,
+        alignItems: "flex-end",
+        
+    },
     mainContainer: {
         flex: 1,
     },
@@ -219,6 +304,35 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
     },
+    headingEditTextStyle: {
+        fontSize: 22,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.textColor1,
+        paddingHorizontal: 20,
+        marginTop: 15,
+        marginBottom:10,
+        alignSelf:'flex-end',
+        textAlign:'center'
+    },
+    headingBigTextStyle: {
+        fontSize: 22,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.textColor1,
+        paddingHorizontal: 20,
+        marginTop: 15,
+        marginBottom:10,
+        textAlign:'center'
+    },
+    headingSmallTextStyle: {
+        fontSize: 15,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.black,
+        paddingHorizontal: 20,
+        marginTop: 15,
+        marginBottom:10,
+
+        textAlign:'center'
+    },
     headingTextStyle: {
         fontSize: 15,
         // fontFamily: fontSelector("regular"),
@@ -233,13 +347,12 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         marginHorizontal: 10,
         marginTop: 35,
-        position: 'relative',
-    
         width:70,
         height:20,
         bottom: 20,
         left: 0,
-        right: 0
+        right: 0,
+        justifyContent:"center"
     },
     buttonText: {
         fontSize: 15,
@@ -264,7 +377,9 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
     },
     rowView: {
+        alignItems:'center',
         flexDirection: 'row',
+        alignSelf:'center'
     },
     rowViewEdit:{
         flexDirection:'row',
@@ -278,6 +393,27 @@ const styles = StyleSheet.create({
     },filterMainContainer: {
         paddingBottom: 12,
     },
+    infoContainer: {
+        flexDirection: 'row',
+        flex: 1,
+        marginTop: 3,
+    },
+    infoContainerTwo: {
+        flexDirection: 'row',
+        marginTop: 3,
+    },
+    infoHeadingTextStyleTwo: {
+        fontSize: 13,
+        // fontFamily: fontSelector("bold"),
+        color: '#7F8C8D',
+    },
+    
+    infoHeadingTextStyle: {
+        fontSize: 13,
+        // fontFamily: fontSelector("bold"),
+        color: '#7F8C8D',
+        flex: 1
+    },
     searchEditTextContainer: {
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 30,
@@ -285,12 +421,14 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         flexDirection: 'row',
         height: 48,
-        paddingBottom:10
+        paddingTop:15,
+         marginTop:10,
+         marginBottom:10
     },largeTextContainer: {
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 15,
-        paddingHorizontal: 15,
-        marginHorizontal: 30,
+        paddingHorizontal: 18,
+        marginHorizontal: 20,
         textAlign:'center',
         height: 100,
     },
@@ -298,7 +436,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
-        flex: 1
     },
     searchIcon: {
         width: 12,
