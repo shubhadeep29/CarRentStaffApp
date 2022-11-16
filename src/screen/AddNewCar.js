@@ -38,15 +38,15 @@ export default class AddNewCar extends React.Component {
             model: "TataV29878",
             fuleType: "Diesel",
             make: "Tata1",
-            isHybrid: 0,
-            status: 0,
             year: "",
             regoExpireDate: "",
             insuranceExpireDate: "",
             carImage: null,
             carId: "1",
-            isHybridChecked: false,
-            isCarStatusChecked: false,
+            isHybridYes: false,
+            isHybridNo: true,
+            isCarStatusActive: true,
+            isCarStatusInactive: false,
             resourcePath: {},
             imageUri: null,
             imageName: "",
@@ -209,8 +209,8 @@ export default class AddNewCar extends React.Component {
         formData.append('model', this.state.model);
         formData.append('year', this.state.year);
         formData.append('fuel_type', this.state.fuleType);
-        formData.append('is_hybrid', this.state.isHybrid);
-        formData.append('status', this.state.status);
+        formData.append('is_hybrid', this.state.isHybridYes);
+        formData.append('status', this.state.isCarStatusActive);
         formData.append('rego_expire_date', this.state.regoExpireDate);
         formData.append('insurance_expire_date', this.state.insuranceExpireDate);
         formData.append('car_image', this.state.carImage);
@@ -303,7 +303,7 @@ export default class AddNewCar extends React.Component {
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Fuel Type</Text>
 
 
-                        <TouchableOpacity onPress={() => this.setState({ isDropdownVisible: true })}>
+                        <TouchableOpacity onPress={() => this.setState({ isDropdownVisible: !this.state.isDropdownVisible })}>
                             <View style={styles.editTextContainer}>
                                 <TextInput
                                     style={styles.emailIdEditTextStyle}
@@ -501,17 +501,23 @@ export default class AddNewCar extends React.Component {
                         <View style={styles.rowViewOptionStyle}>
                             <Text numberOfLines={1} style={styles.headingTextStyleTwo} >Hybrid</Text>
 
-                            <TouchableOpacity onPress={() => this.setState({ isHybridChecked: !this.state.isHybridChecked })}>
+                            <TouchableOpacity onPress={() => this.setState({
+                                isHybridYes: true,
+                                isHybridNo: false
+                            })}>
                                 <Image
-                                    source={this.state.isHybridChecked ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
+                                    source={this.state.isHybridYes ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
                                     style={styles.checkUncheckIcon}
                                 />
                             </TouchableOpacity>
                             <Text numberOfLines={1} style={styles.optionTextStyle} >YES</Text>
 
-                            <TouchableOpacity onPress={() => this.setState({ isHybridChecked: !this.state.isHybridChecked })}>
+                            <TouchableOpacity onPress={() => this.setState({
+                                isHybridYes: false,
+                                isHybridNo: true
+                            })}>
                                 <Image
-                                    source={this.state.isHybridChecked ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
+                                    source={this.state.isHybridNo ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
                                     style={styles.checkUncheckIcon}
                                 />
                             </TouchableOpacity>
@@ -522,17 +528,23 @@ export default class AddNewCar extends React.Component {
                         <View style={styles.rowViewOptionStyle}>
                             <Text numberOfLines={1} style={styles.headingTextStyleTwo} >Car Status</Text>
 
-                            <TouchableOpacity onPress={() => this.setState({ isCarStatusChecked: !this.state.isCarStatusChecked })}>
+                            <TouchableOpacity onPress={() => this.setState({
+                                isCarStatusActive: true,
+                                isCarStatusInactive: false
+                            })}>
                                 <Image
-                                    source={this.state.isCarStatusChecked ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
+                                    source={this.state.isCarStatusActive ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
                                     style={styles.checkUncheckIcon}
                                 />
                             </TouchableOpacity>
                             <Text numberOfLines={1} style={styles.optionTextStyle} >ACTIVE</Text>
 
-                            <TouchableOpacity onPress={() => this.setState({ isCarStatusChecked: !this.state.isCarStatusChecked })}>
+                            <TouchableOpacity onPress={() => this.setState({
+                                isCarStatusActive: false,
+                                isCarStatusInactive: true
+                            })}>
                                 <Image
-                                    source={this.state.isCarStatusChecked ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
+                                    source={this.state.isCarStatusInactive ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
                                     style={styles.checkUncheckIcon}
                                 />
                             </TouchableOpacity>
