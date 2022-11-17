@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 
     appbarContainer: {
         flexDirection: 'row',
-        paddingVertical: 15,
+        paddingVertical: 5,
         paddingHorizontal: 20,
     },
     backIcon: {
