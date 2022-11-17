@@ -12,6 +12,11 @@ import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import AppBarWithMenu from '../component/AppBarWithMenu';
+import Links from '../utils/Links';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from '../utils/Constants';
+import NetInfo from "@react-native-community/netinfo";
+import Moment from 'moment';
 
 
 export default class RentOutVehicleScreen extends React.Component {
@@ -22,79 +27,152 @@ export default class RentOutVehicleScreen extends React.Component {
             isNetworkAvailable: true,
             isLoading: false,
             searchText: "",
-            data: [
-                {
-                    id: 1,
-                    date: "28/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    rent_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    weekly_rent: "$ 00.00",
-                    bond: "$ 00.00",
+            data: [],
+            // data: [
+            //     {
+            //         id: 1,
+            //         date: "28/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         rent_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         weekly_rent: "$ 00.00",
+            //         bond: "$ 00.00",
+            //     },
+            //     {
+            //         id: 2,
+            //         date: "29/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         rent_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         weekly_rent: "$ 00.00",
+            //         bond: "$ 00.00",
+            //     },
+            //     {
+            //         id: 3,
+            //         date: "28/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         rent_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         weekly_rent: "$ 00.00",
+            //         bond: "$ 00.00",
+            //     },
+            //     {
+            //         id: 4,
+            //         date: "29/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         rent_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         weekly_rent: "$ 00.00",
+            //         bond: "$ 00.00",
+            //     },
+            //     {
+            //         id: 5,
+            //         date: "28/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         rent_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         weekly_rent: "$ 00.00",
+            //         bond: "$ 00.00",
+            //     },
+            //     {
+            //         id: 6,
+            //         date: "29/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         rent_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         weekly_rent: "$ 00.00",
+            //         bond: "$ 00.00",
+            //     },
+            // ],
+        }
+    }
+
+
+    componentDidMount = async () => {
+        Moment.locale('en');
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        this.getRentOutList()
+    }
+
+    getRentOutList() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.getRentOutListApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    getRentOutListApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call Rent Out list API Link ========>  ", Links.DRIVER_LIST);
+            console.log("Driver list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.DRIVER_LIST, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
                 },
-                {
-                    id: 2,
-                    date: "29/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    rent_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    weekly_rent: "$ 00.00",
-                    bond: "$ 00.00",
-                },
-                {
-                    id: 3,
-                    date: "28/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    rent_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    weekly_rent: "$ 00.00",
-                    bond: "$ 00.00",
-                },
-                {
-                    id: 4,
-                    date: "29/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    rent_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    weekly_rent: "$ 00.00",
-                    bond: "$ 00.00",
-                },
-                {
-                    id: 5,
-                    date: "28/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    rent_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    weekly_rent: "$ 00.00",
-                    bond: "$ 00.00",
-                },
-                {
-                    id: 6,
-                    date: "29/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    rent_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    weekly_rent: "$ 00.00",
-                    bond: "$ 00.00",
-                },
-            ],
+            });
+            const responseJSON = await res.json();
+            console.log("Rent Out list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    this.setState({ isLoading: false });
+
+                    if (responseJSON.hasOwnProperty("rentout_list") && responseJSON.rentout_list != null) {
+                        this.setState({ data: responseJSON.rentout_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    this.setState({ isLoading: false });
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
         }
     }
 
     setRenderItemView = ({ item, index }) => {
         return (
-            <TouchableOpacity style={styles.listItemContainer} activeOpacity={1} key={item.id}
+            <TouchableOpacity style={styles.listItemContainer} activeOpacity={1} key={item.rent_out_id}
             // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
             >
                 <View style={styles.rowView}>
                     <View style={styles.mainContainer}>
-                        <Text style={styles.dateTextStyle}>{item.date}</Text>
+                        <Text style={styles.dateTextStyle}>{Moment(item.created_ts).format('d/MM/yyyy')}</Text>
                     </View>
 
                     <View style={styles.editContainer}>
@@ -105,8 +183,8 @@ export default class RentOutVehicleScreen extends React.Component {
 
 
                 <View style={styles.nameAndRentUniqueIdContainer}>
-                    <Text style={styles.nameTextStyle}>{item.name}   |   </Text>
-                    <Text style={styles.rentUniqueIdTextStyle}>{item.rent_unique_id}</Text>
+                    <Text style={styles.nameTextStyle}>{item.first_name + " " + item.middle_name + " " + item.last_name}   |   </Text>
+                    <Text style={styles.rentUniqueIdTextStyle}>{item.rent_out_id}</Text>
                 </View>
 
 
@@ -131,7 +209,7 @@ export default class RentOutVehicleScreen extends React.Component {
 
                     <View style={styles.infoContainerTwo}>
                         <Text style={styles.infoHeadingTextStyleTwo}>Bond</Text>
-                        <Text style={styles.infoTextStyleTwo}>{item.bond}</Text>
+                        <Text style={styles.infoTextStyleTwo}>{item.bond_amount}</Text>
                     </View>
 
                 </View>
@@ -147,6 +225,7 @@ export default class RentOutVehicleScreen extends React.Component {
             </View>
         );
     }
+
 
 
     render() {

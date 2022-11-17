@@ -13,5 +13,6 @@ export default class Links {
     static CAR_LIST = Links.API + "staff/getCarList";
     static EDIT_PROFILE = Links.API+"staff/updateProfile";
     static DRIVER_LIST = Links.API+"staff/getDriverList";
+    static DRIVER_LIST = Links.API + "staff/getRentOutList";
     
 }
