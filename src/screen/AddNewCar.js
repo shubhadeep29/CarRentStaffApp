@@ -213,7 +213,7 @@ export default class AddNewCar extends React.Component {
         formData.append('status', this.state.isCarStatusActive);
         formData.append('rego_expire_date', this.state.regoExpireDate);
         formData.append('insurance_expire_date', this.state.insuranceExpireDate);
-        formData.append('car_image', this.state.carImage);
+        formData.append('car_image', this.state.imageUri);
         formData.append('car_id', this.state.carId);
 
 
@@ -587,7 +587,6 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         resizeMode: 'contain',
-        borderRadius: 50
     },
     centerView: {
         flex: 1,
