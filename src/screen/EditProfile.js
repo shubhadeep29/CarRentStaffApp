@@ -13,7 +13,6 @@ import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import AppBarWithMenu from '../component/AppBarWithMenu';
 import LoaderView from '../component/LoaderView'
-import CommonAppBar from '../component/CommonAppBar'
 import Loader from '../component/Loader';
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from '@react-native-async-storage/async-storage';

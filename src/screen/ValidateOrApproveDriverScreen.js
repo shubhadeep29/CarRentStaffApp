@@ -165,8 +165,10 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
 
 
 
-    goToValidatedScreen = () =>{
-        this.props.navigation.navigate('ValidateStepOneScreen')
+    goToValidatedScreen = (item) => {
+        this.props.navigation.navigate('ValidateStepOneScreen', {
+            item: item
+        })
     }
 
     setRenderItemView = ({ item, index }) => {
@@ -181,7 +183,7 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
                         </View>
                     </View>
 
-                    <TouchableOpacity style={styles.validateContainer} onPress={() => this.goToValidatedScreen()}>
+                    <TouchableOpacity style={styles.validateContainer} onPress={() => this.goToValidatedScreen(item)}>
                         <Image
                             source={require('../images/ic_edit_white.png')}
                             style={styles.validateIcon}
@@ -199,7 +201,7 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
                 </View>
 
                 <Text style={styles.infoTextStyle}>{item.email}</Text>
-                <Text style={styles.infoTextStyle}>{item.street_name}, {item.street_no}, {item.suburb}, {item.pin}</Text>
+                <Text style={styles.infoTextStyle}>{item.flat_no}, {item.street_name}, {item.street_no}, {item.suburb}, {item.pin}</Text>
 
 
                 <View style={styles.infoContainer}>

@@ -13,6 +13,8 @@ import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import CommonAppBar from '../component/CommonAppBar';
 import { ScrollView } from 'react-native-gesture-handler';
+import Constants from '../utils/Constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default class ValidateStepFourScreen extends React.Component {
@@ -20,6 +22,7 @@ export default class ValidateStepFourScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
             isFirstOptionChecked: false,
@@ -32,9 +35,33 @@ export default class ValidateStepFourScreen extends React.Component {
             isEighthOptionChecked: false,
         }
     }
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        // this.item = this.props.params.item;
+
+        console.log(this.state.item)
+
+        // this.setState({
+
+
+        //     isFirstOptionChecked: this.state.item,
+        //     isSecondOptionChecked: this.state.item,
+        //     isThirdOptionChecked: this.state.item,
+        //     isFourthOptionChecked: this.state.item,
+        //     isFivthOptionChecked: this.state.item,
+        //     isSixthOptionChecked: this.state.item,
+        //     isSeventhOptionChecked: this.state.item,
+        //     isEighthOptionChecked: this.state.item,
+        // })
+    }
+
 
     goToNextScreen = () => {
         this.props.navigation.navigate('ValidateStepFiveScreen')
+        // this.props.navigation.navigate('ValidateStepFiveScreen', {
+        //     item: item
+        // })
     }
 
     render() {
