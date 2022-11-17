@@ -214,7 +214,7 @@ export default class AddNewCar extends React.Component {
         formData.append('rego_expire_date', this.state.regoExpireDate);
         formData.append('insurance_expire_date', this.state.insuranceExpireDate);
         formData.append('car_image', {
-            uri: this.state.imageUri,
+            uri: Platform.OS === 'ios' ? this.state.imageUri.replace('file://', '') : this.state.imageUri,
             name: this.state.imageName,
             type: this.state.imageType
         });
