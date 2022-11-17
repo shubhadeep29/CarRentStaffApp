@@ -213,7 +213,11 @@ export default class AddNewCar extends React.Component {
         formData.append('status', this.state.isCarStatusActive);
         formData.append('rego_expire_date', this.state.regoExpireDate);
         formData.append('insurance_expire_date', this.state.insuranceExpireDate);
-        formData.append('car_image', this.state.imageUri);
+        formData.append('car_image', {
+            uri: this.state.imageUri,
+            name: this.state.imageName,
+            type: this.state.imageType
+        });
         formData.append('car_id', this.state.carId);
 
 
@@ -232,8 +236,8 @@ export default class AddNewCar extends React.Component {
             const responseJSON = await res.json();
             console.log("Car Edit Response ===========>  ", JSON.stringify(responseJSON));
             if (responseJSON) {
+                this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
-                    this.setState({ isLoading: false });
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
@@ -241,7 +245,6 @@ export default class AddNewCar extends React.Component {
 
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
-                    this.setState({ isLoading: false });
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     } else {

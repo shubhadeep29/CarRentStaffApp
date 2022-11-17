@@ -94,8 +94,8 @@ export default class MyProfile extends React.Component{
             const responseJSON = await res.json();
             console.log("Logout Response ===========>  ", JSON.stringify(responseJSON));
             if (responseJSON) {
+                this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
-                    this.setState({ isLoading: false });
                     this.setState({ data: responseJSON.profile_details });
                     this.setState({ fullName: responseJSON.profile_details.full_name});
                     this.setState({ email: responseJSON.profile_details.email });
@@ -125,14 +125,12 @@ export default class MyProfile extends React.Component{
                     }
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
-                    this.setState({ isLoading: false });
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     } else {
                         Toast.show("something went wrong", Toast.SHORT);
                     }
-                }else{
-                    this.setState({ isLoading: false });
+                } else {
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     } else {

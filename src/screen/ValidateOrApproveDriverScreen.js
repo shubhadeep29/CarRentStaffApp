@@ -140,15 +140,14 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
             const responseJSON = await res.json();
             console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
             if (responseJSON) {
+                this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
-                    this.setState({ isLoading: false });
 
                     if (responseJSON.hasOwnProperty("driver_list") && responseJSON.driver_list != null) {
                         this.setState({ data: responseJSON.driver_list });
                     }
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
-                    this.setState({ isLoading: false });
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     } else {

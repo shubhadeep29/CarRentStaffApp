@@ -128,9 +128,9 @@ export default class RentOutVehicleScreen extends React.Component {
 
 
         try {
-            console.log("Call Rent Out list API Link ========>  ", Links.DRIVER_LIST);
-            console.log("Driver list Input ========>  ", JSON.stringify(inputBody));
-            const res = await fetch(Links.DRIVER_LIST, {
+            console.log("Call Rent Out list API Link ========>  ", Links.RENT_OUT_LIST);
+            console.log("Rent Out list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.RENT_OUT_LIST, {
                 method: 'POST',
                 body: inputBody,
                 headers: {
@@ -141,15 +141,13 @@ export default class RentOutVehicleScreen extends React.Component {
             const responseJSON = await res.json();
             console.log("Rent Out list Response ===========>  ", JSON.stringify(responseJSON));
             if (responseJSON) {
+                this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
-                    this.setState({ isLoading: false });
-
                     if (responseJSON.hasOwnProperty("rentout_list") && responseJSON.rentout_list != null) {
                         this.setState({ data: responseJSON.rentout_list });
                     }
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
-                    this.setState({ isLoading: false });
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     } else {

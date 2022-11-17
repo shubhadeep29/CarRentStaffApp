@@ -95,8 +95,8 @@ export default class ChangePasswordScreen extends React.Component {
             const responseJSON = await res.json();
             console.log("Change password Response ===========>  ", JSON.stringify(responseJSON));
             if (responseJSON) {
+                this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
-                    this.setState({ isLoading: false });
 
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
@@ -106,7 +106,6 @@ export default class ChangePasswordScreen extends React.Component {
 
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
-                    this.setState({ isLoading: false });
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     } else {

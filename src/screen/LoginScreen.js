@@ -90,8 +90,8 @@ export default class LoginScreen extends React.Component {
       const responseJSON = await res.json();
       console.log("Login Response ===========>  ", JSON.stringify(responseJSON));
       if (responseJSON) {
+        this.setState({ isLoading: false });
         if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
-          this.setState({ isLoading: false });
           var userId = "";
           var apiKey = "";
           var name = "";
@@ -132,7 +132,6 @@ export default class LoginScreen extends React.Component {
 
         }
         else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
-          this.setState({ isLoading: false });
           if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
             Toast.show(responseJSON.message, Toast.SHORT);
           } else {

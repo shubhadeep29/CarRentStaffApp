@@ -147,15 +147,14 @@ export default class DashboardScreen extends React.Component {
             const responseJSON = await res.json();
             console.log("Car list Response ===========>  ", JSON.stringify(responseJSON));
             if (responseJSON) {
+                this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
-                    this.setState({ isLoading: false });
 
                     if (responseJSON.hasOwnProperty("car_list") && responseJSON.car_list != null) {
                         this.setState({ data: responseJSON.car_list });
                     }
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
-                    this.setState({ isLoading: false });
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     } else {
@@ -185,7 +184,7 @@ export default class DashboardScreen extends React.Component {
                 <View >
                     <Image
                         // source={require('../images/car_img.jpg')}
-                        source={{ uri: imageUrl }}
+                        source={{ uri: Links.BASEURL + item.car_image }}
                         style={styles.carImage}
                     />
                     <View style={styles.indicatorContainer}>
