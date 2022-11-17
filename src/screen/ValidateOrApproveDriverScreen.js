@@ -143,8 +143,8 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
                     this.setState({ isLoading: false });
 
-                    if (responseJSON.hasOwnProperty("car_list") && responseJSON.car_list != null) {
-                        this.setState({ data: responseJSON.car_list });
+                    if (responseJSON.hasOwnProperty("driver_list") && responseJSON.driver_list != null) {
+                        this.setState({ data: responseJSON.driver_list });
                     }
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
@@ -177,8 +177,8 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
             >
                 <View style={styles.rowView}>
                     <View style={styles.mainContainer}>
-                        <View style={item.status == "Active" ? styles.statusContainer : styles.pendingStatusContainer}>
-                            <Text style={item.status == "Active" ? styles.statusTextStyle : styles.pendingStatusTextStyle}>{item.status}</Text>
+                        <View style={item.status == "1" ? styles.statusContainer : styles.pendingStatusContainer}>
+                            <Text style={item.status == "1" ? styles.statusTextStyle : styles.pendingStatusTextStyle}>{item.status == "1" ? "Active" : "Pending"}</Text>
                         </View>
                     </View>
 
@@ -195,24 +195,24 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
 
 
                 <View style={styles.nameAndMobileContainer}>
-                    <Text style={styles.nameTextStyle}>{item.name}   |   </Text>
+                    <Text style={styles.nameTextStyle}>{item.first_name} {item.middle_name} {item.last_name}   |   </Text>
                     <Text style={styles.mobileTextStyle}>{item.mobile}</Text>
                 </View>
 
                 <Text style={styles.infoTextStyle}>{item.email}</Text>
-                <Text style={styles.infoTextStyle}>{item.address}</Text>
+                <Text style={styles.infoTextStyle}>{item.street_name}, {item.street_no}, {item.suburb}, {item.pin}</Text>
 
 
                 <View style={styles.infoContainer}>
-                    <View style={styles.infoContainer}>
+                    <View style={styles.infoContainerOne}>
                         <Text style={styles.infoHeadingTextStyleTwo}>License No</Text>
-                        <Text style={styles.infoTextStyleTwo}>{item.license_no}</Text>
+                        <Text style={styles.infoTextStyleTwo}>{item.licence_no}</Text>
                     </View>
 
 
                     <View style={styles.infoContainerTwo}>
                         <Text style={styles.infoHeadingTextStyleTwo}>Driver Expire</Text>
-                        <Text style={styles.infoTextStyleTwo}>{item.driver_expire_date}</Text>
+                        <Text style={styles.infoTextStyleTwo}>{item.licence_expiry}</Text>
                     </View>
 
                 </View>
@@ -237,6 +237,7 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
                 <View style={styles.bottomViewContainer}>
 
                     <View style={styles.mainContainer}>
+                    {this.state.isLoading && <Loader />}
                         {this.state.isNetworkAvailable ?
                             <View style={styles.mainContainer}>
                                 {this.state.isLoading && <Loader />}
@@ -360,27 +361,33 @@ const styles = StyleSheet.create({
     },
     infoContainer: {
         flexDirection: 'row',
+        marginTop: 3,
+        // flex: 1,
+        // backgroundColor: 'purple'
+    },
+    infoContainerOne: {
+        flexDirection: 'row',
         flex: 1,
-        marginTop: 3
     },
     infoContainerTwo: {
         flex: 1,
         flexDirection: 'row',
-        alignSelf: 'baseline',
-        marginTop: 3
+        alignSelf: 'flex-end',
+        justifyContent: 'flex-end',
+        alignItems:'flex-end',
     },
     infoHeadingTextStyleTwo: {
-        fontSize: 13,
+        fontSize: 11,
         // fontFamily: fontSelector("bold"),
         color: '#7F8C8D',
     },
     infoTextStyleTwo: {
-        fontSize: 13,
+        fontSize: 11,
         // fontFamily: fontSelector("bold"),
         color: Colors.black,
         fontWeight: 'bold',
         marginStart: 8,
-        flex: 1,
+        // flex: 1,
     },
     rowView: {
         flexDirection: 'row',
