@@ -304,6 +304,7 @@ export default class MyProfile extends React.Component{
                      style={styles.filterInputText} 
                       autoCapitalize="none"
                       multiline={false}
+                      editable={false}
                       placeholderTextColor={Colors.placeholderColor}
                     //   placeholder="DD/MM/YYYY"
                       value={this.state.abn}
