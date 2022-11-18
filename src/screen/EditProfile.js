@@ -221,7 +221,11 @@ export default class MyProfile extends React.Component{
                     </View>
                     <Text numberOfLines={1} style={styles.headingTextStyle} >Phone</Text>
                     <View style={styles.searchEditTextContainer}>
-                    <TextInput numberOfLines={1} style={styles.filterInputText} placeholder={"enter mobile number"}>{this.state.mobile}</TextInput>
+                    <TextInput numberOfLines={1} style={styles.filterInputText} 
+                                value={this.state.mobile}
+                                maxLength={11}
+                                onChangeText={(value) => this.setState({ mobile: value })}
+                                placeholder={"enter mobile number"}>{this.state.mobile}</TextInput>
                     
                     </View>
 
@@ -242,7 +246,11 @@ export default class MyProfile extends React.Component{
 
                     <Text numberOfLines={1} style={styles.headingTextStyle} >Full Address</Text>
                     <View style={styles.largeTextContainer}>
-                    <TextInput numberOfLines={1} style={styles.filterText} >{this.state.address}</TextInput>
+                    <TextInput  style={styles.filterText} 
+                                value={this.state.address}
+                                onChangeText={(value) => this.setState({ address: value })}
+                                
+                    >{this.state.address}</TextInput>
                     
                     </View>
 
@@ -346,7 +354,11 @@ export default class MyProfile extends React.Component{
                             : null}
                     <Text numberOfLines={1} style={styles.headingTextStyle} >TFN</Text>
                     <View style={styles.searchEditTextContainer}>
-                    <TextInput numberOfLines={1} style={styles.filterInputText} >{this.state.tfn}</TextInput>
+                    <TextInput numberOfLines={1} 
+                    style={styles.filterInputText} 
+                    
+                    value={this.state.tfn}
+                    onChangeText={(value) => this.setState({ tfn: value })}>{this.state.tfn}</TextInput>
                     
                     </View>
 
