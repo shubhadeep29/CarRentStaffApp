@@ -12,7 +12,11 @@ import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import AppBarWithMenu from '../component/AppBarWithMenu';
-
+import Links from '../utils/Links';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from '../utils/Constants';
+import NetInfo from "@react-native-community/netinfo";
+import Moment from 'moment';
 
 export default class ReturnInVehicleScreen extends React.Component {
 
@@ -22,67 +26,137 @@ export default class ReturnInVehicleScreen extends React.Component {
             isNetworkAvailable: true,
             isLoading: false,
             searchText: "",
-            data: [
-                {
-                    id: 1,
-                    date: "28/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    return_in_no: "123456",
-                    return_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    damage_amount: "$ 00.00",
-                    bond_refund_amt: "$ 00.00",
-                    refund_date: "28/09/2022"
+            data: [],
+            // data: [
+            //     {
+            //         id: 1,
+            //         date: "28/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         return_in_no: "123456",
+            //         return_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         damage_amount: "$ 00.00",
+            //         bond_refund_amt: "$ 00.00",
+            //         refund_date: "28/09/2022"
+            //     },
+            //     {
+            //         id: 2,
+            //         date: "28/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         return_in_no: "123456",
+            //         return_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         damage_amount: "$ 00.00",
+            //         bond_refund_amt: "$ 00.00",
+            //         refund_date: "28/09/2022"
+            //     },
+            //     {
+            //         id: 3,
+            //         date: "28/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         return_in_no: "123456",
+            //         return_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         damage_amount: "$ 00.00",
+            //         bond_refund_amt: "$ 00.00",
+            //         refund_date: "28/09/2022"
+            //     },
+            //     {
+            //         id: 4,
+            //         date: "28/09/2022",
+            //         name: "Harvir Singh",
+            //         rent_unique_id: "SG 102 L12365",
+            //         return_in_no: "123456",
+            //         return_out_no: "123456",
+            //         odometer_reading: "1000.00",
+            //         damage_amount: "$ 00.00",
+            //         bond_refund_amt: "$ 00.00",
+            //         refund_date: "28/09/2022"
+            //     },
+            // ],
+        }
+    }
+
+    componentDidMount = async () => {
+        Moment.locale('en');
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        this.getRentOutList()
+    }
+
+    getRentOutList() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.getRentOutListApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    getRentOutListApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call Rent In list API Link ========>  ", Links.RENT_IN_LIST);
+            console.log("Rent In list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.RENT_IN_LIST, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
                 },
-                {
-                    id: 2,
-                    date: "28/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    return_in_no: "123456",
-                    return_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    damage_amount: "$ 00.00",
-                    bond_refund_amt: "$ 00.00",
-                    refund_date: "28/09/2022"
-                },
-                {
-                    id: 3,
-                    date: "28/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    return_in_no: "123456",
-                    return_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    damage_amount: "$ 00.00",
-                    bond_refund_amt: "$ 00.00",
-                    refund_date: "28/09/2022"
-                },
-                {
-                    id: 4,
-                    date: "28/09/2022",
-                    name: "Harvir Singh",
-                    rent_unique_id: "SG 102 L12365",
-                    return_in_no: "123456",
-                    return_out_no: "123456",
-                    odometer_reading: "1000.00",
-                    damage_amount: "$ 00.00",
-                    bond_refund_amt: "$ 00.00",
-                    refund_date: "28/09/2022"
-                },
-            ],
+            });
+            const responseJSON = await res.json();
+            console.log("Rent In list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    if (responseJSON.hasOwnProperty("rentin_list") && responseJSON.rentin_list != null) {
+                        this.setState({ data: responseJSON.rentin_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
         }
     }
 
     setRenderItemView = ({ item, index }) => {
         return (
-            <TouchableOpacity style={styles.listItemContainer} activeOpacity={1} key={item.id}
+            <TouchableOpacity style={styles.listItemContainer} activeOpacity={1} key={item.rent_in_id}
             // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
             >
                 <View style={styles.rowView}>
                     <View style={styles.mainContainer}>
-                        <Text style={styles.dateTextStyle}>{item.date}</Text>
+                        <Text style={styles.dateTextStyle}>{Moment(item.created_ts).format('d/MM/yyyy')}</Text>
                     </View>
 
                     <View style={styles.editContainer}>
@@ -98,18 +172,18 @@ export default class ReturnInVehicleScreen extends React.Component {
 
 
                 <View style={styles.nameAndRentUniqueIdContainer}>
-                    <Text style={styles.nameTextStyle}>{item.name}   |   </Text>
-                    <Text style={styles.rentUniqueIdTextStyle}>{item.rent_unique_id}</Text>
+                    <Text style={styles.nameTextStyle}>{item.first_name + " " + item.middle_name + " " + item.last_name}   |   </Text>
+                    <Text style={styles.rentUniqueIdTextStyle}>{item.rent_in_id}</Text>
                 </View>
 
                 <View style={styles.infoContainer}>
                     <Text style={styles.infoHeadingTextStyle}>Rent in No :</Text>
-                    <Text style={styles.infoTextStyle}>{item.return_in_no}</Text>
+                    <Text style={styles.infoTextStyle}>{item.rent_in_no}</Text>
                 </View>
 
                 <View style={styles.infoContainer}>
                     <Text style={styles.infoHeadingTextStyle}>Rent Out No :</Text>
-                    <Text style={styles.infoTextStyle}>{item.return_out_no}</Text>
+                    <Text style={styles.infoTextStyle}>{item.rent_out_no}</Text>
                 </View>
 
                 <View style={styles.infoContainer}>
@@ -126,13 +200,13 @@ export default class ReturnInVehicleScreen extends React.Component {
                 <View style={styles.rowView}>
                     <View style={styles.infoContainer}>
                         <Text style={styles.infoHeadingTextStyleTwo}>Bond Refund Amt. :</Text>
-                        <Text style={styles.infoTextStyleTwo}>{item.bond_refund_amt}</Text>
+                        <Text style={styles.infoTextStyleTwo}>{item.bond_refund_amount}</Text>
                     </View>
 
 
                     <View style={styles.infoContainerTwo}>
                         <Text style={styles.infoHeadingTextStyleTwo}>Refund Date :</Text>
-                        <Text style={styles.infoTextStyleTwo}>{item.refund_date}</Text>
+                        <Text style={styles.infoTextStyleTwo}>{item.bond_refund_date}</Text>
                     </View>
 
                 </View>
@@ -353,7 +427,7 @@ const styles = StyleSheet.create({
     dateTextStyle: {
         fontSize: 13,
         // fontFamily: fontSelector("bold"),
-        color: 'blue',
+        color: Colors.blue,
         marginStart: 4,
         textAlignVertical: 'center',
         flex: 1

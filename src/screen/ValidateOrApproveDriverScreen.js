@@ -12,6 +12,13 @@ import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import AppBarWithMenu from '../component/AppBarWithMenu';
+import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
+import Constants from '../utils/Constants';
+import Links from '../utils/Links';
+import Utils from '../utils/Utils';
+import LoaderView from '../component/LoaderView'
 
 
 export default class ValidateOrApproveDriverScreen extends React.Component {
@@ -21,73 +28,147 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
         this.state = {
             isNetworkAvailable: true,
             isLoading: false,
-            data: [
-                {
-                    id: 1,
-                    status: "Active",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 2,
-                    status: "Pending",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 3,
-                    status: "Active",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 4,
-                    status: "Pending",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 5,
-                    status: "Active",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-                {
-                    id: 6,
-                    status: "Pending",
-                    name: "Sudhir Biswas",
-                    mobile: "9876543210",
-                    email: "sbiswas68532@gmail.com",
-                    address: "Baikunthapur, Tribeni, Hooghly, 712503",
-                    license_no: "H98653",
-                    driver_expire_date: "12/09/2023"
-                },
-            ],
+            data:[],
+            // data: [
+            //     {
+            //         id: 1,
+            //         status: "Active",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 2,
+            //         status: "Pending",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 3,
+            //         status: "Active",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 4,
+            //         status: "Pending",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 5,
+            //         status: "Active",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            //     {
+            //         id: 6,
+            //         status: "Pending",
+            //         name: "Sudhir Biswas",
+            //         mobile: "9876543210",
+            //         email: "sbiswas68532@gmail.com",
+            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
+            //         license_no: "H98653",
+            //         driver_expire_date: "12/09/2023"
+            //     },
+            // ],
         }
     }
 
-    goToValidatedScreen = () =>{
-        this.props.navigation.navigate('ValidateStepOneScreen')
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        this.loadingDriverList()
+    }
+
+    loadingDriverList() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.callDriverListApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    callDriverListApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call driver list API Link ========>  ", Links.DRIVER_LIST);
+            console.log("Driver list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.DRIVER_LIST, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+
+                    if (responseJSON.hasOwnProperty("driver_list") && responseJSON.driver_list != null) {
+                        this.setState({ data: responseJSON.driver_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
+
+
+    goToValidatedScreen = (item) => {
+        this.props.navigation.navigate('ValidateStepOneScreen', {
+            item: item
+        })
     }
 
     setRenderItemView = ({ item, index }) => {
@@ -97,12 +178,12 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
             >
                 <View style={styles.rowView}>
                     <View style={styles.mainContainer}>
-                        <View style={item.status == "Active" ? styles.statusContainer : styles.pendingStatusContainer}>
-                            <Text style={item.status == "Active" ? styles.statusTextStyle : styles.pendingStatusTextStyle}>{item.status}</Text>
+                        <View style={item.status == "1" ? styles.statusContainer : styles.pendingStatusContainer}>
+                            <Text style={item.status == "1" ? styles.statusTextStyle : styles.pendingStatusTextStyle}>{item.status == "1" ? "Active" : "Pending"}</Text>
                         </View>
                     </View>
 
-                    <TouchableOpacity style={styles.validateContainer} onPress={() => this.goToValidatedScreen()}>
+                    <TouchableOpacity style={styles.validateContainer} onPress={() => this.goToValidatedScreen(item)}>
                         <Image
                             source={require('../images/ic_edit_white.png')}
                             style={styles.validateIcon}
@@ -115,24 +196,24 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
 
 
                 <View style={styles.nameAndMobileContainer}>
-                    <Text style={styles.nameTextStyle}>{item.name}   |   </Text>
+                    <Text style={styles.nameTextStyle}>{item.first_name} {item.middle_name} {item.last_name}   |   </Text>
                     <Text style={styles.mobileTextStyle}>{item.mobile}</Text>
                 </View>
 
                 <Text style={styles.infoTextStyle}>{item.email}</Text>
-                <Text style={styles.infoTextStyle}>{item.address}</Text>
+                <Text style={styles.infoTextStyle}>{item.flat_no}, {item.street_name}, {item.street_no}, {item.suburb}, {item.pin}</Text>
 
 
                 <View style={styles.infoContainer}>
-                    <View style={styles.infoContainer}>
+                    <View style={styles.infoContainerOne}>
                         <Text style={styles.infoHeadingTextStyleTwo}>License No</Text>
-                        <Text style={styles.infoTextStyleTwo}>{item.license_no}</Text>
+                        <Text style={styles.infoTextStyleTwo}>{item.licence_no}</Text>
                     </View>
 
 
                     <View style={styles.infoContainerTwo}>
                         <Text style={styles.infoHeadingTextStyleTwo}>Driver Expire</Text>
-                        <Text style={styles.infoTextStyleTwo}>{item.driver_expire_date}</Text>
+                        <Text style={styles.infoTextStyleTwo}>{item.licence_expiry}</Text>
                     </View>
 
                 </View>
@@ -149,7 +230,6 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
         );
     }
 
-
     render() {
         return (
             <SafeAreaView style={styles.container}>
@@ -158,6 +238,7 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
                 <View style={styles.bottomViewContainer}>
 
                     <View style={styles.mainContainer}>
+                    {this.state.isLoading && <Loader />}
                         {this.state.isNetworkAvailable ?
                             <View style={styles.mainContainer}>
                                 {this.state.isLoading && <Loader />}
@@ -233,26 +314,26 @@ const styles = StyleSheet.create({
     statusContainer: {
         // flex: 1,
         borderRadius: 20,
-        backgroundColor: '#D6EAF8',
+        backgroundColor: Colors.blueBackground,
         alignSelf: 'baseline'
     },
     statusTextStyle: {
         fontSize: 12,
         // fontFamily: fontSelector("bold"),
-        color: 'blue',
+        color: Colors.blue,
         fontWeight: 'bold',
         paddingHorizontal: 15,
         paddingVertical: 3
     },
     pendingStatusContainer: {
         borderRadius: 20,
-        backgroundColor: '#FCF3CF',
+        backgroundColor: Colors.yellowBackground,
         alignSelf: 'baseline'
     },
     pendingStatusTextStyle: {
         fontSize: 12,
         // fontFamily: fontSelector("bold"),
-        color: '#F39C12',
+        color: Colors.yellow,
         fontWeight: 'bold',
         paddingHorizontal: 15,
         paddingVertical: 3
@@ -281,27 +362,33 @@ const styles = StyleSheet.create({
     },
     infoContainer: {
         flexDirection: 'row',
+        marginTop: 3,
+        // flex: 1,
+        // backgroundColor: 'purple'
+    },
+    infoContainerOne: {
+        flexDirection: 'row',
         flex: 1,
-        marginTop: 3
     },
     infoContainerTwo: {
         flex: 1,
         flexDirection: 'row',
-        alignSelf: 'baseline',
-        marginTop: 3
+        alignSelf: 'flex-end',
+        justifyContent: 'flex-end',
+        alignItems:'flex-end',
     },
     infoHeadingTextStyleTwo: {
-        fontSize: 13,
+        fontSize: 11,
         // fontFamily: fontSelector("bold"),
         color: '#7F8C8D',
     },
     infoTextStyleTwo: {
-        fontSize: 13,
+        fontSize: 11,
         // fontFamily: fontSelector("bold"),
         color: Colors.black,
         fontWeight: 'bold',
         marginStart: 8,
-        flex: 1,
+        // flex: 1,
     },
     rowView: {
         flexDirection: 'row',

@@ -13,25 +13,63 @@ import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import CommonAppBar from '../component/CommonAppBar';
 import { ScrollView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from '../utils/Constants';
 
 
 export default class ValidateStepTwoScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
-            selectedUtility: "Utility Bill",
-            passportExpireDate: "20/03/2022",
-            passportNo: "AD3EQDAKS",
-            driverExpireDate: "20/03/2022",
-            driverLICNo: "2KWDQJE3",
-            isAustralianLicence: true,
+            selectedUtility: "",
+            passportExpireDate: "",
+            passportNo: "",
+            driverExpireDate: "",
+            driverLICNo: "",
+            isAustralianLicenceYes: true,
+            isAustralianLicenceNo: false
         }
     }
 
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        // this.item = this.props.params.item;
+
+        console.log(this.state.item)
+
+        this.setState({
+            selectedUtility: this.state.item.utility_bill,
+            passportExpireDate: this.state.item.passport_expiry,
+            passportNo: this.state.item.passport_no,
+            driverExpireDate: this.state.item.licence_expiry,
+            driverLICNo: this.state.item.licence_no,
+            isAustralianLicenceYes: this.state.item.is_australian_licence === "Yes" ? true : false,
+            isAustralianLicenceNo: this.state.item.is_australian_licence === "No" ? true : false,
+
+        })
+    }
+
+
     goToNextScreen = () => {
-        this.props.navigation.navigate('ValidateStepThreeScreen')
+        let item = this.state.item
+        item.utility_bill = this.state.selectedUtility;
+        item.passport_expiry = this.state.passportExpireDate;
+        item.passport_no = this.state.passportNo;
+        item.licence_expiry = this.state.driverExpireDate;
+        item.licence_no = this.state.driverLICNo;
+        item.is_australian_licence = this.state.isAustralianLicenceYes;
+        this.setState({
+            item: item
+        })
+
+        console.log("++++++++++++", item)
+        this.props.navigation.navigate('ValidateStepThreeScreen', {
+            item: item
+        })
     }
 
     render() {
@@ -102,20 +140,30 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 />
                             </View>
 
-
-                            <View style={{
-                                flex: 1,
-                                flexDirection: 'row',
-                                alignContent: 'center',
-                                alignItems: 'center',
-                                marginTop: 15,
-                                paddingHorizontal: 40
-                            }}>
+                            <View style={styles.rowViewOptionStyle}>
                                 <Text numberOfLines={1} style={styles.headingTextStyleTwo} >Australian Licence</Text>
 
-                                <Text numberOfLines={1} style={styles.optionTextStyle} >Yes</Text>
+                                <TouchableOpacity onPress={() => this.setState({
+                                    isAustralianLicenceYes: true,
+                                    isAustralianLicenceNo: false
+                                })}>
+                                    <Image
+                                        source={this.state.isAustralianLicenceYes ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text numberOfLines={1} style={styles.optionTextStyle} >YES</Text>
 
-                                <Text numberOfLines={1} style={styles.optionTextStyle} >No</Text>
+                                <TouchableOpacity onPress={() => this.setState({
+                                    isAustralianLicenceYes: false,
+                                    isAustralianLicenceNo: true
+                                })}>
+                                    <Image
+                                        source={this.state.isAustralianLicenceNo ? require('../images/ic_radio_check.png') : require('../images/ic_radio_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text numberOfLines={1} style={styles.optionTextStyle} >NO</Text>
                             </View>
 
 
@@ -321,6 +369,21 @@ const styles = StyleSheet.create({
         height: 15,
         resizeMode: 'contain',
         alignSelf: 'center'
-    }
+    },
+    rowViewOptionStyle: {
+        flex: 1,
+        flexDirection: 'row',
+        alignContent: 'center',
+        alignItems: 'center',
+        marginTop: 15,
+        paddingHorizontal: 40
+    },
+    checkUncheckIcon: {
+        width: 20,
+        height: 20,
+        resizeMode: 'contain',
+        alignSelf: 'center',
+
+    },
 
 });

@@ -13,12 +13,15 @@ import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import CommonAppBar from '../component/CommonAppBar';
 import { ScrollView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from '../utils/Constants';
 
 
 export default class ValidateStepFiveScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            // item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
             bondAmount: "",
@@ -29,8 +32,31 @@ export default class ValidateStepFiveScreen extends React.Component {
         }
     }
 
+
+
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        // this.item = this.props.params.item;
+
+        // console.log(this.state.item)
+
+        // this.setState({
+        //     bondAmount: this.state.item,
+        //     driverExpireDate: this.state.item,
+        //     paymentMethod: this.state.item,
+        //     referenceNumber: this.state.item,
+        //     adminNote: this.state.item,
+
+        // })
+    }
+
     goToNextScreen = () => {
 
+    }
+
+    onClickSubmitButton(){
+        
     }
 
     render() {

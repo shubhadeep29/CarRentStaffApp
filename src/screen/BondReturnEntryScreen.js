@@ -93,7 +93,11 @@ export default class BondReturnEntryScreen extends React.Component {
             >
 
                 <View style={styles.refundStatusContainer}>
-                    <Text style={styles.refundTypeTextStyle}>{item.refund_type}</Text>
+                    {item.refund_type == "Full Refund" ?
+                    <Text style={styles.fullRefundTextStyle}>{item.refund_type}</Text>
+                    : <Text style={styles.partialRefundTextStyle}>{item.refund_type}</Text>
+                    }
+                    
 
                     <View style={item.status == "Settle" ? styles.settleStatusContainer : styles.statusContainer}>
                         <Text style={item.status == "Settle" ? styles.settleStatusTextStyle : styles.statusTextStyle}>{item.status}</Text>
@@ -350,7 +354,14 @@ const styles = StyleSheet.create({
     refundStatusContainer: {
         flexDirection: 'row',
     },
-    refundTypeTextStyle: {
+    fullRefundTextStyle: {
+        fontSize: 13,
+        // fontFamily: fontSelector("bold"),
+        color: '#1E8449',
+        flex: 1,
+        alignSelf: 'center'
+    },
+    partialRefundTextStyle: {
         fontSize: 13,
         // fontFamily: fontSelector("bold"),
         color: '#1E8449',
@@ -360,13 +371,13 @@ const styles = StyleSheet.create({
     statusContainer: {
         // flex: 1,
         borderRadius: 20,
-        backgroundColor: '#D6EAF8',
+        backgroundColor: Colors.blueBackground,
         alignSelf: 'baseline'
     },
     statusTextStyle: {
         fontSize: 12,
         // fontFamily: fontSelector("bold"),
-        color: 'blue',
+        color: Colors.blue,
         fontWeight: 'bold',
         paddingHorizontal: 15,
         paddingVertical: 3

@@ -13,30 +13,74 @@ import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import CommonAppBar from '../component/CommonAppBar';
 import { ScrollView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from '../utils/Constants';
 
 
 export default class ValidateStepOneScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
-            firstName: "Sudhir",
-            lastName: "Biswas",
+            firstName: "",
+            lastName: "",
             middleName: "",
-            email: "rahul@gmail.com",
+            email: "",
             flatNo: "",
             streetNo: "",
             streetName: "",
             subrub: "",
             postCode: "",
-            dob: "20/03/2022",
-            moileNo: "98752345432"
+            dob: "",
+            moileNo: ""
         }
     }
 
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        // this.item = this.props.params.item;
+
+        console.log(this.state.item)
+
+        this.setState({
+            firstName: this.state.item.first_name,
+            lastName: this.state.item.last_name,
+            middleName: this.state.item.middle_name,
+            email: this.state.item.email,
+            flatNo: this.state.item.flat_no,
+            streetNo: this.state.item.street_no,
+            streetName: this.state.item.street_name,
+            subrub: this.state.item.suburb,
+            postCode: this.state.item.pin,
+            dob: this.state.item.do,
+            moileNo: this.state.item.mobile
+        })
+    }
+
     goToNextScreen = () => {
-        this.props.navigation.navigate('ValidateStepTwoScreen')
+        let item = this.state.item
+        item.first_name = this.state.firstName;
+        item.last_name = this.state.lastName;
+        item.middle_name = this.state.middleName;
+        item.email = this.state.email;
+        item.flat_no = this.state.flatNo;
+        item.street_no = this.state.streetNo;
+        item.street_name = this.state.streetName;
+        item.suburb = this.state.subrub;
+        item.pin = this.state.postCode;
+        item.do = this.state.dob;
+        item.mobile = this.state.moileNo;
+        this.setState({
+            item: item
+        })
+
+        console.log("++++++++++++", item)
+        this.props.navigation.navigate('ValidateStepTwoScreen', {
+            item: item
+        })
     }
 
     render() {

@@ -13,12 +13,15 @@ import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
 import CommonAppBar from '../component/CommonAppBar';
 import { ScrollView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from '../utils/Constants';
 
 
 export default class ValidateStepThreeScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
             accountName: "Rahul Pathak",
@@ -29,8 +32,40 @@ export default class ValidateStepThreeScreen extends React.Component {
         }
     }
 
+    componentDidMount = async () => {
+        this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
+        this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+        // this.item = this.props.params.item;
+
+        console.log(this.state.item)
+
+        this.setState({
+
+
+            accountName: this.state.item.bank_name,
+            bsb: this.state.item.bsb,
+            accountNumber: this.state.item.account_no,
+            numberOfAtFaultAccidents: this.state.item.no_of_at_fault_accidents,
+            numberOfNotAtFaultAccidents: this.state.item.no_of_not_at_fault_accidents,
+        })
+    }
+
+
     goToNextScreen = () => {
-        this.props.navigation.navigate('ValidateStepFourScreen')
+        let item = this.state.item
+        item.bank_name = this.state.accountName;
+        item.bsb = this.state.bsb;
+        item.account_no = this.state.accountNumber;
+        item.no_of_at_fault_accidents = this.state.numberOfAtFaultAccidents;
+        item.no_of_not_at_fault_accidents = this.state.numberOfNotAtFaultAccidents;
+        this.setState({
+            item: item
+        })
+
+        console.log("++++++++++++", item)
+        this.props.navigation.navigate('ValidateStepFourScreen', {
+            item: item
+        })
     }
 
     render() {
@@ -120,7 +155,7 @@ export default class ValidateStepThreeScreen extends React.Component {
                             <View style={styles.accountHistoryRowView}>
                                 <Text numberOfLines={1} style={styles.noOfAtFaultAccidentsText} >No of At Fault Accidents</Text>
                                 <View style={styles.dropdownContainer}>
-                                    <Text numberOfLines={1} style={styles.dropdownTextStyle} >1</Text>
+                                    <Text numberOfLines={1} style={styles.dropdownTextStyle} >{this.state.numberOfAtFaultAccidents}</Text>
                                     <Image
                                         source={require('../images/down_arow.png')}
                                         style={styles.dropDownIcon}
@@ -130,7 +165,7 @@ export default class ValidateStepThreeScreen extends React.Component {
                             <View style={styles.accountHistoryRowView}>
                                 <Text numberOfLines={1} style={styles.noOfAtFaultAccidentsText} >No of Not At Fault Accidents</Text>
                                 <View style={styles.dropdownContainer}>
-                                    <Text numberOfLines={1} style={styles.dropdownTextStyle} >4</Text>
+                                    <Text numberOfLines={1} style={styles.dropdownTextStyle} >{this.state.numberOfNotAtFaultAccidents}</Text>
                                     <Image
                                         source={require('../images/down_arow.png')}
                                         style={styles.dropDownIcon}

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  Platform,
 } from 'react-native';
 import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
@@ -75,6 +76,7 @@ export default class LoginScreen extends React.Component {
 
 
     try {
+      console.log("Call car list API Link ========>  ", Links.LOGIN);
       console.log("Call Login API ========>  ", JSON.stringify(inputBody));
       const res = await fetch(Links.LOGIN, {
         method: 'POST',
@@ -88,8 +90,8 @@ export default class LoginScreen extends React.Component {
       const responseJSON = await res.json();
       console.log("Login Response ===========>  ", JSON.stringify(responseJSON));
       if (responseJSON) {
+        this.setState({ isLoading: false });
         if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
-          this.setState({ isLoading: false });
           var userId = "";
           var apiKey = "";
           var name = "";
@@ -130,7 +132,6 @@ export default class LoginScreen extends React.Component {
 
         }
         else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
-          this.setState({ isLoading: false });
           if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
             Toast.show(responseJSON.message, Toast.SHORT);
           } else {
@@ -189,7 +190,6 @@ export default class LoginScreen extends React.Component {
                 caretHidden={false}
                 keyboardType="email-address"
                 placeholderTextColor={Colors.placeholderColor}
-                height={48}
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}
                 placeholder="Email Id"
                 value={this.state.email}
@@ -204,7 +204,6 @@ export default class LoginScreen extends React.Component {
                 style={styles.emailIdEditTextStyle}
                 autoCapitalize="none"
                 multiline={false}
-                height={48}
                 secureTextEntry
                 placeholderTextColor={Colors.placeholderColor}
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}
@@ -316,6 +315,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     // fontFamily: fontSelector("regular"),
     color: Colors.black,
+    paddingVertical: Platform.OS == "ios" ? 12 : 8
   },
   editTextContainer: {
     backgroundColor: Colors.editTextBgColor,
