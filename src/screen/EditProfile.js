@@ -219,7 +219,8 @@ export default class MyProfile extends React.Component {
                                             </View>
                                             <Text
                                                 numberOfLines={1}
-                                                style={styles.filterText} >
+                                                maxLength={15}
+                                                style={styles.filterImage} >
                                                 {this.state.imageName}
                                             </Text>
                                         </View>
@@ -267,6 +268,7 @@ export default class MyProfile extends React.Component {
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Full Address</Text>
                         <View style={styles.largeTextContainer}>
                             <TextInput
+                                multiline={true}
                                 style={styles.filterText}
                                 value={this.state.address}
                                 onChangeText={(value) => this.setState({ address: value })}
@@ -538,8 +540,17 @@ const styles = StyleSheet.create({
         color: Colors.black,
         alignItems: 'center',
         justifyContent: 'center',
+        height: 80,
+        paddingTop: 15, 
+
+    },filterImage: {
+        fontSize: 12,
+        color: Colors.black,
+        alignItems: 'center',
+        justifyContent: 'center',
         height: 48,
-        paddingTop: 15, width: 120
+        paddingTop: 15, 
+        width:120
 
     },
     filterInputText: {

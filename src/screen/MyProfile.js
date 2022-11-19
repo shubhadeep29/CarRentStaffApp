@@ -193,7 +193,7 @@ export default class MyProfile extends React.Component{
 
                 <View style={styles.largeTextContainer}>
                     <Text numberOfLines={1} style={styles.filterText} >Full Address</Text>
-                    <Text numberOfLines={1} style={styles.filterText} >{this.state.address}</Text>                    
+                    <Text style={styles.filterText} >{this.state.address}</Text>                    
                 </View>
 
 
