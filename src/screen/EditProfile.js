@@ -85,7 +85,7 @@ export default class MyProfile extends React.Component {
         formData.append('tfn', this.state.tfn);
         formData.append('address', this.state.address);
         formData.append('user_image', {
-            uri: Platform.OS === 'ios' ? this.state.imageUri.replace('file://', '') : this.state.imageUri,
+            uri: Platform.OS === 'ios' ? this.state.imageUrl.replace('file://', '') : this.state.imageUrl,
             name: this.state.imageName,
             type: this.state.imageType
         });
