@@ -15,5 +15,7 @@ export default class Links {
     static DRIVER_LIST = Links.API+"staff/getDriverList";
     static RENT_OUT_LIST = Links.API + "staff/getRentOutList";
     static RENT_IN_LIST = Links.API + "staff/getRentInList";
+    static RENT_IN_LIST = Links.API + "staff/getRentInList";
+    static ADD_NEW_RENT_IN = Links.API + "staff/addRentIn";
     
 }

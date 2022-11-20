@@ -21,6 +21,8 @@ import ValidateStepTwoScreen from './src/screen/ValidateStepTwoScreen';
 import ValidateStepThreeScreen from './src/screen/ValidateStepThreeScreen';
 import ValidateStepFiveScreen from './src/screen/ValidateStepFiveScreen';
 import ValidateStepFourScreen from './src/screen/ValidateStepFourScreen';
+import AddRentOutVehicle from './src/screen/AddRentOutVehicle';
+import AddReturnInVehicle from './src/screen/AddReturnInVehicle';
 
 
 
@@ -48,12 +50,14 @@ const MainStackNavigator = () => {
         <Stack.Screen name="HamburgerMenuScreen" component={HamburgerMenuScreen} />
         <Stack.Screen name="MyProfileScreen" component={MyProfileScreen} />
         <Stack.Screen name="AddNewCar" component={AddNewCar} />
+        <Stack.Screen name="BondReturnEntryEditScreen" component={BondReturnEntryEditScreen} />
         <Stack.Screen name="ValidateStepOneScreen" component={ValidateStepOneScreen} />
         <Stack.Screen name="ValidateStepTwoScreen" component={ValidateStepTwoScreen} />
         <Stack.Screen name="ValidateStepThreeScreen" component={ValidateStepThreeScreen} />
         <Stack.Screen name="ValidateStepFiveScreen" component={ValidateStepFiveScreen} />
-        <Stack.Screen name="BondReturnEntryEditScreen" component={BondReturnEntryEditScreen} />
         <Stack.Screen name="ValidateStepFourScreen" component={ValidateStepFourScreen} />
+        <Stack.Screen name="AddReturnInVehicle" component={AddReturnInVehicle} />
+        <Stack.Screen name="AddRentOutVehicle" component={AddRentOutVehicle} />
 
 
 

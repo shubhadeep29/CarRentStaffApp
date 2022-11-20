@@ -173,9 +173,15 @@ export default class RentOutVehicleScreen extends React.Component {
                         <Text style={styles.dateTextStyle}>{Moment(item.created_ts).format('d/MM/yyyy')}</Text>
                     </View>
 
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('AddRentOutVehicle', {
+                            item: item
+                        })}
+                    >
                     <View style={styles.editContainer}>
                         <Text style={styles.editTextStyle}>Edit</Text>
                     </View>
+                    </TouchableOpacity>
                 </View>
 
 

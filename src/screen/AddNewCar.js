@@ -203,7 +203,7 @@ export default class AddNewCar extends React.Component {
         var formData = new FormData();
         formData.append('token_key', this.apiKey);
         formData.append('device_type', this.state.deviceType);
-        formData.append('user_id', this.state.userId);
+        formData.append('user_id', this.userId);
         formData.append('car_no', this.state.carNo);
         
         formData.append('make', this.state.make);

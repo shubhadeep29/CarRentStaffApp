@@ -158,10 +158,16 @@ export default class ReturnInVehicleScreen extends React.Component {
                     <View style={styles.mainContainer}>
                         <Text style={styles.dateTextStyle}>{Moment(item.created_ts).format('d/MM/yyyy')}</Text>
                     </View>
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('AddReturnInVehicle', {
+                            item: item
+                        })}
+                    >
+                        <View style={styles.editContainer}>
+                            <Text style={styles.editTextStyle}>Edit</Text>
+                        </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.editContainer}>
-                        <Text style={styles.editTextStyle}>Edit</Text>
-                    </View>
 
                     <Image
                         source={require('../images/ic_download.png')}
