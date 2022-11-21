@@ -40,7 +40,7 @@ export default class AddReturnInVehicle extends React.Component {
             driver: "",
             rentOutDate: "",
             rentOutNo: "",
-            isDisplayRentOutDate: "",
+            isDisplayRentOutDate: false,
             carNo: "",
             isDamageYes: false,
             isDamageNo: true,
@@ -55,43 +55,43 @@ export default class AddReturnInVehicle extends React.Component {
             paymentMethod: "",
             isPaymentMethodDropdownVisible: false,
             isDropdownVisible: false,
-            notes: false,
+            notes: "",
             openImageGalleryFor: "",
-            damageImageUri: null,
-            frontImageUri: null,
-            rearImageUri: null,
-            driverSideImageUri: null,
-            passengerSideImageUri: null,
-            odometerImageUri: null,
-            fuelGuageImageUri: null,
 
+            damageImageUri: null,
             damageImageName: "",
             damageImageSize: "",
             damageImageType: "",
 
+            frontImageUri: null,
             frontImageName: "",
             frontImageSize: "",
             frontImageType: "",
 
+            rearImageUri: null,
             rearImageName: "",
             rearImageSize: "",
             rearImageType: "",
 
+            driverSideImageUri: null,
             driverSideImageName: "",
             driverSideImageSize: "",
             driverSideImageType: "",
 
+            passengerSideImageUri: null,
             passengerSideImageName: "",
             passengerSideImageSize: "",
             passengerSideImageType: "",
 
+            odometerImageUri: null,
             odometerImageName: "",
             odometerImageSize: "",
             odometerImageType: "",
 
+            fuelGuageImageUri: null,
             fuelGuageImageName: "",
-            fuelGuagImageSize: "",
-            fuelGuagImageType: "",
+            fuelGuageImageSize: "",
+            fuelGuageImageType: "",
 
         }
     }
@@ -146,6 +146,13 @@ export default class AddReturnInVehicle extends React.Component {
                 notes: this.state.item.notes,
                 fuelAmount: this.state.item.fuel,
                 notes: this.state.item.notes,
+                driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img,
+                frontImageUri: Links.BASEURL + this.state.item.front_img,
+                fuelGuageImageUri: Links.BASEURL + this.state.item.fuel_guage_img,
+                odometerImageUri: Links.BASEURL + this.state.item.odometer_img,
+                passengerSideImageUri: Links.BASEURL + this.state.item.passenger_side_img,
+                rearImageUri: Links.BASEURL + this.state.item.rear_img,
+                damageImageUri: Links.BASEURL + this.state.item.damage_img,
             })
         }
 
@@ -170,7 +177,7 @@ export default class AddReturnInVehicle extends React.Component {
     }
 
 
-    openImageGallery() {
+    openImageGallery(openImageGalleryFor) {
         let options = {
             storageOptions: {
                 skipBackup: true,
@@ -192,7 +199,7 @@ export default class AddReturnInVehicle extends React.Component {
                 const source = { uri: res.uri };
                 console.log('response', JSON.stringify(res));
 
-                if (this.state.openImageGalleryFor == "damageImageUri") {
+                if (openImageGalleryFor == "damageImageUri") {
                     this.setState({
                         resourcePath: res,
                         damageImageUri: res.assets[0].uri,
@@ -201,7 +208,7 @@ export default class AddReturnInVehicle extends React.Component {
                         damageImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "frontImageUri") {
+                else if (openImageGalleryFor == "frontImageUri") {
                     this.setState({
                         resourcePath: res,
                         frontImageUri: res.assets[0].uri,
@@ -210,7 +217,7 @@ export default class AddReturnInVehicle extends React.Component {
                         frontImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "rearImageUri") {
+                else if (openImageGalleryFor == "rearImageUri") {
                     this.setState({
                         resourcePath: res,
                         rearImageUri: res.assets[0].uri,
@@ -219,7 +226,7 @@ export default class AddReturnInVehicle extends React.Component {
                         rearImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "driverSideImageUri") {
+                else if (openImageGalleryFor == "driverSideImageUri") {
                     this.setState({
                         resourcePath: res,
                         driverSideImageUri: res.assets[0].uri,
@@ -228,7 +235,7 @@ export default class AddReturnInVehicle extends React.Component {
                         driverSideImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "passengerSideImageUri") {
+                else if (openImageGalleryFor == "passengerSideImageUri") {
                     this.setState({
                         resourcePath: res,
                         passengerSideImageUri: res.assets[0].uri,
@@ -237,7 +244,7 @@ export default class AddReturnInVehicle extends React.Component {
                         passengerSideImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "odometerImageUri") {
+                else if (openImageGalleryFor == "odometerImageUri") {
                     this.setState({
                         resourcePath: res,
                         odometerImageUri: res.assets[0].uri,
@@ -246,7 +253,7 @@ export default class AddReturnInVehicle extends React.Component {
                         odometerImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "fuelGuageImageUri") {
+                else if (openImageGalleryFor == "fuelGuageImageUri") {
                     this.setState({
                         resourcePath: res,
                         fuelGuageImageUri: res.assets[0].uri,
@@ -259,6 +266,7 @@ export default class AddReturnInVehicle extends React.Component {
 
                 console.log('fileData', JSON.stringify(res.assets[0].fileName));
                 console.log('fileUri', JSON.stringify(res.assets[0].uri));
+                console.log('fileType', JSON.stringify(res.assets[0].type));
 
 
             }
@@ -314,7 +322,13 @@ export default class AddReturnInVehicle extends React.Component {
         formData.append('driver_id', this.state.driverId);
         formData.append('car_id', this.state.carId);
         formData.append('odometer_reading', this.state.odometerReading);
-        formData.append('bond_amount', this.state.bondRefundAmount);
+        formData.append('basic_excess', this.state.item != null ? this.state.item.basic_excess : "");
+        formData.append('age_excess', this.state.item != null ? this.state.item.age_excess : "");
+        formData.append('overseas_dL_excess', this.state.item != null ? this.state.item.overseas_dL_excess : "");
+        formData.append('weekly_rent', this.state.item != null ? this.state.item.weekly_rent : "");
+        formData.append('bond_amount', this.state.item != null ? this.state.bondRefundAmount : "");
+        formData.append('company_id', this.state.item != null ? this.state.item.company_id : "");
+        formData.append('expire', this.state.item != null ? this.state.item.expire : "");
         formData.append('notes', this.state.notes);
         formData.append('front_img', {
             uri: Platform.OS === 'ios' ? this.state.frontImageUri.replace('file://', '') : this.state.frontImageUri,
@@ -360,6 +374,7 @@ export default class AddReturnInVehicle extends React.Component {
                     "Content-Type": "multipart/form-data",
                 },
             });
+
             const responseJSON = await res.json();
             console.log("Car Add/Edit Return In Vehicle Response ===========>  ", JSON.stringify(responseJSON));
             if (responseJSON) {
@@ -573,7 +588,7 @@ export default class AddReturnInVehicle extends React.Component {
                         </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload photo of Damage</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("damageImageUri")}>
                             {this.state.damageImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.damageImageUri }}
@@ -739,7 +754,7 @@ export default class AddReturnInVehicle extends React.Component {
                         <Text numberOfLines={1} style={[styles.rowViewOptionStyle, styles.headingTextStyleThree]} >Upload 6 pictures of car being issued</Text>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Front</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("frontImageUri")}>
                             {this.state.frontImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.frontImageUri }}
@@ -761,7 +776,7 @@ export default class AddReturnInVehicle extends React.Component {
                         </TouchableOpacity>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Rear</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("rearImageUri")}>
                             {this.state.rearImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.rearImageUri }}
@@ -783,7 +798,7 @@ export default class AddReturnInVehicle extends React.Component {
                         </TouchableOpacity>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Driver Side</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("driverSideImageUri")}>
                             {this.state.driverSideImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.driverSideImageUri }}
@@ -805,7 +820,7 @@ export default class AddReturnInVehicle extends React.Component {
                         </TouchableOpacity>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Passenger Side</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("passengerSideImageUri")}>
                             {this.state.passengerSideImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.passengerSideImageUri }}
@@ -827,7 +842,7 @@ export default class AddReturnInVehicle extends React.Component {
                         </TouchableOpacity>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Odometer</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("odometerImageUri")}>
                             {this.state.odometerImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.odometerImageUri }}
@@ -849,7 +864,7 @@ export default class AddReturnInVehicle extends React.Component {
                         </TouchableOpacity>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Fuel Guage</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("fuelGuageImageUri")}>
                             {this.state.fuelGuageImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.fuelGuageImageUri }}

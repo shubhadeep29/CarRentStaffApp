@@ -38,60 +38,62 @@ export default class AddRentOutVehicle extends React.Component {
             driverId: "1",
             carId: "1",
             driver: "",
-            rentOutDate: "",
-            rentOutNo: "",
-            isDisplayRentOutDate: "",
-            carNo: "",
-            isDamageYes: false,
-            isDamageNo: true,
+            car: "",
             odometerReading: "",
-            damageAmount: "$",
-            fuelAmount: "$",
-            isBondRefundRequestYes: true,
-            isBondRefundRequestNo: false,
-            bondRefundDate: "",
-            isDisplayBondRefundDate: false,
-            bondRefundAmount: "$",
+            basicExcess: "",
+            ageExcess: "",
+            overseasDLExcess: "",
+            weeklyRent: "$",
+            bond: "$",
             paymentMethod: "",
             isPaymentMethodDropdownVisible: false,
-            isDropdownVisible: false,
-            notes: false,
-            openImageGalleryFor: "",
-            damageImageUri: null,
+            referenceNumber: "",
+            company: "",
+            companyId: "",
+            expire: "",
+            notes: "",
+            rentOutId: "",
+
+            coverNoteImageUri: null,
+            coverNoteImageName: "",
+            coverNoteImageSize: "",
+            coverNoteImageType: "",
+
             frontImageUri: null,
-            rearImageUri: null,
-            driverSideImageUri: null,
-            passengerSideImageUri: null,
-            odometerImageUri: null,
-            fuelGuageImageUri: null,
-
-            damageImageName: "",
-            damageImageSize: "",
-            damageImageType: "",
-
             frontImageName: "",
             frontImageSize: "",
             frontImageType: "",
 
+            rearImageUri: null,
             rearImageName: "",
             rearImageSize: "",
             rearImageType: "",
 
+            driverSideImageUri: null,
             driverSideImageName: "",
             driverSideImageSize: "",
             driverSideImageType: "",
 
+            passengerSideImageUri: null,
             passengerSideImageName: "",
             passengerSideImageSize: "",
             passengerSideImageType: "",
 
+            odometerImageUri: null,
             odometerImageName: "",
             odometerImageSize: "",
             odometerImageType: "",
 
+            serviceStickerImageUri: null,
+            serviceStickerImageName: "",
+            serviceStickerImageSize: "",
+            serviceStickerImageType: "",
+
+            fuelGuageImageUri: null,
             fuelGuageImageName: "",
-            fuelGuagImageSize: "",
-            fuelGuagImageType: "",
+            fuelGuageImageSize: "",
+            fuelGuageImageType: "",
+
 
         }
     }
@@ -103,11 +105,11 @@ export default class AddRentOutVehicle extends React.Component {
             bondRefundDate: selectedDate.getDate() + "/" + (selectedDate.getMonth() + 1) + "/" + selectedDate.getFullYear()
         });
     }
-    setRentOutDate = (event, selectedDate) => {
+    setExpireDate = (event, selectedDate) => {
         console.log("selectedDate" + selectedDate)
         this.setState({
-            isDisplayRentOutDate: false,
-            rentOutDate: selectedDate.getDate() + "/" + (selectedDate.getMonth() + 1) + "/" + selectedDate.getFullYear()
+            isDisplayExpireDate: false,
+            expire: selectedDate.getDate() + "/" + (selectedDate.getMonth() + 1) + "/" + selectedDate.getFullYear()
         });
     }
 
@@ -116,9 +118,9 @@ export default class AddRentOutVehicle extends React.Component {
             isDisplayBondRefundDate: true,
         });
     }
-    showRentOutDate = () => {
+    showExpireDate = () => {
         this.setState({
-            isDisplayRentOutDate: true,
+            isDisplayExpireDate: true,
         });
     }
 
@@ -132,20 +134,32 @@ export default class AddRentOutVehicle extends React.Component {
 
             this.setState({
                 carNo: this.state.item.car_no,
-                rentOutDate: this.state.item.rent_out_date,
-                rentOutNo: this.state.item.rent_out_no,
-                isDamageYes: this.state.item.damage,
-                isDamageNo: !this.state.item.damage,
-                damageAmount: this.state.item.damage_amount,
+                carId: this.state.item.car_id,
+                ageExcess: this.state.item.age_excess,
+                basicExcess: this.state.item.basic_excess,
+                overseasDLExcess: this.state.item.overseas_dL_excess,
+                bond: this.state.item.bond_amount,
+                company: this.state.item.company_id,
+                companyId: this.state.item.company_name,
+
+                coverNoteImageUri: Links.BASEURL + this.state.item.cover_note_img,
+
                 driverId: this.state.item.driver_id,
                 odometerReading: this.state.item.odometer_reading,
-                bondRefundAmount: this.state.item.bond_refund_amount,
-                bondRefundDate: this.state.item.bond_refund_date,
-                isBondRefundRequestYes: this.state.item.bond_refund_request,
-                isBondRefundRequestNo: !this.state.item.bond_refund_request,
+
+                driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img,
+                frontImageUri: Links.BASEURL + this.state.item.front_img,
+                fuelGuageImageUri: Links.BASEURL + this.state.item.fuel_guage_img,
+                odometerImageUri: Links.BASEURL + this.state.item.odometer_img,
+                passengerSideImageUri: Links.BASEURL + this.state.item.passenger_side_img,
+                rearImageUri: Links.BASEURL + this.state.item.rear_img,
+                serviceStickerImageUri: Links.BASEURL + this.state.item.service_sticker_img,
+
+                expire: this.state.item.expire,
+                weeklyRent: this.state.item.weekly_rent,
+
                 notes: this.state.item.notes,
-                fuelAmount: this.state.item.fuel,
-                notes: this.state.item.notes,
+                rentOutId: this.state.item.rent_out_id,
             })
         }
 
@@ -161,6 +175,12 @@ export default class AddRentOutVehicle extends React.Component {
             driver: driver,
         })
     }
+    onClickCarDropdownItem(car) {
+        this.setState({
+            isCarDropdownVisible: false,
+            car: car,
+        })
+    }
 
     onClickPaymentMethodDropdownItem(paymentMethod) {
         this.setState({
@@ -170,7 +190,7 @@ export default class AddRentOutVehicle extends React.Component {
     }
 
 
-    openImageGallery() {
+    openImageGallery(openImageGalleryFor) {
         let options = {
             storageOptions: {
                 skipBackup: true,
@@ -192,16 +212,16 @@ export default class AddRentOutVehicle extends React.Component {
                 const source = { uri: res.uri };
                 console.log('response', JSON.stringify(res));
 
-                if (this.state.openImageGalleryFor == "damageImageUri") {
+                if (openImageGalleryFor == "coverNoteImageUri") {
                     this.setState({
                         resourcePath: res,
-                        damageImageUri: res.assets[0].uri,
-                        damageImageName: res.assets[0].fileName,
-                        damageImageSize: res.assets[0].fileSize,
-                        damageImageType: res.assets[0].type
+                        coverNoteImageUri: res.assets[0].uri,
+                        coverNoteImageName: res.assets[0].fileName,
+                        coverNoteImageSize: res.assets[0].fileSize,
+                        coverNoteImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "frontImageUri") {
+                else if (openImageGalleryFor == "frontImageUri") {
                     this.setState({
                         resourcePath: res,
                         frontImageUri: res.assets[0].uri,
@@ -210,7 +230,7 @@ export default class AddRentOutVehicle extends React.Component {
                         frontImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "rearImageUri") {
+                else if (openImageGalleryFor == "rearImageUri") {
                     this.setState({
                         resourcePath: res,
                         rearImageUri: res.assets[0].uri,
@@ -219,7 +239,7 @@ export default class AddRentOutVehicle extends React.Component {
                         rearImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "driverSideImageUri") {
+                else if (openImageGalleryFor == "driverSideImageUri") {
                     this.setState({
                         resourcePath: res,
                         driverSideImageUri: res.assets[0].uri,
@@ -228,7 +248,7 @@ export default class AddRentOutVehicle extends React.Component {
                         driverSideImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "passengerSideImageUri") {
+                else if (openImageGalleryFor == "passengerSideImageUri") {
                     this.setState({
                         resourcePath: res,
                         passengerSideImageUri: res.assets[0].uri,
@@ -237,7 +257,7 @@ export default class AddRentOutVehicle extends React.Component {
                         passengerSideImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "odometerImageUri") {
+                else if (openImageGalleryFor == "odometerImageUri") {
                     this.setState({
                         resourcePath: res,
                         odometerImageUri: res.assets[0].uri,
@@ -246,7 +266,16 @@ export default class AddRentOutVehicle extends React.Component {
                         odometerImageType: res.assets[0].type
                     });
                 }
-                else if (this.state.openImageGalleryFor == "fuelGuageImageUri") {
+                else if (openImageGalleryFor == "serviceStickerImageUri") {
+                    this.setState({
+                        resourcePath: res,
+                        serviceStickerImageUri: res.assets[0].uri,
+                        serviceStickerImageName: res.assets[0].fileName,
+                        serviceStickerImageSize: res.assets[0].fileSize,
+                        serviceStickerImageType: res.assets[0].type
+                    });
+                }
+                else if (openImageGalleryFor == "fuelGuageImageUri") {
                     this.setState({
                         resourcePath: res,
                         fuelGuageImageUri: res.assets[0].uri,
@@ -259,6 +288,7 @@ export default class AddRentOutVehicle extends React.Component {
 
                 console.log('fileData', JSON.stringify(res.assets[0].fileName));
                 console.log('fileUri', JSON.stringify(res.assets[0].uri));
+                console.log('fileType', JSON.stringify(res.assets[0].type));
 
 
             }
@@ -272,21 +302,26 @@ export default class AddRentOutVehicle extends React.Component {
         if (this.state.driver == "") {
             Toast.show("Please enter Driver", Toast.SHORT);
         }
-        else if (this.state.rentOutDate == "") {
-            Toast.show("Please enter Rent out Date", Toast.SHORT);
-        }
-        else if (this.state.rentOutNo == "") {
-            Toast.show("Please enter Rent out No", Toast.SHORT);
-        }
-        else if (this.state.carNo == "") {
-            Toast.show("Please enter Car No", Toast.SHORT);
+        else if (this.state.car == "") {
+            Toast.show("Please enter Car", Toast.SHORT);
         }
         else if (this.state.odometerReading == "") {
             Toast.show("Please enter Odometer Reading", Toast.SHORT);
         }
+        else if (this.state.weeklyRent == "") {
+            Toast.show("Please enter Weekly Rent", Toast.SHORT);
+        }
         else if (this.state.paymentMethod == "") {
             Toast.show("Please enter Payment Method", Toast.SHORT);
         }
+        else if (this.state.company == "") {
+            Toast.show("Please enter Company Name", Toast.SHORT);
+        }
+        else if (this.state.expire == "") {
+            Toast.show("Please enter expire", Toast.SHORT);
+        }
+
+
         else {
             try {
                 NetInfo.fetch().then(state => {
@@ -314,8 +349,20 @@ export default class AddRentOutVehicle extends React.Component {
         formData.append('driver_id', this.state.driverId);
         formData.append('car_id', this.state.carId);
         formData.append('odometer_reading', this.state.odometerReading);
-        formData.append('bond_amount', this.state.bondRefundAmount);
+        formData.append('basic_excess', this.state.basicExcess);
+        formData.append('age_excess', this.state.ageExcess);
+        formData.append('overseas_dL_excess', this.state.overseasDLExcess);
+        formData.append('weekly_rent', this.state.weeklyRent);
+        formData.append('bond_amount', this.state.bond);
+        formData.append('company_id', this.state.companyId);
+        formData.append('expire', this.state.expire);
         formData.append('notes', this.state.notes);
+        formData.append('rent_out_id', this.state.rentOutId);
+        formData.append('cover_note_img', {
+            uri: Platform.OS === 'ios' ? this.state.coverNoteImageUri.replace('file://', '') : this.state.coverNoteImageUri,
+            name: this.state.coverNoteImageName,
+            type: this.state.coverNoteImageType
+        });
         formData.append('front_img', {
             uri: Platform.OS === 'ios' ? this.state.frontImageUri.replace('file://', '') : this.state.frontImageUri,
             name: this.state.frontImageName,
@@ -336,6 +383,11 @@ export default class AddRentOutVehicle extends React.Component {
             name: this.state.passengerSideImageName,
             type: this.state.passengerSideImageType
         });
+        formData.append('service_sticker_img', {
+            uri: Platform.OS === 'ios' ? this.state.serviceStickerImageUri.replace('file://', '') : this.state.serviceStickerImageUri,
+            name: this.state.serviceStickerImageName,
+            type: this.state.serviceStickerImageType
+        });
         formData.append('odometer_img', {
             uri: Platform.OS === 'ios' ? this.state.odometerImageUri.replace('file://', '') : this.state.odometerImageUri,
             name: this.state.odometerImageName,
@@ -344,24 +396,40 @@ export default class AddRentOutVehicle extends React.Component {
         formData.append('fuel_guage_img', {
             uri: Platform.OS === 'ios' ? this.state.fuelGuageImageUri.replace('file://', '') : this.state.fuelGuageImageUri,
             name: this.state.fuelGuageImageName,
-            type: this.state.fuelGuagImageType
+            type: this.state.fuelGuageImageType
         });
 
 
 
         try {
-            console.log("Call Add/Edit Return In Vehicle API ========>  ", JSON.stringify(formData));
-            const res = await fetch(Links.ADD_NEW_RENT_IN, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    Accept: "application/json",
-                    //   'Content-Type': 'application/json',
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            res = null
+            if (this.state.item == null) {
+                console.log("Call Add/Edit Return Out Vehicle API ========>  ", Links.ADD_NEW_RENT_OUT + JSON.stringify(formData));
+                res = await fetch(Links.ADD_NEW_RENT_OUT, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        Accept: "application/json",
+                        //   'Content-Type': 'application/json',
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+            } else {
+                console.log("Call Add/Edit Return Out Vehicle API ========>  ", Links.EDIT_RENT_OUT + JSON.stringify(formData));
+                console.log("+++++", 1)
+                res = await fetch(Links.EDIT_RENT_OUT, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        Accept: "application/json",
+                        //   'Content-Type': 'application/json',
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+            }
+
             const responseJSON = await res.json();
-            console.log("Car Add/Edit Return In Vehicle Response ===========>  ", JSON.stringify(responseJSON));
+            console.log("Car Add/Edit Return Out Vehicle Response ===========>  ", JSON.stringify(responseJSON));
             if (responseJSON) {
                 this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
@@ -440,6 +508,53 @@ export default class AddRentOutVehicle extends React.Component {
 
                                 <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Driver")} >
                                     <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Driver</Text>
+                                </TouchableOpacity>
+                            </View>
+                            : null}
+
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Car *</Text>
+                        <TouchableOpacity onPress={() => this.setState({ isCarDropdownVisible: !this.state.isCarDropdownVisible })}>
+                            <View style={styles.editTextContainer}>
+                                <TextInput
+                                    style={styles.emailIdEditTextStyle}
+                                    autoCapitalize="none"
+                                    multiline={false}
+                                    placeholderTextColor={Colors.placeholderColor}
+                                    // placeholder="Email Id"
+                                    value={this.state.driver}
+                                    onChangeText={(value) => this.setState({ driver: value })}
+                                    onSubmitEditing={() => { this.rentOutDateTextInput.focus() }}
+                                    blurOnSubmit={false}
+                                />
+                                <Image
+                                    source={require('../images/down_arow.png')}
+                                    style={styles.calenderIcon}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+                        {this.state.isCarDropdownVisible ?
+                            <View style={styles.dropdownContainer}>
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickCarDropdownItem("Car")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Car</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickCarDropdownItem("Car")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Car</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickCarDropdownItem("Car")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Car</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickCarDropdownItem("Car")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Car</Text>
                                 </TouchableOpacity>
                             </View>
                             : null}
@@ -568,6 +683,33 @@ export default class AddRentOutVehicle extends React.Component {
                             </View>
                         </TouchableOpacity>
 
+                        {this.state.isPaymentMethodDropdownVisible ?
+                            <View style={styles.dropdownContainer}>
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.divider} />
+
+                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
+                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
+                                </TouchableOpacity>
+                            </View>
+                            : null}
+
+
 
 
 
@@ -610,7 +752,7 @@ export default class AddRentOutVehicle extends React.Component {
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Expire *</Text>
-                        <TouchableOpacity onPress={this.showRentOutDate}>
+                        <TouchableOpacity onPress={this.showExpireDate}>
                             <View style={styles.editTextContainer}>
                                 <TextInput
                                     style={styles.emailIdEditTextStyle}
@@ -632,18 +774,18 @@ export default class AddRentOutVehicle extends React.Component {
                             </View>
                         </TouchableOpacity>
 
-                        {this.state.isDisplayRentOutDate &&
+                        {this.state.isDisplayExpireDate &&
                             <DateTimePicker
                                 testID="dateTimePicker"
                                 value={new Date()}
                                 mode='date'
                                 display="default"
-                                onChange={this.setRentOutDate}
+                            onChange={this.setExpireDate}
                             />
                         }
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload photo of cover note</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("coverNoteImageUri")}>
                             {this.state.coverNoteImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.coverNoteImageUri }}
@@ -668,7 +810,7 @@ export default class AddRentOutVehicle extends React.Component {
                         <Text numberOfLines={1} style={[styles.rowViewOptionStyle, styles.headingTextStyleThree]} >Upload 7 pictures of car being issued</Text>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Front</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("frontImageUri")}>
                             {this.state.frontImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.frontImageUri }}
@@ -690,7 +832,7 @@ export default class AddRentOutVehicle extends React.Component {
                         </TouchableOpacity>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Rear</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("rearImageUri")}>
                             {this.state.rearImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.rearImageUri }}
@@ -712,7 +854,7 @@ export default class AddRentOutVehicle extends React.Component {
                         </TouchableOpacity>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Driver Side</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("driverSideImageUri")}>
                             {this.state.driverSideImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.driverSideImageUri }}
@@ -734,7 +876,7 @@ export default class AddRentOutVehicle extends React.Component {
                         </TouchableOpacity>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Passenger Side</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("passengerSideImageUri")}>
                             {this.state.passengerSideImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.passengerSideImageUri }}
@@ -756,7 +898,7 @@ export default class AddRentOutVehicle extends React.Component {
                         </TouchableOpacity>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Odometer</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("odometerImageUri")}>
                             {this.state.odometerImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.odometerImageUri }}
@@ -777,8 +919,30 @@ export default class AddRentOutVehicle extends React.Component {
 
                         </TouchableOpacity>
 
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Service Sticker</Text>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("serviceStickerImageUri")}>
+                            {this.state.serviceStickerImageUri != null ?
+                                <Image
+                                    source={{ uri: this.state.serviceStickerImageUri }}
+                                    style={styles.logoIcon}
+                                />
+                                : <Image
+                                    source={require('../images/ic_add_camera.png')}
+                                    style={styles.logoIcon}
+                                />
+                            }
+
+
+                            {this.state.fileName != "" ?
+                                <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.serviceStickerImageName}</Text>
+                                : <Text numberOfLines={1} style={styles.uploadPhotoText} >Upload Photo of Service Sticker</Text>
+
+                            }
+
+                        </TouchableOpacity>
+
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Fuel Guage</Text>
-                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery()}>
+                        <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("fuelGuageImageUri")}>
                             {this.state.fuelGuageImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.fuelGuageImageUri }}
@@ -1052,7 +1216,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 15,
         paddingHorizontal: 10,
-        marginHorizontal: 30,
+        marginHorizontal: 40,
         marginTop: 5,
         height: 100
     },

@@ -17,5 +17,7 @@ export default class Links {
     static RENT_IN_LIST = Links.API + "staff/getRentInList";
     static RENT_IN_LIST = Links.API + "staff/getRentInList";
     static ADD_NEW_RENT_IN = Links.API + "staff/addRentIn";
+    static ADD_NEW_RENT_OUT = Links.API + "staff/addRentOut";
+    static EDIT_RENT_OUT = Links.API + "staff/editRentOut";
     
 }
