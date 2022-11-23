@@ -32,6 +32,9 @@ export default class AddReturnInVehicle extends React.Component {
         super(props);
         this.state = {
             item: props.route.params.item,
+            paymentMethodList: props.route.params.paymentMethodList,
+            driverListRentOut: props.route.params.driverListRentOut,
+            carListRent: props.route.params.carListRent,
             isNetworkAvailable: true,
             isLoading: false,
             deviceType: "1",
@@ -365,15 +368,29 @@ export default class AddReturnInVehicle extends React.Component {
 
         try {
             console.log("Call Add/Edit Return In Vehicle API ========>  ", JSON.stringify(formData));
-            const res = await fetch(Links.ADD_NEW_RENT_IN, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    Accept: "application/json",
-                    //   'Content-Type': 'application/json',
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            res = null
+            if (this.state.item == null) {
+                res = await fetch(Links.ADD_NEW_RENT_IN, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        Accept: "application/json",
+                        //   'Content-Type': 'application/json',
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+            }
+            else {
+                res = await fetch(Links.EDIT_RENT_IN, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        Accept: "application/json",
+                        //   'Content-Type': 'application/json',
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+            }
 
             const responseJSON = await res.json();
             console.log("Car Add/Edit Return In Vehicle Response ===========>  ", JSON.stringify(responseJSON));

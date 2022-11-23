@@ -32,6 +32,9 @@ export default class AddRentOutVehicle extends React.Component {
         super(props);
         this.state = {
             item: props.route.params.item,
+            paymentMethodList: props.route.params.paymentMethodList,
+            driverListRentOut: props.route.params.driverListRentOut,
+            carListRent: props.route.params.carListRent,
             isNetworkAvailable: true,
             isLoading: false,
             deviceType: "1",
@@ -403,8 +406,8 @@ export default class AddRentOutVehicle extends React.Component {
 
         try {
             res = null
+            console.log("Call Add/Edit Return Out Vehicle API ========>  ", JSON.stringify(formData));
             if (this.state.item == null) {
-                console.log("Call Add/Edit Return Out Vehicle API ========>  ", Links.ADD_NEW_RENT_OUT + JSON.stringify(formData));
                 res = await fetch(Links.ADD_NEW_RENT_OUT, {
                     method: 'POST',
                     body: formData,
@@ -415,8 +418,6 @@ export default class AddRentOutVehicle extends React.Component {
                     },
                 });
             } else {
-                console.log("Call Add/Edit Return Out Vehicle API ========>  ", Links.EDIT_RENT_OUT + JSON.stringify(formData));
-                console.log("+++++", 1)
                 res = await fetch(Links.EDIT_RENT_OUT, {
                     method: 'POST',
                     body: formData,
@@ -455,6 +456,8 @@ export default class AddRentOutVehicle extends React.Component {
         }
 
     }
+
+
 
     render() {
         return (
@@ -521,8 +524,8 @@ export default class AddRentOutVehicle extends React.Component {
                                     multiline={false}
                                     placeholderTextColor={Colors.placeholderColor}
                                     // placeholder="Email Id"
-                                    value={this.state.driver}
-                                    onChangeText={(value) => this.setState({ driver: value })}
+                                    value={this.state.car}
+                                    onChangeText={(value) => this.setState({ car: value })}
                                     onSubmitEditing={() => { this.rentOutDateTextInput.focus() }}
                                     blurOnSubmit={false}
                                 />

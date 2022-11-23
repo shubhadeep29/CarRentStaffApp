@@ -28,6 +28,9 @@ export default class RentOutVehicleScreen extends React.Component {
             isLoading: false,
             searchText: "",
             data: [],
+            paymentMethodList: [],
+            driverListRentOut: [],
+            carListRent: [],
             // data: [
             //     {
             //         id: 1,
@@ -99,6 +102,9 @@ export default class RentOutVehicleScreen extends React.Component {
         this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
         this.getRentOutList()
+        this.getDriverListRentOut()
+        this.getPaymentMethod()
+        this.getCarListRent()
     }
 
     getRentOutList() {
@@ -163,6 +169,193 @@ export default class RentOutVehicleScreen extends React.Component {
         }
     }
 
+    getDriverListRentOut() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.getDriverListRentOutApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    getDriverListRentOutApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call Rent Out list API Link ========>  ", Links.getDriverListRentOut);
+            console.log("Rent Out list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.getDriverListRentOut, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Rent Out list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    if (responseJSON.hasOwnProperty("driver_list") && responseJSON.driver_list != null) {
+                        this.setState({ driverListRentOut: responseJSON.driver_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
+    getPaymentMethod() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.getPaymentMethodApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    getPaymentMethodtApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call Rent Out list API Link ========>  ", Links.getPaymentMethod);
+            console.log("Rent Out list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.getPaymentMethod, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Rent Out list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    if (responseJSON.hasOwnProperty("payment_method_list") && responseJSON.payment_method_list != null) {
+                        this.setState({ paymentMethodList: responseJSON.payment_method_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
+    getCarListRent() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.getCarListRentApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    getCarListRentApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call Rent Out list API Link ========>  ", Links.getCarListRent);
+            console.log("Rent Out list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.getCarListRent, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Rent Out list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    if (responseJSON.hasOwnProperty("car_list") && responseJSON.car_list != null) {
+                        this.setState({ carListRent: responseJSON.car_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
+
     setRenderItemView = ({ item, index }) => {
         return (
             <TouchableOpacity style={styles.listItemContainer} activeOpacity={1} key={item.rent_out_id}
@@ -175,7 +368,10 @@ export default class RentOutVehicleScreen extends React.Component {
 
                     <TouchableOpacity
                         onPress={() => this.props.navigation.navigate('AddRentOutVehicle', {
-                            item: item
+                            item: item,
+                            paymentMethodList: this.state.paymentMethodList,
+                            driverListRentOut: this.state.driverListRentOut,
+                            carListRent: this.state.carListRent,
                         })}
                     >
                     <View style={styles.editContainer}>
@@ -261,6 +457,19 @@ export default class RentOutVehicleScreen extends React.Component {
                             />
                         </View>
                     </View>
+
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('AddRentOutVehicle', {
+                            item: null,
+                            paymentMethodList: this.state.paymentMethodList,
+                            driverListRentOut: this.state.driverListRentOut,
+                            carListRent: this.state.carListRent,
+                        })}
+                    >
+                        <View style={styles.addNewRentContainer}>
+                            <Text style={styles.editTextStyle}> Add New Rent out Vehcile</Text>
+                        </View>
+                    </TouchableOpacity>
 
                     <View style={styles.mainContainer}>
                         {this.state.isNetworkAvailable ?
@@ -469,5 +678,16 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         alignSelf: 'center',
         marginStart: 10
+    },
+    addNewRentContainer: {
+        backgroundColor: Colors.dark_shade_pink_red,
+        borderRadius: 30,
+        paddingHorizontal: 18,
+        marginHorizontal: 20,
+        marginTop: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        height: 40,
     },
 });
