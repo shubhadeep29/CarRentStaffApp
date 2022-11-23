@@ -155,11 +155,11 @@ export default class ReturnInVehicleScreen extends React.Component {
         }
     }
 
-    getDriverListRentOut() {
+    getDriverListRentIn() {
         try {
             NetInfo.fetch().then(state => {
                 if (state.isConnected) {
-                    this.getDriverListRentOutApi();
+                    this.getDriverListRentInApi();
                 }
                 else {
                     Utils.showMessageAlert("No internet connection")
@@ -171,7 +171,7 @@ export default class ReturnInVehicleScreen extends React.Component {
         }
     }
 
-    getDriverListRentOutApi = async () => {
+    getDriverListRentInApi = async () => {
         this.setState({ isLoading: true });
 
         var inputBody = JSON.stringify({
@@ -233,7 +233,7 @@ export default class ReturnInVehicleScreen extends React.Component {
         }
     }
 
-    getPaymentMethodtApi = async () => {
+    getPaymentMethodApi = async () => {
         this.setState({ isLoading: true });
 
         var inputBody = JSON.stringify({

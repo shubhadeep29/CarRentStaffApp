@@ -25,6 +25,7 @@ import LoaderView from '../component/LoaderView';
 import DatePickerModel from '../component/DatePickerModel';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 
 
 export default class AddReturnInVehicle extends React.Component {
@@ -157,7 +158,41 @@ export default class AddReturnInVehicle extends React.Component {
                 rearImageUri: Links.BASEURL + this.state.item.rear_img,
                 damageImageUri: Links.BASEURL + this.state.item.damage_img,
             })
+        } else {
+            this.setState({
+                driverId: this.state.driverListRentOut[0].driver_id,
+                carId: this.state.carListRent[0].car_id,
+                paymentMethod: this.state.paymentMethod[0],
+            })
+
         }
+
+    }
+
+
+
+    async onValueChangeCar(value) {
+        this.setState({
+            carNo: value.car_no,
+            carId: value.car_id,
+        });
+        console.log("this.state.carId", value)
+
+    }
+
+    async onValueChangeDriver(value) {
+        this.setState({
+            driverId: value,
+        });
+        console.log("this.state.driverId", value)
+
+    }
+
+    async onValueChangePayment(value) {
+        this.setState({
+            paymentMethod: value
+        });
+        console.log("this.state.paymentMethod", value)
 
     }
 
@@ -322,17 +357,25 @@ export default class AddReturnInVehicle extends React.Component {
         formData.append('token_key', this.apiKey);
         formData.append('device_type', this.state.deviceType);
         formData.append('user_id', this.userId);
-        formData.append('driver_id', this.state.driverId);
-        formData.append('car_id', this.state.carId);
+        // formData.append('driver_id', this.state.driverId);
+        // formData.append('car_id', this.state.carId);
         formData.append('odometer_reading', this.state.odometerReading);
+        formData.append('damage', this.state.isDamageYes ? "Yes" : "No");
+        formData.append('damage_amount', this.state.damageAmount);
+        formData.append('fuel', this.state.fuelAmount);
         formData.append('basic_excess', this.state.item != null ? this.state.item.basic_excess : "");
         formData.append('age_excess', this.state.item != null ? this.state.item.age_excess : "");
         formData.append('overseas_dL_excess', this.state.item != null ? this.state.item.overseas_dL_excess : "");
         formData.append('weekly_rent', this.state.item != null ? this.state.item.weekly_rent : "");
         formData.append('bond_amount', this.state.item != null ? this.state.bondRefundAmount : "");
-        formData.append('company_id', this.state.item != null ? this.state.item.company_id : "");
+        // formData.append('company_id', this.state.item != null ? this.state.item.company_id : "");
         formData.append('expire', this.state.item != null ? this.state.item.expire : "");
         formData.append('notes', this.state.notes);
+        formData.append('damage_img', {
+            uri: Platform.OS === 'ios' ? this.state.damageImageUri.replace('file://', '') : this.state.damageImageUri,
+            name: this.state.damageImageName,
+            type: this.state.damageImageType
+        });
         formData.append('front_img', {
             uri: Platform.OS === 'ios' ? this.state.frontImageUri.replace('file://', '') : this.state.frontImageUri,
             name: this.state.frontImageName,
@@ -430,23 +473,24 @@ export default class AddReturnInVehicle extends React.Component {
                     <View style={styles.bottomViewContainer}>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Driver *</Text>
-                        <TouchableOpacity onPress={() => this.setState({ isDropdownVisible: !this.state.isDropdownVisible })}>
+                        <TouchableOpacity >
                             <View style={styles.editTextContainer}>
-                                <TextInput
+                                <Picker
+                                    itemStyle={styles.editTextContainer}
+                                    mode="dropdown"
                                     style={styles.emailIdEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    // placeholder="Email Id"
-                                    value={this.state.driver}
-                                    onChangeText={(value) => this.setState({ driver: value })}
-                                    onSubmitEditing={() => { this.rentOutDateTextInput.focus() }}
-                                    blurOnSubmit={false}
-                                />
-                                <Image
-                                    source={require('../images/down_arow.png')}
-                                    style={styles.calenderIcon}
-                                />
+                                    selectedValue={this.state.driverId}
+                                    onValueChange={this.onValueChangeDriver.bind(this)}
+                                >
+                                    {this.state.driverListRentOut.map((item, index) => (
+                                        <Picker.Item
+                                            color="#000"
+                                            label={item.first_name + " " + item.middle_name + " " + item.last_name}
+                                            value={item.driver_id}
+                                            index={index}
+                                        />
+                                    ))}
+                                </Picker>
                             </View>
                         </TouchableOpacity>
 
@@ -721,22 +765,24 @@ export default class AddReturnInVehicle extends React.Component {
                         </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Payment Method *</Text>
-                        <TouchableOpacity onPress={() => this.setState({ isPaymentMethodDropdownVisible: !this.state.isPaymentMethodDropdownVisible })}>
+                        <TouchableOpacity >
                             <View style={styles.editTextContainer}>
-                                <TextInput
+                                <Picker
+                                    itemStyle={styles.editTextContainer}
+                                    mode="dropdown"
                                     style={styles.emailIdEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    // placeholder="Email Id"
-                                    value={this.state.paymentMethod}
-                                    onChangeText={(value) => this.setState({ paymentMethod: value })}
-                                    blurOnSubmit={false}
-                                />
-                                <Image
-                                    source={require('../images/down_arow.png')}
-                                    style={styles.calenderIcon}
-                                />
+                                    selectedValue={this.state.paymentMethod}
+                                    onValueChange={this.onValueChangePayment.bind(this)}
+                                >
+                                    {this.state.paymentMethodList.map((item, index) => (
+                                        <Picker.Item
+                                            color="#000"
+                                            label={item}
+                                            value={item}
+                                            index={index}
+                                        />
+                                    ))}
+                                </Picker>
                             </View>
                         </TouchableOpacity>
 

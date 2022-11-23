@@ -247,7 +247,7 @@ export default class RentOutVehicleScreen extends React.Component {
         }
     }
 
-    getPaymentMethodtApi = async () => {
+    getPaymentMethodApi = async () => {
         this.setState({ isLoading: true });
 
         var inputBody = JSON.stringify({

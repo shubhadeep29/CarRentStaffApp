@@ -25,6 +25,7 @@ import LoaderView from '../component/LoaderView';
 import DatePickerModel from '../component/DatePickerModel';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 
 
 export default class AddRentOutVehicle extends React.Component {
@@ -38,8 +39,8 @@ export default class AddRentOutVehicle extends React.Component {
             isNetworkAvailable: true,
             isLoading: false,
             deviceType: "1",
-            driverId: "1",
-            carId: "1",
+            driverId: "",
+            carId: "",
             driver: "",
             car: "",
             odometerReading: "",
@@ -142,8 +143,8 @@ export default class AddRentOutVehicle extends React.Component {
                 basicExcess: this.state.item.basic_excess,
                 overseasDLExcess: this.state.item.overseas_dL_excess,
                 bond: this.state.item.bond_amount,
-                company: this.state.item.company_id,
-                companyId: this.state.item.company_name,
+                company: this.state.item.company_name,
+                companyId: this.state.item.company_id,
 
                 coverNoteImageUri: Links.BASEURL + this.state.item.cover_note_img,
 
@@ -164,9 +165,43 @@ export default class AddRentOutVehicle extends React.Component {
                 notes: this.state.item.notes,
                 rentOutId: this.state.item.rent_out_id,
             })
+        } else {
+            this.setState({
+                driverId: this.state.driverListRentOut[0].driver_id,
+                carId: this.state.carListRent[0].car_id,
+                paymentMethod: this.state.paymentMethod[0],
+            })
+
         }
 
     }
+
+
+    async onValueChangeCar(value) {
+        this.setState({
+            carNo: value.car_no,
+            carId: value.car_id,
+        });
+        console.log("this.state.carId", value)
+
+    }
+
+    async onValueChangeDriver(value) {
+        this.setState({
+            driverId: value,
+        });
+        console.log("this.state.driverId", value)
+
+    }
+
+    async onValueChangePayment(value) {
+        this.setState({
+            paymentMethod: value
+        });
+        console.log("this.state.paymentMethod", value)
+
+    }
+
 
     onClickSubmitButton() {
 
@@ -302,7 +337,7 @@ export default class AddRentOutVehicle extends React.Component {
 
     callAddReturnInVehicleValidation() {
         Keyboard.dismiss();
-        if (this.state.driver == "") {
+        if (this.state.driverId == "") {
             Toast.show("Please enter Driver", Toast.SHORT);
         }
         else if (this.state.car == "") {
@@ -459,6 +494,9 @@ export default class AddRentOutVehicle extends React.Component {
 
 
 
+
+
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
@@ -469,25 +507,28 @@ export default class AddRentOutVehicle extends React.Component {
                     <View style={styles.bottomViewContainer}>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Driver *</Text>
-                        <TouchableOpacity onPress={() => this.setState({ isDropdownVisible: !this.state.isDropdownVisible })}>
+                        <TouchableOpacity >
                             <View style={styles.editTextContainer}>
-                                <TextInput
+                                <Picker
+                                    itemStyle={styles.editTextContainer}
+                                    mode="dropdown"
                                     style={styles.emailIdEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    // placeholder="Email Id"
-                                    value={this.state.driver}
-                                    onChangeText={(value) => this.setState({ driver: value })}
-                                    onSubmitEditing={() => { this.rentOutDateTextInput.focus() }}
-                                    blurOnSubmit={false}
-                                />
-                                <Image
-                                    source={require('../images/down_arow.png')}
-                                    style={styles.calenderIcon}
-                                />
+                                    selectedValue={this.state.driverId}
+                                    onValueChange={this.onValueChangeDriver.bind(this)}
+                                >
+                                    {this.state.driverListRentOut.map((item, index) => (
+                                        <Picker.Item
+                                            color="#000"
+                                            label={item.first_name + " " + item.middle_name + " " + item.last_name}
+                                            value={item.driver_id}
+                                            index={index}
+                                        />
+                                    ))}
+                                </Picker>
                             </View>
                         </TouchableOpacity>
+
+
 
                         {this.state.isDropdownVisible ?
                             <View style={styles.dropdownContainer}>
@@ -516,23 +557,24 @@ export default class AddRentOutVehicle extends React.Component {
                             : null}
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Car *</Text>
-                        <TouchableOpacity onPress={() => this.setState({ isCarDropdownVisible: !this.state.isCarDropdownVisible })}>
+                        <TouchableOpacity >
                             <View style={styles.editTextContainer}>
-                                <TextInput
+                                <Picker
+                                    itemStyle={styles.editTextContainer}
+                                    mode="dropdown"
                                     style={styles.emailIdEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    // placeholder="Email Id"
-                                    value={this.state.car}
-                                    onChangeText={(value) => this.setState({ car: value })}
-                                    onSubmitEditing={() => { this.rentOutDateTextInput.focus() }}
-                                    blurOnSubmit={false}
-                                />
-                                <Image
-                                    source={require('../images/down_arow.png')}
-                                    style={styles.calenderIcon}
-                                />
+                                    selectedValue={this.state.carNo}
+                                    onValueChange={this.onValueChangeCar.bind(this)}
+                                >
+                                    {this.state.carListRent.map((item, index) => (
+                                        <Picker.Item
+                                            color="#000"
+                                            label={item.car_no}
+                                            value={item}
+                                            index={index}
+                                        />
+                                    ))}
+                                </Picker>
                             </View>
                         </TouchableOpacity>
 
@@ -667,22 +709,24 @@ export default class AddRentOutVehicle extends React.Component {
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Payment Method *</Text>
-                        <TouchableOpacity onPress={() => this.setState({ isPaymentMethodDropdownVisible: !this.state.isPaymentMethodDropdownVisible })}>
+                        <TouchableOpacity >
                             <View style={styles.editTextContainer}>
-                                <TextInput
+                                <Picker
+                                    itemStyle={styles.editTextContainer}
+                                    mode="dropdown"
                                     style={styles.emailIdEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    // placeholder="Email Id"
-                                    value={this.state.paymentMethod}
-                                    onChangeText={(value) => this.setState({ paymentMethod: value })}
-                                    blurOnSubmit={false}
-                                />
-                                <Image
-                                    source={require('../images/down_arow.png')}
-                                    style={styles.calenderIcon}
-                                />
+                                    selectedValue={this.state.paymentMethod}
+                                    onValueChange={this.onValueChangePayment.bind(this)}
+                                >
+                                    {this.state.paymentMethodList.map((item, index) => (
+                                        <Picker.Item
+                                            color="#000"
+                                            label={item}
+                                            value={item}
+                                            index={index}
+                                        />
+                                    ))}
+                                </Picker>
                             </View>
                         </TouchableOpacity>
 
