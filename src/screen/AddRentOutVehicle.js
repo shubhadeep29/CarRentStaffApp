@@ -29,6 +29,7 @@ import { Picker } from '@react-native-picker/picker';
 
 
 export default class AddRentOutVehicle extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -136,6 +137,27 @@ export default class AddRentOutVehicle extends React.Component {
         if (this.state.item != null) {
             console.log(this.state.item)
 
+
+            if(this.state.item.driver_side_img==""){
+                driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img
+            }
+            if(this.state.item.fuel_guage_img==""){
+                fuelGuageImageUri: Links.BASEURL + this.state.item.fuel_guage_img
+            }
+            if(this.state.item.odometer_img==""){
+                odometerImageUri: Links.BASEURL + this.state.item.odometer_img
+            }
+            if(this.state.item.passenger_side_img==""){
+                passengerSideImageUri: Links.BASEURL + this.state.item.passenger_side_img
+            }
+            if(this.state.item.rear_img==""){
+                rearImageUri: Links.BASEURL + this.state.item.rear_img
+            }
+            if(this.state.item.driver_side_img==""){
+                serviceStickerImageUri: Links.BASEURL + this.state.item.service_sticker_img
+            }
+                
+
             this.setState({
                 carNo: this.state.item.car_no,
                 carId: this.state.item.car_id,
@@ -151,19 +173,20 @@ export default class AddRentOutVehicle extends React.Component {
                 driverId: this.state.item.driver_id,
                 odometerReading: this.state.item.odometer_reading,
 
-                driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img,
-                frontImageUri: Links.BASEURL + this.state.item.front_img,
-                fuelGuageImageUri: Links.BASEURL + this.state.item.fuel_guage_img,
-                odometerImageUri: Links.BASEURL + this.state.item.odometer_img,
-                passengerSideImageUri: Links.BASEURL + this.state.item.passenger_side_img,
-                rearImageUri: Links.BASEURL + this.state.item.rear_img,
-                serviceStickerImageUri: Links.BASEURL + this.state.item.service_sticker_img,
-
+                
                 expire: this.state.item.expire,
                 weeklyRent: this.state.item.weekly_rent,
 
                 notes: this.state.item.notes,
                 rentOutId: this.state.item.rent_out_id,
+                
+                driverSideImageUri,
+                fuelGuageImageUri,
+                odometerImageUri,
+                passengerSideImageUri,
+                rearImageUri,
+                serviceStickerImageUri,
+
             })
         } else {
             this.setState({
@@ -385,63 +408,86 @@ export default class AddRentOutVehicle extends React.Component {
         formData.append('device_type', this.state.deviceType);
         formData.append('user_id', this.userId);
         formData.append('driver_id', this.state.driverId);
-        formData.append('car_id', this.state.carId);
+        formData.append('car_id', this.state.carId+"#$car-1234");
         formData.append('odometer_reading', this.state.odometerReading);
         formData.append('basic_excess', this.state.basicExcess);
         formData.append('age_excess', this.state.ageExcess);
         formData.append('overseas_dL_excess', this.state.overseasDLExcess);
         formData.append('weekly_rent', this.state.weeklyRent);
         formData.append('bond_amount', this.state.bond);
-        formData.append('company_id', this.state.companyId);
+        //formData.append('company_id', this.state.companyId);
+        formData.append('company_id', 2);
         formData.append('expire', this.state.expire);
         formData.append('notes', this.state.notes);
-        formData.append('rent_out_id', this.state.rentOutId);
+        //formData.append('rent_out_id', this.state.rentOutId);
+        formData.append('rent_out_id', 2);
+        console.log("Call Add Return Out Vehicle API ========>  ", JSON.stringify(formData));
+            
+        if(this.state.coverNoteImageName!=""){
         formData.append('cover_note_img', {
             uri: Platform.OS === 'ios' ? this.state.coverNoteImageUri.replace('file://', '') : this.state.coverNoteImageUri,
             name: this.state.coverNoteImageName,
             type: this.state.coverNoteImageType
         });
+    }
+        console.log("Call Add Return Out Vehicle API ========>  ", JSON.stringify(this.state.coverNoteImageName));
+        if(this.state.frontImageName!=""){       
         formData.append('front_img', {
             uri: Platform.OS === 'ios' ? this.state.frontImageUri.replace('file://', '') : this.state.frontImageUri,
             name: this.state.frontImageName,
             type: this.state.frontImageType
         });
+    }
+
+    if(this.state.rearImageName!=""){
         formData.append('rear_img', {
             uri: Platform.OS === 'ios' ? this.state.rearImageUri.replace('file://', '') : this.state.rearImageUri,
             name: this.state.rearImageName,
             type: this.state.rearImageType
         });
+    }
+        console.log("Call Add Return Out Vehicle API ========>  ", JSON.stringify(formData));
+     
+        if(this.state.driverSideImageName!=""){
         formData.append('driver_side_img', {
             uri: Platform.OS === 'ios' ? this.state.driverSideImageUri.replace('file://', '') : this.state.driverSideImageUri,
             name: this.state.driverSideImageName,
             type: this.state.driverSideImageType
         });
+    }
+
+    if(this.state.passengerSideImageName!=""){
         formData.append('passenger_side_img', {
             uri: Platform.OS === 'ios' ? this.state.passengerSideImageUri.replace('file://', '') : this.state.passengerSideImageUri,
             name: this.state.passengerSideImageName,
             type: this.state.passengerSideImageType
         });
+    }
+    if(this.state.serviceStickerImageName!=""){
         formData.append('service_sticker_img', {
             uri: Platform.OS === 'ios' ? this.state.serviceStickerImageUri.replace('file://', '') : this.state.serviceStickerImageUri,
             name: this.state.serviceStickerImageName,
             type: this.state.serviceStickerImageType
         });
+    }if(this.state.odometerImageName!=""){
         formData.append('odometer_img', {
             uri: Platform.OS === 'ios' ? this.state.odometerImageUri.replace('file://', '') : this.state.odometerImageUri,
             name: this.state.odometerImageName,
             type: this.state.odometerImageType
         });
+    }if(this.state.fuelGuageImageName!=""){
         formData.append('fuel_guage_img', {
             uri: Platform.OS === 'ios' ? this.state.fuelGuageImageUri.replace('file://', '') : this.state.fuelGuageImageUri,
             name: this.state.fuelGuageImageName,
             type: this.state.fuelGuageImageType
         });
+    }
 
 
 
         try {
             res = null
-            console.log("Call Add/Edit Return Out Vehicle API ========>  ", JSON.stringify(formData));
+            console.log("Call Add Return Out Vehicle API ========>  ", JSON.stringify(formData));
             if (this.state.item == null) {
                 res = await fetch(Links.ADD_NEW_RENT_OUT, {
                     method: 'POST',
@@ -833,6 +879,7 @@ export default class AddRentOutVehicle extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload photo of cover note</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("coverNoteImageUri")}>
+                        
                             {this.state.coverNoteImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.coverNoteImageUri }}
@@ -843,7 +890,6 @@ export default class AddRentOutVehicle extends React.Component {
                                     style={styles.logoIcon}
                                 />
                             }
-
 
                             {this.state.fileName != "" ?
                                 <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.coverNoteImageName}</Text>
