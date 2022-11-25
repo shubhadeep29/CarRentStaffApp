@@ -497,6 +497,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
+        paddingVertical: Platform.OS == "ios" ? 16 : 12
+
     },
     headingTextStyle: {
         fontSize: 15,

@@ -39,8 +39,8 @@ export default class AddReturnInVehicle extends React.Component {
             isNetworkAvailable: true,
             isLoading: false,
             deviceType: "1",
-            driverId: "1",
-            carId: "1",
+            driverId: "",
+            carId: "",
             driver: "",
             rentOutDate: "",
             rentOutNo: "",
@@ -62,40 +62,40 @@ export default class AddReturnInVehicle extends React.Component {
             notes: "",
             openImageGalleryFor: "",
 
-            damageImageUri: null,
+            damageImageUri: "",
             damageImageName: "",
             damageImageSize: "",
-            damageImageType: "",
+            damageImageType: "jpeg",
 
-            frontImageUri: null,
+            frontImageUri: "",
             frontImageName: "",
             frontImageSize: "",
-            frontImageType: "",
+            frontImageType: "jpeg",
 
-            rearImageUri: null,
+            rearImageUri: "",
             rearImageName: "",
             rearImageSize: "",
-            rearImageType: "",
+            rearImageType: "jpeg",
 
-            driverSideImageUri: null,
+            driverSideImageUri: "",
             driverSideImageName: "",
             driverSideImageSize: "",
-            driverSideImageType: "",
+            driverSideImageType: "jpeg",
 
-            passengerSideImageUri: null,
+            passengerSideImageUri: "",
             passengerSideImageName: "",
             passengerSideImageSize: "",
-            passengerSideImageType: "",
+            passengerSideImageType: "jpeg",
 
-            odometerImageUri: null,
+            odometerImageUri: "",
             odometerImageName: "",
             odometerImageSize: "",
-            odometerImageType: "",
+            odometerImageType: "jpeg",
 
-            fuelGuageImageUri: null,
+            fuelGuageImageUri: "",
             fuelGuageImageName: "",
             fuelGuageImageSize: "",
-            fuelGuageImageType: "",
+            fuelGuageImageType: "jpeg",
 
         }
     }
@@ -138,34 +138,76 @@ export default class AddReturnInVehicle extends React.Component {
                 carNo: this.state.item.car_no,
                 rentOutDate: this.state.item.rent_out_date,
                 rentOutNo: this.state.item.rent_out_no,
-                isDamageYes: this.state.item.damage,
-                isDamageNo: !this.state.item.damage,
-                damageAmount: this.state.item.damage_amount,
+                isDamageYes: this.state.item.damage == "Yes" ? true : false,
+                isDamageNo: this.state.item.damage == "No" ? true : false,
+                damageAmount: "$" + this.state.item.damage_amount,
                 driverId: this.state.item.driver_id,
                 odometerReading: this.state.item.odometer_reading,
-                bondRefundAmount: this.state.item.bond_refund_amount,
+                bondRefundAmount: "$" + this.state.item.bond_refund_amount,
                 bondRefundDate: this.state.item.bond_refund_date,
-                isBondRefundRequestYes: this.state.item.bond_refund_request,
-                isBondRefundRequestNo: !this.state.item.bond_refund_request,
+                isBondRefundRequestYes: this.state.item.bond_refund_request == "Yes" ? true : false,
+                isBondRefundRequestNo: this.state.item.bond_refund_request == "No" ? true : false,
                 notes: this.state.item.notes,
-                fuelAmount: this.state.item.fuel,
+                fuelAmount: "$" + this.state.item.fuel,
                 notes: this.state.item.notes,
-                driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img,
-                frontImageUri: Links.BASEURL + this.state.item.front_img,
-                fuelGuageImageUri: Links.BASEURL + this.state.item.fuel_guage_img,
-                odometerImageUri: Links.BASEURL + this.state.item.odometer_img,
-                passengerSideImageUri: Links.BASEURL + this.state.item.passenger_side_img,
-                rearImageUri: Links.BASEURL + this.state.item.rear_img,
-                damageImageUri: Links.BASEURL + this.state.item.damage_img,
+
+
             })
+
+            if (this.state.item.driver_side_img != null && this.state.item.driver_side_img != "") {
+                this.setState({
+                    driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img,
+                    driverSideImageName: this.state.item.driver_side_img.replace(/^.*[\\\/]/, '')
+
+                })
+            }
+
+            if (this.state.item.front_img != null && this.state.item.front_img != "") {
+                this.setState({
+                    frontImageUri: Links.BASEURL + this.state.item.front_img,
+                    frontImageName: this.state.item.front_img.replace(/^.*[\\\/]/, '')
+                })
+            }
+            if (this.state.item.fuel_guage_img != null && this.state.item.fuel_guage_img != "") {
+                this.setState({
+                    fuelGuageImageUri: Links.BASEURL + this.state.item.fuel_guage_img,
+                    fuelGuageImageName: this.state.item.fuel_guage_img.replace(/^.*[\\\/]/, '')
+                })
+            }
+            if (this.state.item.odometer_img != null && this.state.item.odometer_img != "") {
+                this.setState({
+                    odometerImageUri: Links.BASEURL + this.state.item.odometer_img,
+                    odometerImageName: this.state.item.odometer_img.replace(/^.*[\\\/]/, ''),
+                })
+            }
+            if (this.state.item.passenger_side_img != null && this.state.item.passenger_side_img != "") {
+                this.setState({
+                    passengerSideImageUri: Links.BASEURL + this.state.item.passenger_side_img,
+                    passengerSideImageName: this.state.item.passenger_side_img.replace(/^.*[\\\/]/, ''),
+                })
+            }
+            if (this.state.item.rear_img != null && this.state.item.rear_img != "") {
+                this.setState({
+                    rearImageUri: Links.BASEURL + this.state.item.rear_img,
+                    rearImageName: this.state.item.rear_img.replace(/^.*[\\\/]/, ''),
+                })
+            }
+            if (this.state.item.damage_img != null && this.state.item.damage_img != "") {
+                this.setState({
+                    damageImageUri: Links.BASEURL + this.state.item.damage_img,
+                    damageImageName: this.state.item.damage_img.replace(/^.*[\\\/]/, ''),
+                })
+            }
         } else {
             this.setState({
                 driverId: this.state.driverListRentOut[0].driver_id,
-                carId: this.state.carListRent[0].car_id,
                 paymentMethod: this.state.paymentMethod[0],
             })
 
         }
+
+
+
 
     }
 
@@ -357,62 +399,69 @@ export default class AddReturnInVehicle extends React.Component {
         formData.append('token_key', this.apiKey);
         formData.append('device_type', this.state.deviceType);
         formData.append('user_id', this.userId);
-        // formData.append('driver_id', this.state.driverId);
-        // formData.append('car_id', this.state.carId);
+        formData.append('driver_id', this.state.driverId + "-" + this.state.rentOutNo);
+        formData.append('car_no', this.state.carNo);
         formData.append('odometer_reading', this.state.odometerReading);
         formData.append('damage', this.state.isDamageYes ? "Yes" : "No");
-        formData.append('damage_amount', this.state.damageAmount);
-        formData.append('fuel', this.state.fuelAmount);
-        formData.append('basic_excess', this.state.item != null ? this.state.item.basic_excess : "");
-        formData.append('age_excess', this.state.item != null ? this.state.item.age_excess : "");
-        formData.append('overseas_dL_excess', this.state.item != null ? this.state.item.overseas_dL_excess : "");
-        formData.append('weekly_rent', this.state.item != null ? this.state.item.weekly_rent : "");
-        formData.append('bond_amount', this.state.item != null ? this.state.bondRefundAmount : "");
-        // formData.append('company_id', this.state.item != null ? this.state.item.company_id : "");
-        formData.append('expire', this.state.item != null ? this.state.item.expire : "");
+        formData.append('damage_amount', this.state.damageAmount.substring(1));
+        formData.append('fuel', this.state.fuelAmount.substring(1));
+        formData.append('bond_refund_amount', this.state.bondRefundAmount.substring(1));
+        formData.append('bond_refund_request', this.state.isBondRefundRequestYes ? "Yes" : "No");
+        formData.append('bond_refund_date', this.state.bondRefundDate);
+        formData.append('bond_reference_no', "bondRef123");
         formData.append('notes', this.state.notes);
+
+        if (this.state.damageImageUri != null && this.state.damageImageUri != "")
         formData.append('damage_img', {
             uri: Platform.OS === 'ios' ? this.state.damageImageUri.replace('file://', '') : this.state.damageImageUri,
             name: this.state.damageImageName,
             type: this.state.damageImageType
         });
+        if (this.state.frontImageUri != null && this.state.frontImageUri != "")
         formData.append('front_img', {
             uri: Platform.OS === 'ios' ? this.state.frontImageUri.replace('file://', '') : this.state.frontImageUri,
             name: this.state.frontImageName,
             type: this.state.frontImageType
         });
+        if (this.state.rearImageUri != null && this.state.rearImageUri != "")
         formData.append('rear_img', {
             uri: Platform.OS === 'ios' ? this.state.rearImageUri.replace('file://', '') : this.state.rearImageUri,
             name: this.state.rearImageName,
             type: this.state.rearImageType
         });
+        if (this.state.driverSideImageUri != null && this.state.driverSideImageUri != "")
         formData.append('driver_side_img', {
             uri: Platform.OS === 'ios' ? this.state.driverSideImageUri.replace('file://', '') : this.state.driverSideImageUri,
             name: this.state.driverSideImageName,
             type: this.state.driverSideImageType
         });
+        if (this.state.passengerSideImageUri != null && this.state.passengerSideImageUri != "")
         formData.append('passenger_side_img', {
             uri: Platform.OS === 'ios' ? this.state.passengerSideImageUri.replace('file://', '') : this.state.passengerSideImageUri,
             name: this.state.passengerSideImageName,
             type: this.state.passengerSideImageType
         });
+        if (this.state.odometerImageUri != null && this.state.odometerImageUri != "")
         formData.append('odometer_img', {
             uri: Platform.OS === 'ios' ? this.state.odometerImageUri.replace('file://', '') : this.state.odometerImageUri,
             name: this.state.odometerImageName,
             type: this.state.odometerImageType
         });
+        if (this.state.fuelGuageImageUri != null && this.state.fuelGuageImageUri != "")
         formData.append('fuel_guage_img', {
             uri: Platform.OS === 'ios' ? this.state.fuelGuageImageUri.replace('file://', '') : this.state.fuelGuageImageUri,
             name: this.state.fuelGuageImageName,
-            type: this.state.fuelGuagImageType
+            type: this.state.fuelGuageImageType
         });
 
 
 
         try {
-            console.log("Call Add/Edit Return In Vehicle API ========>  ", JSON.stringify(formData));
             res = null
             if (this.state.item == null) {
+                console.log("Call Add Return In Vehicle API ========>  ", JSON.stringify(formData));
+                formData.append('bond_payment_method', this.state.paymentMethod);
+
                 res = await fetch(Links.ADD_NEW_RENT_IN, {
                     method: 'POST',
                     body: formData,
@@ -424,6 +473,7 @@ export default class AddReturnInVehicle extends React.Component {
                 });
             }
             else {
+                console.log("Call Edit Return In Vehicle API ========>  ", JSON.stringify(formData));
                 res = await fetch(Links.EDIT_RENT_IN, {
                     method: 'POST',
                     body: formData,
@@ -467,7 +517,11 @@ export default class AddReturnInVehicle extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <CommonAppBar title="Add Return In Vehicle" navigation={this.props.navigation} />
+                {this.state.item != null ?
+                    <CommonAppBar title="Edit Return In Vehicle" navigation={this.props.navigation} />
+                    :
+                    <CommonAppBar title="Add Return In Vehicle" navigation={this.props.navigation} />
+                }
 
                 <ScrollView >
                     <View style={styles.bottomViewContainer}>
@@ -478,7 +532,7 @@ export default class AddReturnInVehicle extends React.Component {
                                 <Picker
                                     itemStyle={styles.editTextContainer}
                                     mode="dropdown"
-                                    style={styles.emailIdEditTextStyle}
+                                    style={styles.dropdownStyle}
                                     selectedValue={this.state.driverId}
                                     onValueChange={this.onValueChangeDriver.bind(this)}
                                 >
@@ -650,7 +704,7 @@ export default class AddReturnInVehicle extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload photo of Damage</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("damageImageUri")}>
-                            {this.state.damageImageUri != null ?
+                            {this.state.damageImageUri != null && this.state.damageImageUri != "" ?
                                 <Image
                                     source={{ uri: this.state.damageImageUri }}
                                     style={styles.logoIcon}
@@ -770,7 +824,7 @@ export default class AddReturnInVehicle extends React.Component {
                                 <Picker
                                     itemStyle={styles.editTextContainer}
                                     mode="dropdown"
-                                    style={styles.emailIdEditTextStyle}
+                                    style={styles.dropdownStyle}
                                     selectedValue={this.state.paymentMethod}
                                     onValueChange={this.onValueChangePayment.bind(this)}
                                 >
@@ -818,7 +872,7 @@ export default class AddReturnInVehicle extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Front</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("frontImageUri")}>
-                            {this.state.frontImageUri != null ?
+                            {this.state.frontImageUri != null && this.state.frontImageUri != "" ?
                                 <Image
                                     source={{ uri: this.state.frontImageUri }}
                                     style={styles.logoIcon}
@@ -840,7 +894,7 @@ export default class AddReturnInVehicle extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Rear</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("rearImageUri")}>
-                            {this.state.rearImageUri != null ?
+                            {this.state.rearImageUri != null && this.state.rearImageUri != "" ?
                                 <Image
                                     source={{ uri: this.state.rearImageUri }}
                                     style={styles.logoIcon}
@@ -862,7 +916,7 @@ export default class AddReturnInVehicle extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Driver Side</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("driverSideImageUri")}>
-                            {this.state.driverSideImageUri != null ?
+                            {this.state.driverSideImageUri != null && this.state.driverSideImageUri != "" ?
                                 <Image
                                     source={{ uri: this.state.driverSideImageUri }}
                                     style={styles.logoIcon}
@@ -884,7 +938,7 @@ export default class AddReturnInVehicle extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Passenger Side</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("passengerSideImageUri")}>
-                            {this.state.passengerSideImageUri != null ?
+                            {this.state.passengerSideImageUri != null && this.state.passengerSideImageUri != "" ?
                                 <Image
                                     source={{ uri: this.state.passengerSideImageUri }}
                                     style={styles.logoIcon}
@@ -906,7 +960,7 @@ export default class AddReturnInVehicle extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Odometer</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("odometerImageUri")}>
-                            {this.state.odometerImageUri != null ?
+                            {this.state.odometerImageUri != null && this.state.odometerImageUri != "" ?
                                 <Image
                                     source={{ uri: this.state.odometerImageUri }}
                                     style={styles.logoIcon}
@@ -928,7 +982,7 @@ export default class AddReturnInVehicle extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload Photo of Fuel Guage</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("fuelGuageImageUri")}>
-                            {this.state.fuelGuageImageUri != null ?
+                            {this.state.fuelGuageImageUri != null && this.state.fuelGuageImageUri != "" ?
                                 <Image
                                     source={{ uri: this.state.fuelGuageImageUri }}
                                     style={styles.logoIcon}
@@ -1050,7 +1104,14 @@ const styles = StyleSheet.create({
         fontSize: 15,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
-        flex: 1
+        flex: 1,
+        paddingVertical: Platform.OS == "ios" ? 16 : 12
+    },
+    dropdownStyle: {
+        fontSize: 15,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.black,
+        flex: 1,
     },
     headingTextStyle: {
         fontSize: 15,

@@ -547,7 +547,11 @@ export default class AddRentOutVehicle extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <CommonAppBar title="Add Return Out Vehicle" navigation={this.props.navigation} />
+                {this.state.item != null ?
+                    <CommonAppBar title="Edit Return Out Vehicle" navigation={this.props.navigation} />
+                    :
+                    <CommonAppBar title="Add Return Out Vehicle" navigation={this.props.navigation} />
+                }
 
                 <ScrollView >
                     <View style={styles.bottomViewContainer}>
@@ -558,7 +562,7 @@ export default class AddRentOutVehicle extends React.Component {
                                 <Picker
                                     itemStyle={styles.editTextContainer}
                                     mode="dropdown"
-                                    style={styles.emailIdEditTextStyle}
+                                    style={styles.dropdownStyle}
                                     selectedValue={this.state.driverId}
                                     onValueChange={this.onValueChangeDriver.bind(this)}
                                 >
@@ -608,7 +612,7 @@ export default class AddRentOutVehicle extends React.Component {
                                 <Picker
                                     itemStyle={styles.editTextContainer}
                                     mode="dropdown"
-                                    style={styles.emailIdEditTextStyle}
+                                    style={styles.dropdownStyle}
                                     selectedValue={this.state.carNo}
                                     onValueChange={this.onValueChangeCar.bind(this)}
                                 >
@@ -760,7 +764,7 @@ export default class AddRentOutVehicle extends React.Component {
                                 <Picker
                                     itemStyle={styles.editTextContainer}
                                     mode="dropdown"
-                                    style={styles.emailIdEditTextStyle}
+                                    style={styles.dropdownStyle}
                                     selectedValue={this.state.paymentMethod}
                                     onValueChange={this.onValueChangePayment.bind(this)}
                                 >
@@ -1158,7 +1162,14 @@ const styles = StyleSheet.create({
         fontSize: 15,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
-        flex: 1
+        flex: 1,
+        paddingVertical: Platform.OS == "ios" ? 16 : 12
+    },
+    dropdownStyle: {
+        fontSize: 15,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.black,
+        flex: 1,
     },
     headingTextStyle: {
         fontSize: 15,

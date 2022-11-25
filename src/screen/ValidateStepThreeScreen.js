@@ -321,6 +321,8 @@ const styles = StyleSheet.create({
         fontSize: 14,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
+        paddingVertical: Platform.OS == "ios" ? 16 : 12
+
     },
     accountHistoryRowView: {
         flexDirection: 'row',

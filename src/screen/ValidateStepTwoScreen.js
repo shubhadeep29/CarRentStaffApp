@@ -345,7 +345,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
-        flex: 1
+        flex: 1,
+        paddingVertical: Platform.OS == "ios" ? 16 : 12
+
     },
     boxGap: {
         width: 15
