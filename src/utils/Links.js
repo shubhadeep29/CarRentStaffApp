@@ -24,5 +24,6 @@ export default class Links {
     static getDriverListRentIn = Links.API + "staff/getDriverListRentIn";
     static getPaymentMethod = Links.API + "staff/getPaymentMethod";
     static getCarListRent = Links.API + "staff/getCarListRent";
+    static validateDriver = Links.API + "staff/validateDriver";
     
 }

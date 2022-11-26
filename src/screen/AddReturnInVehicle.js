@@ -409,6 +409,7 @@ export default class AddReturnInVehicle extends React.Component {
         formData.append('bond_refund_request', this.state.isBondRefundRequestYes ? "Yes" : "No");
         formData.append('bond_refund_date', this.state.bondRefundDate);
         formData.append('bond_reference_no', "bondRef123");
+        formData.append('rent_in_id', "11");
         formData.append('notes', this.state.notes);
 
         if (this.state.damageImageUri != null && this.state.damageImageUri != "")

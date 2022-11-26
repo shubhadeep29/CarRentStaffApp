@@ -25,20 +25,19 @@ export default class ValidateStepFourScreen extends React.Component {
             item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
-            isFirstOptionChecked: false,
-            isSecondOptionChecked: false,
-            isThirdOptionChecked: false,
-            isFourthOptionChecked: false,
-            isFivthOptionChecked: false,
-            isSixthOptionChecked: false,
-            isSeventhOptionChecked: false,
-            isEighthOptionChecked: false,
+            isFirstOptionChecked: true,
+            isSecondOptionChecked: true,
+            isThirdOptionChecked: true,
+            isFourthOptionChecked: true,
+            isFivthOptionChecked: true,
+            isSixthOptionChecked: true,
+            isSeventhOptionChecked: true,
+            isEighthOptionChecked: true,
         }
     }
     componentDidMount = async () => {
         this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
-        // this.item = this.props.params.item;
 
         console.log(this.state.item)
 
@@ -58,10 +57,9 @@ export default class ValidateStepFourScreen extends React.Component {
 
 
     goToNextScreen = () => {
-        this.props.navigation.navigate('ValidateStepFiveScreen')
-        // this.props.navigation.navigate('ValidateStepFiveScreen', {
-        //     item: item
-        // })
+        this.props.navigation.navigate('ValidateStepFiveScreen', {
+            item: this.state.item
+        })
     }
 
     render() {
@@ -95,7 +93,7 @@ export default class ValidateStepFourScreen extends React.Component {
 
 
                     <View style={styles.rowView}>
-                        <TouchableOpacity onPress={() => this.setState({ isFirstOptionChecked: !this.state.isFirstOptionChecked })}>
+                        <TouchableOpacity >
                             <Image
                                 source={this.state.isFirstOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
                                 style={styles.checkUncheckIcon}
@@ -106,7 +104,7 @@ export default class ValidateStepFourScreen extends React.Component {
 
 
                     <View style={styles.rowView}>
-                        <TouchableOpacity onPress={() => this.setState({ isSecondOptionChecked: !this.state.isSecondOptionChecked })}>
+                        <TouchableOpacity >
                             <Image
                                 source={this.state.isSecondOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
                                 style={styles.checkUncheckIcon}
@@ -116,7 +114,7 @@ export default class ValidateStepFourScreen extends React.Component {
                     </View>
 
                     <View style={styles.rowView}>
-                        <TouchableOpacity onPress={() => this.setState({ isThirdOptionChecked: !this.state.isThirdOptionChecked })}>
+                        <TouchableOpacity >
                             <Image
                                 source={this.state.isThirdOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
                                 style={styles.checkUncheckIcon}
@@ -126,7 +124,7 @@ export default class ValidateStepFourScreen extends React.Component {
                     </View>
 
                     <View style={styles.rowView}>
-                        <TouchableOpacity onPress={() => this.setState({ isFourthOptionChecked: !this.state.isFourthOptionChecked })}>
+                        <TouchableOpacity >
                             <Image
                                 source={this.state.isFourthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
                                 style={styles.checkUncheckIcon}
@@ -136,7 +134,7 @@ export default class ValidateStepFourScreen extends React.Component {
                     </View>
 
                     <View style={styles.rowView}>
-                        <TouchableOpacity onPress={() => this.setState({ isFivthOptionChecked: !this.state.isFivthOptionChecked })}>
+                        <TouchableOpacity >
                             <Image
                                 source={this.state.isFivthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
                                 style={styles.checkUncheckIcon}
@@ -146,7 +144,7 @@ export default class ValidateStepFourScreen extends React.Component {
                     </View>
 
                     <View style={styles.rowView}>
-                        <TouchableOpacity onPress={() => this.setState({ isSixthOptionChecked: !this.state.isSixthOptionChecked })}>
+                        <TouchableOpacity >
                             <Image
                                 source={this.state.isSixthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
                                 style={styles.checkUncheckIcon}
@@ -156,7 +154,7 @@ export default class ValidateStepFourScreen extends React.Component {
                     </View>
 
                     <View style={styles.rowView}>
-                        <TouchableOpacity onPress={() => this.setState({ isSeventhOptionChecked: !this.state.isSeventhOptionChecked })}>
+                        <TouchableOpacity >
                             <Image
                                 source={this.state.isSeventhOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
                                 style={styles.checkUncheckIcon}
@@ -167,7 +165,7 @@ export default class ValidateStepFourScreen extends React.Component {
 
 
                     <View style={styles.rowView}>
-                        <TouchableOpacity onPress={() => this.setState({ isEighthOptionChecked: !this.state.isEighthOptionChecked })}>
+                        <TouchableOpacity >
                             <Image
                                 source={this.state.isEighthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
                                 style={styles.checkUncheckIcon}

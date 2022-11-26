@@ -24,11 +24,11 @@ export default class ValidateStepThreeScreen extends React.Component {
             item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
-            accountName: "Rahul Pathak",
+            accountName: "",
             bsb: "",
             accountNumber: "",
-            numberOfAtFaultAccidents: "3",
-            numberOfNotAtFaultAccidents: "3",
+            numberOfAtFaultAccidents: "",
+            numberOfNotAtFaultAccidents: "",
         }
     }
 

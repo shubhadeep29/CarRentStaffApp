@@ -15,6 +15,7 @@ import CommonAppBar from '../component/CommonAppBar';
 import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from '../utils/Constants';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 export default class ValidateStepOneScreen extends React.Component {
@@ -81,6 +82,21 @@ export default class ValidateStepOneScreen extends React.Component {
         this.props.navigation.navigate('ValidateStepTwoScreen', {
             item: item
         })
+    }
+
+
+    showDate = () => {
+        this.setState({
+            isDisplayDate: true,
+        });
+    }
+
+    setDate = (event, selectedDate) => {
+        console.log("selectedDate" + selectedDate)
+        this.setState({
+            isDisplayDate: false,
+            dob: selectedDate.getDate() + "/" + (selectedDate.getMonth() + 1) + "/" + selectedDate.getFullYear()
+        });
     }
 
     render() {
@@ -266,19 +282,13 @@ export default class ValidateStepOneScreen extends React.Component {
 
 
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Date of Birth</Text>
+                            <TouchableOpacity style={styles.bondDateContainer} onPress={this.showDate} >
                             <View style={styles.editTextContainer}>
-                                <TextInput
-                                    style={styles.emailIdEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    // placeholder="Middle Name"
-                                    value={this.state.dob}
-                                    onChangeText={(value) => this.setState({ dob: value })}
-                                    onSubmitEditing={() => { this.moileNoTextInput.focus() }}
-                                    ref={(input) => { this.dobTextInput = input; }}
-                                    blurOnSubmit={false}
-                                />
+                                    <Text
+                                        style={[styles.emailIdEditTextStyle, { paddingVertical: 16 }]}
+                                    >
+                                        {this.state.dob}
+                                    </Text>
 
                                 <Image
                                     source={require('../images/calendar.png')}
@@ -286,6 +296,18 @@ export default class ValidateStepOneScreen extends React.Component {
                                 />
 
                             </View>
+
+                            </TouchableOpacity>
+
+                            {this.state.isDisplayDate &&
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={new Date()}
+                                    mode='date'
+                                    display="default"
+                                    onChange={this.setDate}
+                                />
+                            }
 
 
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Mobile</Text>

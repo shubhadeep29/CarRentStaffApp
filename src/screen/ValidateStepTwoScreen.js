@@ -9,12 +9,14 @@ import {
     TextInput,
 } from 'react-native';
 import * as Colors from '../utils/Colors';
-import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
-import Loader from '../component/Loader';
 import CommonAppBar from '../component/CommonAppBar';
 import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from '../utils/Constants';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
+
 
 
 export default class ValidateStepTwoScreen extends React.Component {
@@ -25,12 +27,25 @@ export default class ValidateStepTwoScreen extends React.Component {
             isNetworkAvailable: true,
             isLoading: false,
             selectedUtility: "",
-            passportExpireDate: "",
+            passportExpireDate: "DD/MM/YYYY",
             passportNo: "",
-            driverExpireDate: "",
+            driverExpireDate: "DD/MM/YYYY",
+            isDisplayPassportExpireDate: false,
+            isDisplayDriverExpireDate: false,
             driverLICNo: "",
             isAustralianLicenceYes: true,
-            isAustralianLicenceNo: false
+            isAustralianLicenceNo: false,
+
+            licenceImage: "",
+            licenceImageName: "",
+            licenceExpiryImage: "",
+            licenceExpiryImageName: "",
+            passportNoImage: "",
+            passportNoImageName: "",
+            passportExpiryImage: "",
+            passportExpiryImageName: "",
+            utilityBillImage: "",
+            utilityBillImageName: "",
         }
     }
 
@@ -62,6 +77,11 @@ export default class ValidateStepTwoScreen extends React.Component {
         item.licence_expiry = this.state.driverExpireDate;
         item.licence_no = this.state.driverLICNo;
         item.is_australian_licence = this.state.isAustralianLicenceYes;
+        item.licence_image = this.state.licenceImage;
+        item.licence_expiry_image = this.state.licenceExpiryImage;
+        item.passport_no_image = this.state.passportNoImage;
+        item.passport_expiry_image = this.state.passportExpiryImage;
+        item.utility_bill_image = this.state.utilityBillImage;
         this.setState({
             item: item
         })
@@ -71,6 +91,125 @@ export default class ValidateStepTwoScreen extends React.Component {
             item: item
         })
     }
+
+
+    openImageGallery(openImageGalleryFor) {
+        let options = {
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+        // ImagePicker.launchImageLibrary(options, (res) => {
+        launchImageLibrary(options, (res) => {
+            console.log('Response = ', res);
+            if (res.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (res.error) {
+                console.log('ImagePicker Error: ', res.error);
+            } else if (res.customButton) {
+                console.log('User tapped custom button: ', res.customButton);
+                alert(res.customButton);
+            } else {
+
+                const source = { uri: res.uri };
+                console.log('response', JSON.stringify(res));
+
+                if (openImageGalleryFor == "licenceImage") {
+                    this.setState({
+                        resourcePath: res,
+                        licenceImage: res.assets[0].uri,
+                        licenceImageName: res.assets[0].fileName,
+                    });
+                }
+                else if (openImageGalleryFor == "licenceExpiryImage") {
+                    this.setState({
+                        resourcePath: res,
+                        licenceExpiryImage: res.assets[0].uri,
+                        licenceExpiryImageName: res.assets[0].fileName,
+                    });
+                }
+                else if (openImageGalleryFor == "passportNoImage") {
+                    this.setState({
+                        resourcePath: res,
+                        passportNoImage: res.assets[0].uri,
+                        passportNoImageName: res.assets[0].fileName,
+
+                    });
+                }
+                else if (openImageGalleryFor == "passportExpiryImage") {
+                    this.setState({
+                        resourcePath: res,
+                        passportExpiryImage: res.assets[0].uri,
+                        passportExpiryImageName: res.assets[0].fileName,
+                    });
+                }
+                else if (openImageGalleryFor == "utilityBillImage") {
+                    this.setState({
+                        resourcePath: res,
+                        utilityBillImage: res.assets[0].uri,
+                        utilityBillImageName: res.assets[0].fileName,
+                    });
+                }
+                else if (openImageGalleryFor == "odometerImageUri") {
+                    this.setState({
+                        resourcePath: res,
+                        odometerImageUri: res.assets[0].uri,
+                        odometerImageName: res.assets[0].fileName,
+                        odometerImageSize: res.assets[0].fileSize,
+                        odometerImageType: res.assets[0].type
+                    });
+                }
+                else if (openImageGalleryFor == "fuelGuageImageUri") {
+                    this.setState({
+                        resourcePath: res,
+                        fuelGuageImageUri: res.assets[0].uri,
+                        fuelGuageImageName: res.assets[0].fileName,
+                        fuelGuageImageSize: res.assets[0].fileSize,
+                        fuelGuageImageType: res.assets[0].type
+                    });
+                }
+
+
+                console.log('fileData', JSON.stringify(res.assets[0].fileName));
+                console.log('fileUri', JSON.stringify(res.assets[0].uri));
+                console.log('fileType', JSON.stringify(res.assets[0].type));
+
+
+            }
+        });
+    }
+
+
+
+    showDriverExpireDate = () => {
+        this.setState({
+            isDisplayDriverExpireDate: true,
+        });
+    }
+
+    setDriverExpireDate = (event, selectedDate) => {
+        console.log("selectedDate" + selectedDate)
+        this.setState({
+            isDisplayDriverExpireDate: false,
+            driverExpireDate: selectedDate.getDate() + "/" + (selectedDate.getMonth() + 1) + "/" + selectedDate.getFullYear()
+        });
+    }
+
+    setPassportExpireDate = (event, selectedDate) => {
+        console.log("selectedDate" + selectedDate)
+        this.setState({
+            isDisplayPassportExpireDate: false,
+            passportExpireDate: selectedDate.getDate() + "/" + (selectedDate.getMonth() + 1) + "/" + selectedDate.getFullYear()
+        });
+    }
+
+    showPassportExpireDate = () => {
+        this.setState({
+            isDisplayPassportExpireDate: true,
+        });
+    }
+
 
     render() {
         return (
@@ -119,26 +258,70 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 />
                             </View>
 
+                            <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("licenceImage")}>
+                                {this.state.licenceImage != null && this.state.licenceImage != "" ?
+                                    <Image
+                                        source={{ uri: this.state.licenceImage }}
+                                        style={styles.logoIcon}
+                                    />
+                                    : <Image
+                                        source={require('../images/ic_add_camera.png')}
+                                        style={styles.logoIcon}
+                                    />
+                                }
+
+
+                                {this.state.licenceImageName != null && this.state.licenceImageName != "" ?
+                                    <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.licenceImageName}</Text>
+                                    :
+                                    <Text numberOfLines={1} style={styles.uploadImageNameText} >Upload Photo of Driver LIC No.</Text>
+                                }
+
+                            </TouchableOpacity>
+
 
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Driver Expire</Text>
-                            <View style={styles.editTextContainer}>
-                                <TextInput
-                                    style={styles.emailIdEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    placeholder="DD/MM/YYYY"
-                                    value={this.state.driverExpireDate}
-                                    onChangeText={(value) => this.setState({ driverExpireDate: value })}
-                                    onSubmitEditing={() => { this.passportNoTextInput.focus() }}
-                                    ref={(input) => { this.driverExpireDateTextInput = input; }}
-                                    blurOnSubmit={false}
-                                />
+                            <TouchableOpacity style={styles.bondDateContainer} onPress={this.showDriverExpireDate} >
+                                <View style={styles.editTextContainer}>
+                                    <Text style={[styles.emailIdEditTextStyle, { paddingVertical: 16 }]}
+                                    >{this.state.driverExpireDate}</Text>
                                 <Image
                                     source={require('../images/calendar.png')}
                                     style={{ alignSelf: 'center', height: 15, width: 15 }}
                                 />
                             </View>
+                            </TouchableOpacity>
+
+                            {this.state.isDisplayDriverExpireDate &&
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={new Date()}
+                                    mode='date'
+                                    display="default"
+                                    onChange={this.setDriverExpireDate}
+                                />
+                            }
+
+                            <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("licenceExpiryImage")}>
+                                {this.state.licenceExpiryImage != null && this.state.licenceExpiryImage != "" ?
+                                    <Image
+                                        source={{ uri: this.state.licenceExpiryImage }}
+                                        style={styles.logoIcon}
+                                    />
+                                    : <Image
+                                        source={require('../images/ic_add_camera.png')}
+                                        style={styles.logoIcon}
+                                    />
+                                }
+
+
+                                {this.state.licenceExpiryImageName != null && this.state.licenceExpiryImageName != "" ?
+                                    <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.licenceExpiryImageName}</Text>
+                                    :
+                                    <Text numberOfLines={1} style={styles.uploadImageNameText} >Upload Photo of Driver Expire</Text>
+                                }
+
+                            </TouchableOpacity>
 
                             <View style={styles.rowViewOptionStyle}>
                                 <Text numberOfLines={1} style={styles.headingTextStyleTwo} >Australian Licence</Text>
@@ -185,26 +368,72 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 />
                             </View>
 
+                            <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("passportNoImage")}>
+                                {this.state.passportNoImage != null && this.state.passportNoImage != "" ?
+                                    <Image
+                                        source={{ uri: this.state.passportNoImage }}
+                                        style={styles.logoIcon}
+                                    />
+                                    : <Image
+                                        source={require('../images/ic_add_camera.png')}
+                                        style={styles.logoIcon}
+                                    />
+                                }
+
+
+                                {this.state.passportNoImageName != null && this.state.passportNoImageName != "" ?
+                                    <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.passportNoImageName}</Text>
+                                    :
+                                    <Text numberOfLines={1} style={styles.uploadImageNameText} >Upload Photo of Passport No.</Text>
+                                }
+
+                            </TouchableOpacity>
+
 
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Passport Expire</Text>
-                            <View style={styles.editTextContainer}>
-                                <TextInput
-                                    style={styles.emailIdEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    placeholder="DD/MM/YYYY"
-                                    value={this.state.passportExpireDate}
-                                    onChangeText={(value) => this.setState({ passportExpireDate: value })}
-                                    onSubmitEditing={() => { this.selectedUtilityTextInput.focus() }}
-                                    ref={(input) => { this.passportExpireDateTextInput= input; }}
-                                    blurOnSubmit={false}
-                                />
+                            <TouchableOpacity style={styles.bondDateContainer} onPress={this.showPassportExpireDate} >
+                                <View style={styles.editTextContainer}>
+                                    <Text style={[styles.emailIdEditTextStyle, { paddingVertical: 16 }]}
+                                    >
+                                        {this.state.passportExpireDate}
+                                    </Text>
                                 <Image
                                     source={require('../images/calendar.png')}
                                     style={{ alignSelf: 'center', height: 15, width: 15 }}
                                 />
                             </View>
+                            </TouchableOpacity>
+
+                            {this.state.isDisplayPassportExpireDate &&
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={new Date()}
+                                    mode='date'
+                                    display="default"
+                                    onChange={this.setPassportExpireDate}
+                                />
+                            }
+
+                            <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("passportExpiryImage")}>
+                                {this.state.passportExpiryImage != null && this.state.passportExpiryImage != "" ?
+                                    <Image
+                                        source={{ uri: this.state.passportExpiryImage }}
+                                        style={styles.logoIcon}
+                                    />
+                                    : <Image
+                                        source={require('../images/ic_add_camera.png')}
+                                        style={styles.logoIcon}
+                                    />
+                                }
+
+
+                                {this.state.passportExpiryImageName != null && this.state.passportExpiryImageName != "" ?
+                                    <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.passportExpiryImageName}</Text>
+                                    :
+                                    <Text numberOfLines={1} style={styles.uploadImageNameText} >Upload Photo of Passport Expire</Text>
+                                }
+
+                            </TouchableOpacity>
 
 
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Select Utility</Text>
@@ -222,6 +451,29 @@ export default class ValidateStepTwoScreen extends React.Component {
                                     blurOnSubmit={false}
                                 />
                             </View>
+
+
+
+                            <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("utilityBillImage")}>
+                                {this.state.utilityBillImage != null && this.state.utilityBillImage != "" ?
+                                    <Image
+                                        source={{ uri: this.state.utilityBillImage }}
+                                        style={styles.logoIcon}
+                                    />
+                                    : <Image
+                                        source={require('../images/ic_add_camera.png')}
+                                        style={styles.logoIcon}
+                                    />
+                                }
+
+
+                                {this.state.utilityBillImageName != null && this.state.utilityBillImageName != "" ?
+                                    <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.utilityBillImageName}</Text>
+                                    :
+                                    <Text numberOfLines={1} style={styles.uploadImageNameText} >Upload Photo of Utility</Text>
+                                }
+
+                            </TouchableOpacity>
 
                             <TouchableOpacity style={styles.buttonContainer}
                                 onPress={() => this.goToNextScreen()}>
@@ -377,7 +629,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignContent: 'center',
         alignItems: 'center',
-        marginTop: 15,
+        marginVertical: 15,
         paddingHorizontal: 40
     },
     checkUncheckIcon: {
@@ -386,6 +638,33 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         alignSelf: 'center',
 
+    },
+
+    addImageViewStyle: {
+        borderColor: '#f1f1f1',
+        borderWidth: 2,
+        borderRadius: 10,
+        height: 125,
+        marginTop: 8,
+        marginLeft: 40,
+        marginRight: 40,
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+    },
+
+    logoIcon: {
+        width: 60,
+        height: 60,
+        resizeMode: 'contain',
+    },
+
+    uploadImageNameText: {
+        fontSize: 11,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.textColor2,
+        paddingHorizontal: 15
     },
 
 });
