@@ -18,6 +18,7 @@ import Constants from '../utils/Constants';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 
+
 export default class ValidateStepOneScreen extends React.Component {
     constructor(props) {
         super(props);
