@@ -139,22 +139,34 @@ export default class AddRentOutVehicle extends React.Component {
 
 
             if(this.state.item.driver_side_img==""){
+                this.setState({
                 driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img
+                })
             }
             if(this.state.item.fuel_guage_img==""){
-                fuelGuageImageUri: Links.BASEURL + this.state.item.fuel_guage_img
+                this.setState({
+                    fuelGuageImageUri: Links.BASEURL + this.state.item.fuel_guage_img
+                })
             }
             if(this.state.item.odometer_img==""){
-                odometerImageUri: Links.BASEURL + this.state.item.odometer_img
+                this.setState({
+                    odometerImageUri: Links.BASEURL + this.state.item.odometer_img
+                })
             }
             if(this.state.item.passenger_side_img==""){
-                passengerSideImageUri: Links.BASEURL + this.state.item.passenger_side_img
+                this.setState({
+                    passengerSideImageUri: Links.BASEURL + this.state.item.passenger_side_img
+                })
             }
             if(this.state.item.rear_img==""){
-                rearImageUri: Links.BASEURL + this.state.item.rear_img
+                this.setState({
+                    rearImageUri: Links.BASEURL + this.state.item.rear_img
+                })
             }
             if(this.state.item.driver_side_img==""){
-                serviceStickerImageUri: Links.BASEURL + this.state.item.service_sticker_img
+                this.setState({
+                    serviceStickerImageUri: Links.BASEURL + this.state.item.service_sticker_img
+                })
             }
                 
 
@@ -180,12 +192,7 @@ export default class AddRentOutVehicle extends React.Component {
                 notes: this.state.item.notes,
                 rentOutId: this.state.item.rent_out_id,
                 
-                driverSideImageUri,
-                fuelGuageImageUri,
-                odometerImageUri,
-                passengerSideImageUri,
-                rearImageUri,
-                serviceStickerImageUri,
+
 
             })
         } else {
