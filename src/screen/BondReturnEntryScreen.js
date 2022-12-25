@@ -125,7 +125,7 @@ export default class BondReturnEntryScreen extends React.Component {
                 </View>
 
 
-                <View style={styles.infoContainer}>
+                {/* <View style={styles.infoContainer}>
                     <View style={styles.infoContainer}>
                         <Text style={styles.infoHeadingTextStyleTwo}>Notice date</Text>
                         <Text style={styles.infoTextStyleTwo}>{item.notice_date}</Text>
@@ -137,6 +137,17 @@ export default class BondReturnEntryScreen extends React.Component {
                         <Text style={styles.infoTextStyleTwo}>{item.notice_date}</Text>
                     </View>
 
+                </View> */}
+
+                <View style={styles.infoContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>Notice date</Text>
+                    <Text style={styles.infoTextStyle}>{item.notice_date}</Text>
+                </View>
+
+
+                <View style={styles.infoContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>Refund due date</Text>
+                    <Text style={styles.infoTextStyle}>{item.notice_date}</Text>
                 </View>
 
 

@@ -467,7 +467,7 @@ export default class ReturnInVehicleScreen extends React.Component {
                     >
                         <View style={styles.addNewRentContainer}>
                             <Text style={styles.editTextStyle}>
-                                Add New Rent in Vehcile
+                                Add New Rent in Vehicle
                             </Text>
                         </View>
                     </TouchableOpacity>

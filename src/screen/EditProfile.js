@@ -383,31 +383,15 @@ export default class MyProfile extends React.Component {
 
                         </View>
 
-                        <View style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                            alignContent: 'center',
-                            alignItems: 'center',
-                            marginTop: 25,
-                            paddingHorizontal: 40
-                        }}>
-                            <TouchableOpacity style={{
-                                backgroundColor: '#aaaaaa',
-                                borderRadius: 30,
-                                paddingVertical: 10,
-                                flex: 1,
-                            }}
+                        <View style={styles.buttonContainers}>
+                            <TouchableOpacity style={styles.cancelButtonContainer}
                                 onPress={() => this.onClickCancelButton()}>
                                 <Text numberOfLines={1} style={styles.buttonText}>CANCLE</Text>
                             </TouchableOpacity>
+                            <View style={styles.boxGap} />
 
-                            <TouchableOpacity style={{
-                                backgroundColor: Colors.textColor1,
-                                borderRadius: 30,
-                                paddingVertical: 10,
-                                marginStart: 10,
-                                flex: 1,
-                            }}
+
+                            <TouchableOpacity style={styles.approveButtonContainer}
                                 onPress={() => this.callMyProfileApi()}>
                                 <Text
                                     numberOfLines={1}
@@ -415,6 +399,7 @@ export default class MyProfile extends React.Component {
                             </TouchableOpacity>
 
                         </View>
+
                     </View>
                 </ScrollView>
             </SafeAreaView>
@@ -638,6 +623,28 @@ const styles = StyleSheet.create({
         height: 0.5,
         marginStart: 40,
         marginEnd: 40
-    }
+    },
+    buttonContainers: {
+        marginHorizontal: 30,
+        flexDirection: 'row',
+        marginTop: 100,
+        marginBottom: 20
+    },
+
+    approveButtonContainer: {
+        backgroundColor: Colors.textColor1,
+        borderRadius: 30,
+        paddingVertical: 13,
+        flex: 1
+    },
+    cancelButtonContainer: {
+        backgroundColor: '#aaaaaa',
+        borderRadius: 30,
+        paddingVertical: 13,
+        flex: 1
+    },
+    boxGap: {
+        width: 15
+    },
 
 });

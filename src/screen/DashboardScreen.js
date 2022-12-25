@@ -262,13 +262,13 @@ export default class DashboardScreen extends React.Component {
 
                     <View style={styles.bottomViewContainer}>
                         <View style={styles.filterMainContainer}>
-                            <TouchableOpacity style={styles.allEditTextContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
+                            {/* <TouchableOpacity style={styles.allEditTextContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
                                 <Text numberOfLines={1} style={styles.filterText} >All</Text>
                                 <Image
                                     source={require('../images/down_arow.png')}
                                     style={styles.dropdownIcon}
                                 />
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
 
                             <View style={styles.searchEditTextContainer}>
                                 <TextInput

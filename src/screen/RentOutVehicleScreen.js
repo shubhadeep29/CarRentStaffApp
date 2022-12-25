@@ -467,7 +467,7 @@ export default class RentOutVehicleScreen extends React.Component {
                         })}
                     >
                         <View style={styles.addNewRentContainer}>
-                            <Text style={styles.editTextStyle}> Add New Rent out Vehcile</Text>
+                            <Text style={styles.editTextStyle}> Add New Rent out Vehicle</Text>
                         </View>
                     </TouchableOpacity>
 
