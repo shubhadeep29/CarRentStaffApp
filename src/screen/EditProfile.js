@@ -242,7 +242,13 @@ export default class MyProfile extends React.Component {
                                 numberOfLines={1}
                                 style={styles.filterInputText}
                                 value={this.state.fullName}
-                                placeholder={"enter full name"} />
+                                placeholder={"enter full name"}
+                                autoCapitalize="none"
+                                multiline={false}
+                                placeholderTextColor={Colors.placeholderColor}
+                                onChangeText={(value) => this.setState({ fullName: value })}
+                                blurOnSubmit={false}
+                            />
 
                         </View>
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Phone</Text>
@@ -251,7 +257,11 @@ export default class MyProfile extends React.Component {
                                 value={this.state.mobile}
                                 maxLength={11}
                                 onChangeText={(value) => this.setState({ mobile: value })}
-                                placeholder={"enter mobile number"} />
+                                placeholder={"enter mobile number"}
+                                autoCapitalize="none"
+                                multiline={false}
+                                placeholderTextColor={Colors.placeholderColor}
+                                blurOnSubmit={false} />
 
                         </View>
 
@@ -277,6 +287,9 @@ export default class MyProfile extends React.Component {
                                 style={styles.filterText}
                                 value={this.state.address}
                                 onChangeText={(value) => this.setState({ address: value })}
+                                autoCapitalize="none"
+                                placeholderTextColor={Colors.placeholderColor}
+                                blurOnSubmit={false}
                             />
 
                         </View>
@@ -330,7 +343,11 @@ export default class MyProfile extends React.Component {
                                 numberOfLines={1}
                                 style={styles.filterInputText}
                                 value={this.state.tfn}
-                                onChangeText={(value) => this.setState({ tfn: value })} />
+                                onChangeText={(value) => this.setState({ tfn: value })}
+                                autoCapitalize="none"
+                                multiline={false}
+                                placeholderTextColor={Colors.placeholderColor}
+                                blurOnSubmit={false} />
 
                         </View>
 
