@@ -293,7 +293,7 @@ export default class DashboardScreen extends React.Component {
                         </View>
 
                         <View style={styles.mainContainer}>
-                            {this.state.isNetworkAvailable ?
+                            {/* {this.state.isNetworkAvailable ?
                                 <View style={styles.mainContainer}>
                                     {this.state.isLoading && <Loader />}
                                     {this.state.data.length > 0 ?
@@ -313,7 +313,10 @@ export default class DashboardScreen extends React.Component {
                                 </View>
                                 :
                                 null
-                            }
+                            } */}
+                            <View style={styles.noDataPlaceHolderContainer}>
+                                <Text style={styles.noDataPlaceHolderTextStyle}>Working on it</Text>
+                            </View>
                         </View>
 
                         {this.state.isDropdownVisible ?
