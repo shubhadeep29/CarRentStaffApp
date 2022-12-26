@@ -219,23 +219,31 @@ const styles = StyleSheet.create({
         width: 45,
         height: 45,
         borderRadius: 30,
-        backgroundColor: Colors.textColor1,
-        marginEnd: 17
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+        marginStart: 17,
+        backgroundColor: Colors.textColor1
     },
     selectedIndicatorText: {
         fontSize: 17,
         // fontFamily: fontSelector("bold"),
         color: Colors.white,
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
     },
     indicatorContainer: {
         width: 45,
         height: 45,
         borderRadius: 30,
+        marginStart: 17,
         backgroundColor: Colors.white,
         borderWidth: 1,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         borderStyle: 'dashed',
         borderColor: '#C0C2C2',
     },
@@ -244,8 +252,9 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("bold"),
         color: '#C0C2C2',
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
     },
     checkUncheckIcon: {
         width: 20,

@@ -188,7 +188,11 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
                             source={require('../images/ic_edit_white.png')}
                             style={styles.validateIcon}
                         />
-                        <Text style={styles.validateTextStyle}>Validate</Text>
+                        {item.status == "1" ?
+                            < Text style={styles.validateTextStyle}>Edit</Text>
+                            :
+                            <Text style={styles.validateTextStyle}>Validate</Text>
+                        }
                     </TouchableOpacity>
                 </View>
 

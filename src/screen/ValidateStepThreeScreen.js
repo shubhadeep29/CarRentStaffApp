@@ -246,29 +246,29 @@ const styles = StyleSheet.create({
         width: 45,
         height: 45,
         borderRadius: 30,
-        backgroundColor: Colors.textColor1,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         marginStart: 17,
+        backgroundColor: Colors.textColor1
     },
     selectedIndicatorText: {
         fontSize: 17,
         // fontFamily: fontSelector("bold"),
         color: Colors.white,
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
-    },
-    headingOneTextStyle: {
-        fontSize: 18,
-        // fontFamily: fontSelector("regular"),
-        color: Colors.black,
-        paddingHorizontal: 40,
-        marginTop: 25
     },
     indicatorContainer: {
         width: 45,
         height: 45,
         borderRadius: 30,
         marginStart: 17,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         backgroundColor: Colors.white,
         borderWidth: 1,
         borderStyle: 'dashed',
@@ -279,9 +279,18 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("bold"),
         color: '#C0C2C2',
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
     },
+    headingOneTextStyle: {
+        fontSize: 18,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.black,
+        paddingHorizontal: 40,
+        marginTop: 25
+    },
+
     headingTextStyle: {
         fontSize: 14,
         // fontFamily: fontSelector("regular"),

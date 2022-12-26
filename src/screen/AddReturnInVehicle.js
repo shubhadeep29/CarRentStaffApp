@@ -25,7 +25,7 @@ import LoaderView from '../component/LoaderView';
 import DatePickerModel from '../component/DatePickerModel';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
+import { Dropdown } from 'react-native-element-dropdown';
 
 
 export default class AddReturnInVehicle extends React.Component {
@@ -205,6 +205,15 @@ export default class AddReturnInVehicle extends React.Component {
             })
 
         }
+
+        var paymentMethodListModified = []
+        for (var i = 0; i < this.state.paymentMethodList.length; i++) {
+            paymentMethodListModified.push({ "value": this.state.paymentMethodList[i] });
+        }
+
+        this.setState({
+            paymentMethodList: paymentMethodListModified
+        })
 
 
 
@@ -528,53 +537,26 @@ export default class AddReturnInVehicle extends React.Component {
                     <View style={styles.bottomViewContainer}>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Driver *</Text>
-                        <TouchableOpacity >
-                            <View style={styles.editTextContainer}>
-                                <Picker
-                                    itemStyle={styles.editTextContainer}
-                                    mode="dropdown"
-                                    style={styles.dropdownStyle}
-                                    selectedValue={this.state.driverId}
-                                    onValueChange={this.onValueChangeDriver.bind(this)}
-                                >
-                                    {this.state.driverListRentOut.map((item, index) => (
-                                        <Picker.Item
-                                            color="#000"
-                                            label={item.first_name + " " + item.middle_name + " " + item.last_name}
-                                            value={item.driver_id}
-                                            index={index}
-                                        />
-                                    ))}
-                                </Picker>
-                            </View>
-                        </TouchableOpacity>
 
-                        {this.state.isDropdownVisible ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Driver")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Driver</Text>
-                                </TouchableOpacity>
+                        <View style={styles.editTextContainer}>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.driverListRentOut}
+                                placeholder="Select Driver"
+                                maxHeight={300}
+                                labelField="first_name"
+                                valueField="driver_id"
+                                value={this.state.driverId}
+                                onChange={item => {
+                                    this.onValueChangeDriver(item.driver_id);
+                                }}
+                            />
 
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Driver")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Driver</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Driver")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Driver</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Driver")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Driver</Text>
-                                </TouchableOpacity>
-                            </View>
-                            : null}
-
+                        </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Rent out Date *</Text>
                         <TouchableOpacity onPress={this.showRentOutDate}>
@@ -628,17 +610,21 @@ export default class AddReturnInVehicle extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Car No. *</Text>
                         <View style={styles.editTextContainer}>
-                            <TextInput
-                                style={styles.emailIdEditTextStyle}
-                                autoCapitalize="none"
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                // placeholder="Email Id"
-                                value={this.state.carNo}
-                                onChangeText={(value) => this.setState({ carNo: value })}
-                                onSubmitEditing={() => { this.odometerReadingTextInput.focus() }}
-                                ref={(input) => { this.carNoTextInput = input; }}
-                                blurOnSubmit={false}
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.carListRent}
+                                placeholder="Select Car"
+                                maxHeight={300}
+                                labelField="car_no"
+                                valueField="car_id"
+                                value={this.state.carId}
+                                onChange={item => {
+                                    this.onValueChangeCar(item);
+                                }}
                             />
                         </View>
 
@@ -820,53 +806,25 @@ export default class AddReturnInVehicle extends React.Component {
                         </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Payment Method *</Text>
-                        <TouchableOpacity >
-                            <View style={styles.editTextContainer}>
-                                <Picker
-                                    itemStyle={styles.editTextContainer}
-                                    mode="dropdown"
-                                    style={styles.dropdownStyle}
-                                    selectedValue={this.state.paymentMethod}
-                                    onValueChange={this.onValueChangePayment.bind(this)}
-                                >
-                                    {this.state.paymentMethodList.map((item, index) => (
-                                        <Picker.Item
-                                            color="#000"
-                                            label={item}
-                                            value={item}
-                                            index={index}
-                                        />
-                                    ))}
-                                </Picker>
-                            </View>
-                        </TouchableOpacity>
 
-                        {this.state.isPaymentMethodDropdownVisible ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
-                                </TouchableOpacity>
-                            </View>
-                            : null}
-
+                        <View style={styles.editTextContainer}>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.paymentMethodList}
+                                placeholder="Select Payment Method"
+                                maxHeight={300}
+                                labelField="value"
+                                valueField="value"
+                                value={this.state.paymentMethod}
+                                onChange={item => {
+                                    this.onValueChangePayment(item);
+                                }}
+                            />
+                        </View>
 
 
                         <Text numberOfLines={1} style={[styles.rowViewOptionStyle, styles.headingTextStyleThree]} >Upload 6 pictures of car being issued</Text>
@@ -1273,5 +1231,38 @@ const styles = StyleSheet.create({
         color: Colors.black,
         flex: 1,
         textAlignVertical: 'top',
+    },
+    dropdown: {
+        height: 50,
+        flex: 1,
+        borderColor: 'gray',
+        borderRadius: 8,
+        paddingHorizontal: 8,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
     },
 });

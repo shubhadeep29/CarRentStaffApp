@@ -15,7 +15,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from '../utils/Constants';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
 
 
 
@@ -529,16 +528,20 @@ const styles = StyleSheet.create({
         width: 45,
         height: 45,
         borderRadius: 30,
-        backgroundColor: Colors.textColor1,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         marginStart: 17,
+        backgroundColor: Colors.textColor1
     },
     selectedIndicatorText: {
         fontSize: 17,
         // fontFamily: fontSelector("bold"),
         color: Colors.white,
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
     },
     indicatorContainer: {
         width: 45,
@@ -546,6 +549,9 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         marginStart: 17,
         backgroundColor: Colors.white,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         borderWidth: 1,
         borderStyle: 'dashed',
         borderColor: '#C0C2C2',
@@ -555,8 +561,9 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("bold"),
         color: '#C0C2C2',
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
     },
     headingTextStyle: {
         fontSize: 14,

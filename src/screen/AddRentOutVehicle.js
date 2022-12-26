@@ -24,7 +24,6 @@ import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
 import { Dropdown } from 'react-native-element-dropdown';
 
 
@@ -35,7 +34,7 @@ export default class AddRentOutVehicle extends React.Component {
         this.state = {
             item: props.route.params.item,
             paymentMethodList: props.route.params.paymentMethodList,
-            paymentMethodListModified: [],
+
             driverListRentOut: props.route.params.driverListRentOut,
             carListRent: props.route.params.carListRent,
             isNetworkAvailable: true,
@@ -619,7 +618,6 @@ export default class AddRentOutVehicle extends React.Component {
                                     this.onValueChangeCar(item);
                                 }}
                             />
-
                         </View>
 
 

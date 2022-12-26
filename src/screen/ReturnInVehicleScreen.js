@@ -399,18 +399,15 @@ export default class ReturnInVehicleScreen extends React.Component {
                 </View>
 
 
-                <View style={styles.rowView}>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoHeadingTextStyleTwo}>Bond Refund Amt. :</Text>
-                        <Text style={styles.infoTextStyleTwo}>{item.bond_refund_amount}</Text>
-                    </View>
+                <View style={styles.infoContainer}>
+                    <Text style={styles.infoHeadingTextStyle}>Bond Refund Amt. :</Text>
+                    <Text style={styles.infoTextStyle}>{item.bond_refund_amount}</Text>
+                </View>
 
 
-                    <View style={styles.infoContainerTwo}>
-                        <Text style={styles.infoHeadingTextStyleTwo}>Refund Date :</Text>
-                        <Text style={styles.infoTextStyleTwo}>{item.bond_refund_date}</Text>
-                    </View>
-
+                <View style={styles.infoContainerTwo}>
+                    <Text style={styles.infoHeadingTextStyle}>Refund Date :</Text>
+                    <Text style={styles.infoTextStyle}>{item.bond_refund_date}</Text>
                 </View>
             </TouchableOpacity>
         );

@@ -23,7 +23,7 @@ import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
+import { Dropdown } from 'react-native-element-dropdown';
 
 
 export default class ValidateStepFiveScreen extends React.Component {
@@ -119,6 +119,8 @@ export default class ValidateStepFiveScreen extends React.Component {
 
 
         })
+
+
     }
 
 
@@ -311,6 +313,15 @@ export default class ValidateStepFiveScreen extends React.Component {
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
                     if (responseJSON.hasOwnProperty("payment_method_list") && responseJSON.payment_method_list != null) {
                         this.setState({ paymentMethodList: responseJSON.payment_method_list });
+
+                        var paymentMethodListModified = []
+                        for (var i = 0; i < this.state.paymentMethodList.length; i++) {
+                            paymentMethodListModified.push({ "value": this.state.paymentMethodList[i] });
+                        }
+
+                        this.setState({
+                            paymentMethodList: paymentMethodListModified
+                        })
                     }
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
@@ -427,24 +438,26 @@ export default class ValidateStepFiveScreen extends React.Component {
 
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Payment Method</Text>
 
+
                             <View style={styles.editTextContainer}>
-                                <Picker
-                                    itemStyle={styles.editTextContainer}
-                                    mode="dropdown"
-                                    style={styles.dropdownStyle}
-                                    selectedValue={this.state.paymentMethod}
-                                    onValueChange={this.onValueChangePayment.bind(this)}
-                                >
-                                    {this.state.paymentMethodList.map((item, index) => (
-                                        <Picker.Item
-                                            color="#000"
-                                            label={item}
-                                            value={item}
-                                            index={index}
-                                        />
-                                    ))}
-                                </Picker>
+                                <Dropdown
+                                    style={styles.dropdown}
+                                    placeholderStyle={styles.placeholderStyle}
+                                    selectedTextStyle={styles.selectedTextStyle}
+                                    inputSearchStyle={styles.inputSearchStyle}
+                                    iconStyle={styles.iconStyle}
+                                    data={this.state.paymentMethodList}
+                                    placeholder="Select Payment Method"
+                                    maxHeight={300}
+                                    labelField="value"
+                                    valueField="value"
+                                    value={this.state.paymentMethod}
+                                    onChange={item => {
+                                        this.onValueChangePayment(item);
+                                    }}
+                                />
                             </View>
+
 
 
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Refarence Number</Text>
@@ -533,24 +546,20 @@ const styles = StyleSheet.create({
         width: 45,
         height: 45,
         borderRadius: 30,
-        backgroundColor: Colors.textColor1,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         marginStart: 17,
+        backgroundColor: Colors.textColor1
     },
     selectedIndicatorText: {
         fontSize: 17,
         // fontFamily: fontSelector("bold"),
         color: Colors.white,
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
-    },
-    headingOneTextStyle: {
-        fontSize: 16,
-        // fontFamily: fontSelector("regular"),
-        color: Colors.black,
-        paddingHorizontal: 40,
-        marginTop: 25,
-        fontWeight: 'bold'
     },
     indicatorContainer: {
         width: 45,
@@ -567,9 +576,19 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("bold"),
         color: '#C0C2C2',
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
     },
+    headingOneTextStyle: {
+        fontSize: 16,
+        // fontFamily: fontSelector("regular"),
+        color: Colors.black,
+        paddingHorizontal: 40,
+        marginTop: 25,
+        fontWeight: 'bold'
+    },
+
     headingTextStyle: {
         fontSize: 14,
         // fontFamily: fontSelector("regular"),
@@ -716,5 +735,37 @@ const styles = StyleSheet.create({
         color: Colors.black,
         flex: 1,
     },
-
+    dropdown: {
+        height: 50,
+        flex: 1,
+        borderColor: 'gray',
+        borderRadius: 8,
+        paddingHorizontal: 8,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },
 });

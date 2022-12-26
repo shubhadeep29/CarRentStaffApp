@@ -378,6 +378,9 @@ const styles = StyleSheet.create({
         width: 45,
         height: 45,
         borderRadius: 30,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         backgroundColor: Colors.textColor1
     },
     selectedIndicatorText: {
@@ -385,8 +388,9 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("bold"),
         color: Colors.white,
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
     },
     indicatorContainer: {
         width: 45,
@@ -394,6 +398,9 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         marginStart: 17,
         backgroundColor: Colors.white,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         borderWidth: 1,
         borderStyle: 'dashed',
         borderColor: '#C0C2C2',
@@ -403,8 +410,9 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("bold"),
         color: '#C0C2C2',
         alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         textAlignVertical: 'center',
-        flex: 1
     },
     headingTextStyle: {
         fontSize: 14,
