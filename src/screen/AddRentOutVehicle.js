@@ -35,6 +35,7 @@ export default class AddRentOutVehicle extends React.Component {
         this.state = {
             item: props.route.params.item,
             paymentMethodList: props.route.params.paymentMethodList,
+            paymentMethodListModified: [],
             driverListRentOut: props.route.params.driverListRentOut,
             carListRent: props.route.params.carListRent,
             isNetworkAvailable: true,
@@ -203,6 +204,17 @@ export default class AddRentOutVehicle extends React.Component {
             })
 
         }
+
+
+        var paymentMethodListModified = []
+        for (var i = 0; i < this.state.paymentMethodList.length; i++) {
+            paymentMethodListModified.push({ "value": this.state.paymentMethodList[i] });
+        }
+
+        this.setState({
+            paymentMethodList: paymentMethodListModified
+        })
+
 
     }
 
@@ -564,136 +576,51 @@ export default class AddRentOutVehicle extends React.Component {
                     <View style={styles.bottomViewContainer}>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Driver *</Text>
-                        <TouchableOpacity >
-                            <View style={styles.editTextContainer}>
+                        <View style={styles.editTextContainer}>
 
-                                <Dropdown
-                                    style={styles.dropdown}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    inputSearchStyle={styles.inputSearchStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={this.state.driverListRentOut}
-                                    placeholder="Select Driver"
-                                    maxHeight={300}
-                                    labelField="first_name"
-                                    valueField="driver_id"
-                                    value={this.state.driverId}
-                                    onChange={item => {
-                                        this.onValueChangeDriver(item.driver_id);
-                                    }}
-                                />
-                                {/* <Picker
-                                    itemStyle={styles.editTextContainer}
-                                    mode="dropdown"
-                                    style={styles.dropdownStyle}
-                                    selectedValue={this.state.driverId}
-                                    onValueChange={this.onValueChangeDriver.bind(this)}
-                                >
-                                    {this.state.driverListRentOut.map((item, index) => (
-                                        <Picker.Item
-                                            color="#000"
-                                            label={item.first_name + " " + item.middle_name + " " + item.last_name}
-                                            value={item.driver_id}
-                                            index={index}
-                                        />
-                                    ))}
-                                </Picker> */}
-                            </View>
-                        </TouchableOpacity>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.driverListRentOut}
+                                placeholder="Select Driver"
+                                maxHeight={300}
+                                labelField="first_name"
+                                valueField="driver_id"
+                                value={this.state.driverId}
+                                onChange={item => {
+                                    this.onValueChangeDriver(item.driver_id);
+                                }}
+                            />
+
+                        </View>
 
 
 
-                        {this.state.isDropdownVisible ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Driver")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Driver</Text>
-                                </TouchableOpacity>
 
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Driver")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Driver</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Driver")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Driver</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Driver")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Driver</Text>
-                                </TouchableOpacity>
-                            </View>
-                            : null}
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Car *</Text>
-                        <TouchableOpacity >
-                            <View style={styles.editTextContainer}>
-                                <Dropdown
-                                    style={styles.dropdown}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    inputSearchStyle={styles.inputSearchStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={this.state.carListRent}
-                                    placeholder="Select Car"
-                                    maxHeight={300}
-                                    labelField="car_no"
-                                    valueField="car_id"
-                                    value={this.state.carId}
-                                    onChange={item => {
-                                        this.onValueChangeCar(item);
-                                    }}
-                                />
-                                {/* <Picker
-                                    itemStyle={styles.editTextContainer}
-                                    mode="dropdown"
-                                    style={styles.dropdownStyle}
-                                    selectedValue={this.state.carNo}
-                                    onValueChange={this.onValueChangeCar.bind(this)}
-                                >
-                                    {this.state.carListRent.map((item, index) => (
-                                        <Picker.Item
-                                            color="#000"
-                                            label={item.car_no}
-                                            value={item}
-                                            index={index}
-                                        />
-                                    ))}
-                                </Picker> */}
-                            </View>
-                        </TouchableOpacity>
+                        <View style={styles.editTextContainer}>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.carListRent}
+                                placeholder="Select Car"
+                                maxHeight={300}
+                                labelField="car_no"
+                                valueField="car_id"
+                                value={this.state.carId}
+                                onChange={item => {
+                                    this.onValueChangeCar(item);
+                                }}
+                            />
 
-                        {this.state.isCarDropdownVisible ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickCarDropdownItem("Car")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Car</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickCarDropdownItem("Car")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Car</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickCarDropdownItem("Car")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Car</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickCarDropdownItem("Car")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Car</Text>
-                                </TouchableOpacity>
-                            </View>
-                            : null}
-
+                        </View>
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Odometer Reading *</Text>
@@ -799,72 +726,24 @@ export default class AddRentOutVehicle extends React.Component {
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Payment Method *</Text>
-                        <TouchableOpacity >
-                            <View style={styles.editTextContainer}>
-                                <Dropdown
-                                    style={styles.dropdown}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    inputSearchStyle={styles.inputSearchStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={this.state.paymentMethodList}
-                                    placeholder="Select Payment Method"
-                                    maxHeight={300}
-                                    labelField=""
-                                    valueField=""
-                                    value={this.state.paymentMethod}
-                                    onChange={item => {
-                                        this.onValueChangePayment(item);
-                                    }}
-                                />
-                                {/* <Picker
-                                    itemStyle={styles.editTextContainer}
-                                    mode="dropdown"
-                                    style={styles.dropdownStyle}
-                                    selectedValue={this.state.paymentMethod}
-                                    onValueChange={this.onValueChangePayment.bind(this)}
-                                >
-                                    {this.state.paymentMethodList.map((item, index) => (
-                                        <Picker.Item
-                                            color="#000"
-                                            label={item}
-                                            value={item}
-                                            index={index}
-                                        />
-                                    ))}
-                                </Picker> */}
-                            </View>
-                        </TouchableOpacity>
-
-                        {this.state.isPaymentMethodDropdownVisible ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickPaymentMethodDropdownItem("Payment Method ")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Payment Method </Text>
-                                </TouchableOpacity>
-                            </View>
-                            : null}
-
-
-
-
+                        <View style={styles.editTextContainer}>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.paymentMethodList}
+                                placeholder="Select Payment Method"
+                                maxHeight={300}
+                                labelField="value"
+                                valueField="value"
+                                value={this.state.paymentMethod}
+                                onChange={item => {
+                                    this.onValueChangePayment(item);
+                                }}
+                            />
+                        </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Reference Number</Text>
                         <View style={styles.editTextContainer}>

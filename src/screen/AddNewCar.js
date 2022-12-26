@@ -25,6 +25,7 @@ import LoaderView from '../component/LoaderView';
 import DatePickerModel from '../component/DatePickerModel';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Dropdown } from 'react-native-element-dropdown';
 
 
 export default class AddNewCar extends React.Component {
@@ -56,6 +57,12 @@ export default class AddNewCar extends React.Component {
             isDisplayRegoExpireDate: false,
             isDisplayInsuranceExpireDate: false,
             isDropdownVisible: false,
+            abnList: [
+                { value: "Petrol" },
+                { value: "Diesel" },
+                { value: "Roller" },
+                { value: "LPG" },
+            ]
 
         }
     }
@@ -110,7 +117,6 @@ export default class AddNewCar extends React.Component {
 
     onClickDropdownItem(fuleType) {
         this.setState({
-            isDropdownVisible: false,
             fuleType: fuleType,
         })
     }
@@ -306,54 +312,24 @@ export default class AddNewCar extends React.Component {
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Fuel Type</Text>
 
-
-                        <TouchableOpacity onPress={() => this.setState({ isDropdownVisible: !this.state.isDropdownVisible })}>
-                            <View style={styles.editTextContainer}>
-                                <TextInput
-                                    style={styles.emailIdEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    // placeholder="Email Id"
-                                    value={this.state.fuleType}
-                                    onChangeText={(value) => this.setState({ fuleType: value })}
-                                    onSubmitEditing={() => { this.makeTextInput.focus() }}
-                                    ref={(input) => { this.fuelTypeTextInput = input; }}
-                                    blurOnSubmit={false}
-                                />
-                                <Image
-                                    source={require('../images/down_arow.png')}
-                                    style={styles.calenderIcon}
-                                />
-                            </View>
-                        </TouchableOpacity>
-
-                        {this.state.isDropdownVisible ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Petrol")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Petrol</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Diesel")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Diesel</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Roller")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Roller</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("LPG")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >LPG</Text>
-                                </TouchableOpacity>
-                            </View>
-                            : null}
-
+                        <View style={styles.editTextContainer}>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.abnList}
+                                placeholder="Select ABN"
+                                maxHeight={300}
+                                labelField="value"
+                                valueField="value"
+                                value={this.state.abn}
+                                onChange={item => {
+                                    this.onClickDropdownItem(item);
+                                }}
+                            />
+                        </View>
 
 
 
@@ -782,5 +758,40 @@ const styles = StyleSheet.create({
     divider: {
         backgroundColor: Colors.borderColor,
         height: 0.5
-    }
+    },
+
+    dropdown: {
+        height: 50,
+        flex: 1,
+        borderColor: 'gray',
+        borderRadius: 8,
+        paddingHorizontal: 8,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },
+
 });

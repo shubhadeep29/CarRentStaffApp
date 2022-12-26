@@ -47,11 +47,15 @@ const styles = StyleSheet.create({
     },
     mainContainer: {
         flex: 1,
+        textAlignVertical: 'center',
+        alignItems: "center",
+        alignContent: 'center',
+        justifyContent: 'center',
     },
     appbarContainer: {
         flexDirection: 'row',
-        paddingVertical: 15,
         paddingHorizontal: 20,
+        flex: 1,
     },
     hambergerIcon: {
         width: 23,
@@ -61,14 +65,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     titleText: {
-        fontSize: 16,
+        fontSize: 18,
         // fontFamily: fontSelector("regular"),
         color: Colors.textColor1,
-        textAlignVertical: 'center',
-        alignSelf: 'center',     
-        alignItems: "center",
-        alignContent: 'center',
-        justifyContent: 'center',
         fontWeight: 'bold',
     },
 });

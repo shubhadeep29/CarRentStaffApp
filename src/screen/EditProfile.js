@@ -8,22 +8,16 @@ import {
     SafeAreaView,
     TextInput,
 } from 'react-native';
-import exported from 'react-native/Libraries/Components/SafeAreaView/SafeAreaView';
 import * as Colors from '../utils/Colors';
-import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
-import AppBarWithMenu from '../component/AppBarWithMenu';
 import LoaderView from '../component/LoaderView'
-import Loader from '../component/Loader';
-import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 import Constants from '../utils/Constants';
 import Links from '../utils/Links';
-import Utils from '../utils/Utils';
 import { ScrollView } from 'react-native-gesture-handler';
-
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import CommonAppBar from '../component/CommonAppBar';
+import { Dropdown } from 'react-native-element-dropdown';
 
 export default class MyProfile extends React.Component {
     constructor(props) {
@@ -41,7 +35,18 @@ export default class MyProfile extends React.Component {
             tfn: "",
             imageUrl: "",
             imageName: "No choosen file",
-            address: ""
+            address: "",
+            genderList: [
+                { value: "Male" },
+                { value: "Female" },
+                { value: "Trans Gender" },
+            ],
+            abnList: [
+                { value: "Petrol" },
+                { value: "Diesel" },
+                { value: "Roller" },
+                { value: "LPG" },
+            ]
 
         }
     }
@@ -175,27 +180,29 @@ export default class MyProfile extends React.Component {
         });
     }
 
-    onClickDropdownItem = (value) => {
-        this.setState({ isDropdownVisible: false, gender: value })
+    onClickDropdownGender = (value) => {
+        this.setState({
+            gender: value
+        })
     }
 
-    onClickDropdownItem1 = (value) => {
-        this.setState({ isDropdownVisible1: false, abn: value })
+    onClickDropdownABN = (value) => {
+        this.setState({
+            abn: value
+        })
     }
     render() {
         return (
             <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
                 <CommonAppBar title="Edit My Account" navigation={this.props.navigation} />
-                <ScrollView style={styles.bottomViewContainer}>
-                    <View style={styles.bottomViewContainer}>
-                        <View style={styles.rowView}>
-                            <View style={styles.bottomViewContainer}>
-                                <Image
-                                    source={{ uri: this.state.imageUrl }}
-                                    style={styles.viewImage}
-                                />
-                            </View>
+                <ScrollView style={styles.mainContainer}>
+                    <View >
+                        <View style={[styles.rowView, { paddingHorizontal: 30, flex: 1 }]}>
+                            <Image
+                                source={{ uri: this.state.imageUrl }}
+                                style={styles.viewImage}
+                            />
 
                             <View style={styles.column}>
                                 <Text
@@ -203,34 +210,32 @@ export default class MyProfile extends React.Component {
                                     style={styles.headingSmallTextStyle} >
                                     Upload New Photo
                                 </Text>
-                                <View style={styles.searchEditSmallTextContainer}>
-                                    <TouchableOpacity
-                                        style={styles.addImageViewStyle}
-                                        onPress={() => this.openImageGallery()}>
+                                <TouchableOpacity
+                                    style={styles.searchEditSmallTextContainer}
+                                    onPress={() => this.openImageGallery()}>
 
-                                        <View style={styles.rowView}>
-                                            <View style={styles.buttonContainer}>
-                                                <Text
-                                                    numberOfLines={1}
-                                                    style={styles.editTextStyle}>
-                                                    Choose File
-                                                </Text>
-
-                                            </View>
+                                    <View style={styles.rowView}>
+                                        <View style={styles.buttonContainer}>
                                             <Text
                                                 numberOfLines={1}
-                                                maxLength={15}
-                                                style={styles.filterImage} >
-                                                {this.state.imageName}
+                                                style={styles.editTextStyle}>
+                                                Choose File
                                             </Text>
                                         </View>
-                                    </TouchableOpacity>
-                                </View>
+                                        <View style={styles.boxGap} />
 
-
+                                        <Text
+                                            numberOfLines={1}
+                                            maxLength={15}
+                                            style={styles.filterImage} >
+                                            {this.state.imageName}
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
                             </View>
-
                         </View>
+
+
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Name</Text>
                         <View style={styles.searchEditTextContainer}>
                             <TextInput
@@ -277,102 +282,48 @@ export default class MyProfile extends React.Component {
                         </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Gender</Text>
-                        <TouchableOpacity style={styles.filterMainContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
 
-                            <View style={styles.filterMainContainer}>
-                                <View style={styles.searchEditTextContainer}>
-                                    <TextInput
-                                        numberOfLines={1}
-                                        style={styles.searchEditTextStyle}
-                                        autoCapitalize="none"
-                                        multiline={false}
-                                        placeholderTextColor={Colors.placeholderColor}
-                                        placeholder="Male"
-                                        editable={false}
-                                        value={this.state.gender}
-                                        onChangeText={(value) => this.setState({ searchText: value })}
-                                        onSubmitEditing={() => { this.passwordTextInput.focus() }}
-                                        blurOnSubmit={false}
-                                    />
+                        <View style={styles.searchEditTextContainer}>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.genderList}
+                                placeholder="Select Gender"
+                                maxHeight={300}
+                                labelField="value"
+                                valueField="value"
+                                value={this.state.gender}
+                                onChange={item => {
+                                    this.onClickDropdownGender(item);
+                                }}
+                            />
 
-                                    <Image
-                                        source={require('../images/down_arow.png')}
-                                        style={styles.searchIcon}
-                                    />
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                        {this.state.isDropdownVisible ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Male")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Male</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Female")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Female</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Trans Gender")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Trans Gender</Text>
-                                </TouchableOpacity>
-
-
-                            </View>
-                            : null}
+                        </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >ABN</Text>
-                        <TouchableOpacity style={styles.filterMainContainer} onPress={() => this.setState({ isDropdownVisible1: true })}>
 
-                            <View style={styles.searchEditTextContainer}>
-                                <TextInput
-                                    style={styles.filterInputText}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    editable={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    //   placeholder="DD/MM/YYYY"
-                                    value={this.state.abn}
-                                    onChangeText={(value) => this.setState({ abn: value })}
-                                    blurOnSubmit={false}
-                                />
+                        <View style={styles.searchEditTextContainer}>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.abnList}
+                                placeholder="Select ABN"
+                                maxHeight={300}
+                                labelField="value"
+                                valueField="value"
+                                value={this.state.abn}
+                                onChange={item => {
+                                    this.onClickDropdownABN(item);
+                                }}
+                            />
+                        </View>
 
-                                <Image
-                                    source={require('../images/down_arow.png')}
-                                    style={styles.searchIcon}
-                                />
-                            </View>
-                        </TouchableOpacity>
-
-                        {this.state.isDropdownVisible1 ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem1("Petrol")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Petrol</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem1("Diesel")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Diesel</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem1("Roller")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Roller</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem1("LPG")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >LPG</Text>
-                                </TouchableOpacity>
-
-                            </View>
-                            : null}
                         <Text numberOfLines={1} style={styles.headingTextStyle} >TFN</Text>
                         <View style={styles.searchEditTextContainer}>
                             <TextInput
@@ -403,7 +354,7 @@ export default class MyProfile extends React.Component {
                     </View>
                 </ScrollView>
             </SafeAreaView>
-        );
+        )  
     }
 
 
@@ -419,7 +370,6 @@ const styles = StyleSheet.create({
         height: 100,
         resizeMode: 'cover',
         alignSelf: 'center',
-        marginStart: 0,
         borderRadius: 50
     },
     viewIcon: {
@@ -440,28 +390,21 @@ const styles = StyleSheet.create({
         fontSize: 10,
         // fontFamily: fontSelector("bold"),
         color: Colors.white,
-        paddingHorizontal: 0,
-        paddingVertical: 0,
         alignItems: "center",
-        textAlign: 'center'
-
     },
 
-    mainContainer: {
-        flex: 1,
-    },
     centerView: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center"
     },
-    bottomViewContainer: {
+    mainContainer: {
         flex: 1,
         backgroundColor: Colors.white,
         marginTop: 10,
         borderTopEndRadius: 40,
         borderTopStartRadius: 40,
-        paddingVertical: 10,
+        paddingVertical: 25,
     },
 
     editTextContainer: {
@@ -497,24 +440,17 @@ const styles = StyleSheet.create({
         fontSize: 15,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
-        paddingHorizontal: 10,
-        marginTop: 15,
-        marginBottom: 10,
+        marginVertical: 10,
+        backgroundColor: Colors.white,
     },
     buttonContainer: {
         backgroundColor: Colors.textColor1,
         borderRadius: 30,
-        paddingVertical: 3,
-        paddingLeft: 0,
-        marginHorizontal: 10,
-        marginTop: 32,
         textColor: Colors.white,
-        width: 100,
-        height: 20,
-        bottom: 20,
-        left: 0,
-        right: 0,
-        textAlign: 'center'
+        textAlign: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 4,
+        alignSelf: 'center',
     },
     buttonText: {
         fontSize: 15,
@@ -530,15 +466,12 @@ const styles = StyleSheet.create({
         height: 80,
         paddingTop: 15, 
 
-    },filterImage: {
+    },
+    filterImage: {
         fontSize: 12,
         color: Colors.black,
         alignItems: 'center',
-        justifyContent: 'center',
-        height: 48,
-        paddingTop: 15, 
-        width:120
-
+        alignSelf: 'center'
     },
     filterInputText: {
         fontSize: 12,
@@ -566,18 +499,16 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignContent: 'flex-start',
         justifyContent: 'center',
-        textAlign: ''
-
-    }, filterMainContainer: {
-        paddingBottom: 12,
+        marginStart: 10,
+        flex: 1
     },
+
     searchEditSmallTextContainer: {
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 30,
-        marginEnd: 70,
         flexDirection: 'row',
-        height: 48,
-        paddingBottom: 10,
+        justifyContent: 'center',
+        flex: 1,
     },
     searchEditTextContainer: {
         backgroundColor: Colors.editTextBgColor,
@@ -587,7 +518,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 48,
         paddingBottom: 10
-    }, largeTextContainer: {
+    },
+
+    largeTextContainer: {
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 15,
         paddingHorizontal: 15,
@@ -595,29 +528,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         height: 100,
     },
-    searchEditTextStyle: {
-        fontSize: 13,
-        // fontFamily: fontSelector("regular"),
-        color: Colors.black,
-        flex: 1, paddingTop: 5
-    },
-    searchIcon: {
-        width: 12,
-        height: 12,
-        resizeMode: 'contain',
-        alignSelf: 'center',
-        marginStart: 10
-    },
-    dropdownItemTextContainer: {
-        paddingVertical: 15
-    },
-    dropdownItemTextStyle: {
-        fontSize: 11,
-        // fontFamily: fontSelector("bold"),
-        color: Colors.black,
-        alignSelf: 'flex-start',
-        marginStart: 40
-    },
+
     divider: {
         backgroundColor: Colors.borderColor,
         height: 0.5,
@@ -645,6 +556,39 @@ const styles = StyleSheet.create({
     },
     boxGap: {
         width: 15
+    },
+    dropdown: {
+        height: 50,
+        flex: 1,
+        borderColor: 'gray',
+        borderRadius: 8,
+        paddingHorizontal: 8,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
     },
 
 });
