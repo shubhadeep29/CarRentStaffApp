@@ -391,7 +391,7 @@ export default class ValidateStepFiveScreen extends React.Component {
                             <Text numberOfLines={1} style={styles.headingOneTextStyle} >Bond Setup</Text>
                             <View style={styles.bondContainer}>
                                 <View style={styles.bondAmountContainer}>
-                                    <Text numberOfLines={1} style={styles.bondAmountText} >Bond Account</Text>
+                                    <Text numberOfLines={1} style={styles.bondAmountText} >Bond Amount</Text>
                                     <View style={styles.editTextContainerForBond}>
                                         <TextInput
                                             style={styles.editTextStyle}

@@ -34,7 +34,7 @@ export default class AddRentOutVehicle extends React.Component {
         this.state = {
             item: props.route.params.item,
             paymentMethodList: props.route.params.paymentMethodList,
-
+            companyList: props.route.params.companyList,
             driverListRentOut: props.route.params.driverListRentOut,
             carListRent: props.route.params.carListRent,
             isNetworkAvailable: true,
@@ -138,32 +138,38 @@ export default class AddRentOutVehicle extends React.Component {
             console.log(this.state.item)
 
 
-            if(this.state.item.driver_side_img==""){
+            if (this.state.item.front_img != null && this.state.item.front_img != "") {
+                this.setState({
+                    frontImageUri: Links.BASEURL + this.state.item.front_img
+                })
+            }
+
+            if (this.state.item.driver_side_img != null && this.state.item.driver_side_img != "") {
                 this.setState({
                 driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img
                 })
             }
-            if(this.state.item.fuel_guage_img==""){
+            if (this.state.item.fuel_guage_img != null && this.state.item.fuel_guage_img != "") {
                 this.setState({
                     fuelGuageImageUri: Links.BASEURL + this.state.item.fuel_guage_img
                 })
             }
-            if(this.state.item.odometer_img==""){
+            if (this.state.item.odometer_img != null && this.state.item.odometer_img != "") {
                 this.setState({
                     odometerImageUri: Links.BASEURL + this.state.item.odometer_img
                 })
             }
-            if(this.state.item.passenger_side_img==""){
+            if (this.state.item.passenger_side_img != null && this.state.item.passenger_side_img != "") {
                 this.setState({
                     passengerSideImageUri: Links.BASEURL + this.state.item.passenger_side_img
                 })
             }
-            if(this.state.item.rear_img==""){
+            if (this.state.item.rear_img != null && this.state.item.rear_img != "") {
                 this.setState({
                     rearImageUri: Links.BASEURL + this.state.item.rear_img
                 })
             }
-            if(this.state.item.driver_side_img==""){
+            if (this.state.item.service_sticker_img != null && this.state.item.service_sticker_img != "") {
                 this.setState({
                     serviceStickerImageUri: Links.BASEURL + this.state.item.service_sticker_img
                 })
@@ -198,6 +204,7 @@ export default class AddRentOutVehicle extends React.Component {
         } else {
             this.setState({
                 driverId: this.state.driverListRentOut[0].driver_id,
+                companyId: this.state.companyList[0].company_id,
                 carId: this.state.carListRent[0].car_id,
                 paymentMethod: this.state.paymentMethod[0],
             })
@@ -213,6 +220,8 @@ export default class AddRentOutVehicle extends React.Component {
         this.setState({
             paymentMethodList: paymentMethodListModified
         })
+
+        console.log("companyList", this.state.companyList)
 
 
     }
@@ -232,6 +241,14 @@ export default class AddRentOutVehicle extends React.Component {
             driverId: value,
         });
         console.log("this.state.driverId", value)
+
+    }
+
+    async onValueChangeCompany(value) {
+        this.setState({
+            companyId: value,
+        });
+        console.log("this.state.companyId", value)
 
     }
 
@@ -764,19 +781,26 @@ export default class AddRentOutVehicle extends React.Component {
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Company *</Text>
+
                         <View style={styles.editTextContainer}>
-                            <TextInput
-                                style={styles.emailIdEditTextStyle}
-                                autoCapitalize="none"
-                                multiline={false}
-                                placeholderTextColor={Colors.placeholderColor}
-                                // placeholder="Email Id"
-                                value={this.state.company}
-                                onChangeText={(value) => this.setState({ company: value })}
-                                onSubmitEditing={() => { this.yearTextInput.focus() }}
-                                ref={(input) => { this.companyTextInput = input; }}
-                                blurOnSubmit={false}
+
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.companyList}
+                                placeholder="Select Company"
+                                maxHeight={300}
+                                labelField="company_name"
+                                valueField="company_id"
+                                value={this.state.companyId}
+                                onChange={item => {
+                                    this.onValueChangeCompany(item.company_id);
+                                }}
                             />
+
                         </View>
 
 

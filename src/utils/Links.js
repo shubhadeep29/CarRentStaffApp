@@ -21,6 +21,7 @@ export default class Links {
     static EDIT_RENT_OUT = Links.API + "staff/editRentOut";
     static EDIT_RENT_IN = Links.API + "staff/editRentIn";
     static getDriverListRentOut = Links.API + "staff/getDriverListRentOut";
+    static getCompanyList = Links.API + "staff/getCompanyList";
     static getDriverListRentIn = Links.API + "staff/getDriverListRentIn";
     static getPaymentMethod = Links.API + "staff/getPaymentMethod";
     static getCarListRent = Links.API + "staff/getCarListRent";

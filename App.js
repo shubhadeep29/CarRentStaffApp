@@ -23,6 +23,7 @@ import ValidateStepFiveScreen from './src/screen/ValidateStepFiveScreen';
 import ValidateStepFourScreen from './src/screen/ValidateStepFourScreen';
 import AddRentOutVehicle from './src/screen/AddRentOutVehicle';
 import AddReturnInVehicle from './src/screen/AddReturnInVehicle';
+import CarMaintenanceScreen from './src/screen/CarMaintenanceScreen';
 
 
 
@@ -41,6 +42,7 @@ const MainStackNavigator = () => {
         <Stack.Screen name="Splash" component={Splash} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+        <Stack.Screen name="CarMaintenanceScreen" component={CarMaintenanceScreen} />
         <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
         <Stack.Screen name="BondReturnEntryScreen" component={BondReturnEntryScreen} />
         <Stack.Screen name="ValidateOrApproveDriverScreen" component={ValidateOrApproveDriverScreen} />

@@ -91,93 +91,107 @@ export default class ValidateStepFourScreen extends React.Component {
                     </View>
 
 
+                    <ScrollView >
+                        <View >
 
-                    <View style={styles.rowView}>
-                        <TouchableOpacity >
-                            <Image
-                                source={this.state.isFirstOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
-                                style={styles.checkUncheckIcon}
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.infoText}>car to be used in area max of 200 km from melbourne cbd </Text>
-                    </View>
-
-
-                    <View style={styles.rowView}>
-                        <TouchableOpacity >
-                            <Image
-                                source={this.state.isSecondOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
-                                style={styles.checkUncheckIcon}
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.infoText}>I will check water and engine oil every day </Text>
-                    </View>
-
-                    <View style={styles.rowView}>
-                        <TouchableOpacity >
-                            <Image
-                                source={this.state.isThirdOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
-                                style={styles.checkUncheckIcon}
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.infoText}>I will report every accident on the day </Text>
-                    </View>
-
-                    <View style={styles.rowView}>
-                        <TouchableOpacity >
-                            <Image
-                                source={this.state.isFourthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
-                                style={styles.checkUncheckIcon}
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.infoText}>I will send service sticker and speedo meter photo every week  </Text>
-                    </View>
-
-                    <View style={styles.rowView}>
-                        <TouchableOpacity >
-                            <Image
-                                source={this.state.isFivthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
-                                style={styles.checkUncheckIcon}
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.infoText}>I will pay $10 per nomination for any late toll invoices </Text>
-                    </View>
-
-                    <View style={styles.rowView}>
-                        <TouchableOpacity >
-                            <Image
-                                source={this.state.isSixthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
-                                style={styles.checkUncheckIcon}
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.infoText}>I will give 2 weeks notice when returning the car / van </Text>
-                    </View>
-
-                    <View style={styles.rowView}>
-                        <TouchableOpacity >
-                            <Image
-                                source={this.state.isSeventhOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
-                                style={styles.checkUncheckIcon}
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.infoText}>I agree to terms and conditions listed on car rental website </Text>
-                    </View>
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isFirstOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>CAR TO BE USED IN AREA MAX OF 200 KM FROM MELBOURNE CBD</Text>
+                            </View>
 
 
-                    <View style={styles.rowView}>
-                        <TouchableOpacity >
-                            <Image
-                                source={this.state.isEighthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
-                                style={styles.checkUncheckIcon}
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.infoText}>all information provided is true and correct</Text>
-                    </View>
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isSecondOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>I WILL CHECK WATER AND ENGINE OIL EVERY DAY</Text>
+                            </View>
 
-                    <TouchableOpacity style={styles.buttonContainer}
-                        onPress={() => this.goToNextScreen()}>
-                        <Text numberOfLines={1} style={styles.buttonText}>Next</Text>
-                    </TouchableOpacity>
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isThirdOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>I WILL REPORT EVERY ACCIDENT ON THE DAY</Text>
+                            </View>
+
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isFourthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>I WILL SEND SERVICE STICKER AND SPEEDO METER PHOTO EVERY WEEK</Text>
+                            </View>
+
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isFivthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>I WILL PAY $10 PER NOMINATION FOR ANY LATE TOLL INVOICES</Text>
+                            </View>
+
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isSixthOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>I WILL GIVE 2 WEEKS NOTICE WHEN RETURING THE CAR / VAN</Text>
+                            </View>
+
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isSeventhOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>I WILL RETURN THE RENTAL CAR CLEAN INSIDE AND OUTSIDE IF NOT I AM LIABLE FOR $100 SURCHARGE</Text>
+                            </View>
+
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isSeventhOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>I AGREE TO TERMS AND CONDITIONS LISTED ON CAR RENTAL WEBSITE</Text>
+                            </View>
+
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isSeventhOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>ALL INFORMATION PROVIDED IS TRUE AND CORRECT</Text>
+                            </View>
+
+                            <TouchableOpacity style={styles.buttonContainer}
+                                onPress={() => this.goToNextScreen()}>
+                                <Text numberOfLines={1} style={styles.buttonText}>Next</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                    </ScrollView>
 
                 </View>
             </SafeAreaView>
@@ -273,8 +287,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         paddingVertical: 15,
         marginHorizontal: 30,
-        marginTop: 25,
-        position: 'absolute',
+        marginTop: 50,
         bottom: 20,
         left: 0,
         right: 0
