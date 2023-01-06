@@ -106,7 +106,7 @@ export default class MyProfile extends React.Component{
                     this.setState({ abn: responseJSON.profile_details.abn });
                     this.setState({ tfn: responseJSON.profile_details.tfn });
                     this.setState({ imageUrl: Links.BASEURL+responseJSON.profile_details.user_image });
-                    //console.log("MyProfile Response ===========>  ", JSON.stringify(fullName));
+                    console.log("MyProfile Response ===========>  ", imageUrl);
             
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, this.state.fullName);
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, this.state.email);
@@ -118,7 +118,7 @@ export default class MyProfile extends React.Component{
 
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_GENDER, this.state.gender);
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_ROLE, this.state.role);
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_IMAGE, imageUrl);
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_IMAGE, this.state.imageUrl);
                    // console.log("MyProfile AsyncStorageResponse ===========>  ", JSON.stringify(fullName));
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
@@ -172,7 +172,7 @@ export default class MyProfile extends React.Component{
                         <View style={styles.rowView}>
                         
                         <Image
-                                source={{ uri: imageUrl }}
+                                source={{ uri: this.state.imageUrl }}
                                 style={styles.viewImage}
                             />
 
@@ -192,7 +192,7 @@ export default class MyProfile extends React.Component{
                 </View>
 
                 <View style={styles.largeTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterText} >Full Address</Text>
+                    <Text numberOfLines={1} style={styles.filterGrayText} >Full Address</Text>
                     <Text style={styles.filterText} >{this.state.address}</Text>                    
                 </View>
 
@@ -367,6 +367,16 @@ const styles = StyleSheet.create({
     filterText: {
         fontSize: 12,
         color: Colors.black,
+        alignItems:'center',
+        justifyContent:'center',
+        height:48,
+        paddingTop:15
+        
+    },
+
+    filterGrayText: {
+        fontSize: 12,
+        color: "#7F8C8D",
         alignItems:'center',
         justifyContent:'center',
         height:48,
