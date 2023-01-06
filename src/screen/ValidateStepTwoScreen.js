@@ -435,7 +435,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                             </TouchableOpacity>
 
 
-                            <Text numberOfLines={1} style={styles.headingTextStyle} >Select Utility</Text>
+                            <Text numberOfLines={1} style={styles.headingTextStyle} >Select Utility Bill</Text>
 
                             <View style={styles.editTextContainer}>
                                 <TextInput

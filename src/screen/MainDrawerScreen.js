@@ -13,6 +13,7 @@ import RentOutVehicleScreen from './RentOutVehicleScreen';
 import ReturnInVehicleScreen from './ReturnInVehicleScreen';
 import BondReturnEntryScreen from './BondReturnEntryScreen';
 import ChangePasswordScreen from './ChangePasswordScreen';
+import CarMaintenanceScreen from './CarMaintenanceScreen';
 
 
 
@@ -46,6 +47,7 @@ export default class MainDrawerScreen extends React.Component {
         drawerStyle={{ width: Dimensions.get('window').width * .80 }}
         drawerContent={props => <HamburgerMenuScreen  {...props} />} >
         <MyDrawer.Screen name="DashboardScreen" component={DashboardScreen} />
+        <MyDrawer.Screen name="CarMaintenanceScreen" component={CarMaintenanceScreen} />
         <MyDrawer.Screen name="MyProfile" component={MyProfileScreen} />
         <MyDrawer.Screen name="EditProfile" component={EditProfileScreen} />
         <MyDrawer.Screen name="ValidateOrApproveDriverScreen" component={ValidateOrApproveDriverScreen} />

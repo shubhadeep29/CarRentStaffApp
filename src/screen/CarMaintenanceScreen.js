@@ -20,11 +20,10 @@ import Constants from '../utils/Constants';
 import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView'
-import { color } from 'react-native-reanimated';
 
 const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
 
-export default class DashboardScreen extends React.Component {
+export default class CarMaintenanceScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -259,7 +258,7 @@ export default class DashboardScreen extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.mainContainer}>
-                    <AppBarWithMenu title="Dashboard" navigation={this.props.navigation} />
+                    <AppBarWithMenu title="List of Cars" navigation={this.props.navigation} />
 
                     <View style={styles.bottomViewContainer}>
                         <View style={styles.filterMainContainer}>
@@ -271,7 +270,7 @@ export default class DashboardScreen extends React.Component {
                                 />
                             </TouchableOpacity> */}
 
-                            {/* <View style={styles.searchEditTextContainer}>
+                            <View style={styles.searchEditTextContainer}>
                                 <TextInput
                                     numberOfLines={1}
                                     style={styles.searchEditTextStyle}
@@ -289,12 +288,12 @@ export default class DashboardScreen extends React.Component {
                                     source={require('../images/ic_search.png')}
                                     style={styles.searchIcon}
                                 />
-                            </View> */}
+                            </View>
 
                         </View>
 
                         <View style={styles.mainContainer}>
-                            {/* {this.state.isNetworkAvailable ?
+                            {this.state.isNetworkAvailable ?
                                 <View style={styles.mainContainer}>
                                     {this.state.isLoading && <Loader />}
                                     {this.state.data.length > 0 ?
@@ -314,10 +313,8 @@ export default class DashboardScreen extends React.Component {
                                 </View>
                                 :
                                 null
-                            } */}
-                            <View style={styles.noDataPlaceHolderContainer}>
-                                <Text style={styles.noDataPlaceHolderTextStyle}>Welcome to Quantum Cars</Text>
-                            </View>
+                            }
+
                         </View>
 
                         {this.state.isDropdownVisible ?
@@ -453,7 +450,7 @@ const styles = StyleSheet.create({
     noDataPlaceHolderTextStyle: {
         fontSize: 17,
         // fontFamily: fontSelector("bold"),
-        color: Colors.dark_shade_pink_red,
+        color: Colors.black,
     },
     listItemContainer: {
         flex: 0.5,

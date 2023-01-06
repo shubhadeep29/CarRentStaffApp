@@ -166,7 +166,7 @@ export default class HamburgerMenuScreen extends Component {
             screen = "MyProfile"
         }
         else if (item.flag === "carMaintaince") {
-            screen = ""
+            screen = "CarMaintenanceScreen"
         }
         else if (item.flag === "approveDriver") {
             screen = "ValidateOrApproveDriverScreen"

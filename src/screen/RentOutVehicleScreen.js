@@ -31,6 +31,7 @@ export default class RentOutVehicleScreen extends React.Component {
             paymentMethodList: [],
             driverListRentOut: [],
             carListRent: [],
+            companyList: [],
             // data: [
             //     {
             //         id: 1,
@@ -103,6 +104,7 @@ export default class RentOutVehicleScreen extends React.Component {
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
         this.getRentOutList()
         this.getDriverListRentOut()
+        this.getCompanyListRentOut()
         this.getPaymentMethod()
         this.getCarListRent()
     }
@@ -213,6 +215,71 @@ export default class RentOutVehicleScreen extends React.Component {
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
                     if (responseJSON.hasOwnProperty("driver_list") && responseJSON.driver_list != null) {
                         this.setState({ driverListRentOut: responseJSON.driver_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
+    getCompanyListRentOut() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.getCompanyListRentOutApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    getCompanyListRentOutApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call Rent Out company_list API Link ========>  ", Links.getCompanyList);
+            console.log("Rent Out company_list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.getCompanyList, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Rent Out company_list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    if (responseJSON.hasOwnProperty("company_list") && responseJSON.company_list != null) {
+                        this.setState({ companyList: responseJSON.company_list });
+
+                        console.log("company_id", this.state.companyList)
+
                     }
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
@@ -372,6 +439,7 @@ export default class RentOutVehicleScreen extends React.Component {
                             paymentMethodList: this.state.paymentMethodList,
                             driverListRentOut: this.state.driverListRentOut,
                             carListRent: this.state.carListRent,
+                            companyList: this.state.companyList,
                         })}
                     >
                     <View style={styles.editContainer}>
@@ -464,6 +532,7 @@ export default class RentOutVehicleScreen extends React.Component {
                             paymentMethodList: this.state.paymentMethodList,
                             driverListRentOut: this.state.driverListRentOut,
                             carListRent: this.state.carListRent,
+                            companyList: this.state.companyList,
                         })}
                     >
                         <View style={styles.addNewRentContainer}>
