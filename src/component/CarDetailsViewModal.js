@@ -6,12 +6,14 @@ import {
 import Constants from '../utils/Constants';
 // import fontSelector from '../utils/FontSelector';
 import * as Colors from '../utils/Colors';
+import Links from '../utils/Links';
 // import Utils from '../utils/Utils';
 
 
 export default class CarDetailsViewModal extends Component {
     constructor(props) {
         super(props);
+
 
     }
 
@@ -43,8 +45,8 @@ export default class CarDetailsViewModal extends Component {
                         <View style={styles.modalView}>
                             <View style={styles.rowView}>
                                 <View style={styles.carAndModelNumberContainer}>
-                                    <Text style={styles.carAndModelNumberTextStyle}>WB16 M9816   |   </Text>
-                                    <Text style={styles.carAndModelNumberTextStyle}>Model : K02315</Text>
+                                    <Text style={styles.carAndModelNumberTextStyle}>{this.props.item.car_no}    |   </Text>
+                                    <Text style={styles.carAndModelNumberTextStyle}>Model : {this.props.item.model}</Text>
                                 </View>
 
                                 <TouchableOpacity onPress={() => this.setStateUpdateMethod(false)}>
@@ -56,46 +58,57 @@ export default class CarDetailsViewModal extends Component {
                             </View>
 
                             <Image
-                                source={require('../images/car_img.jpg')}
+                                source={{ uri: Links.BASEURL + this.props.item.car_image }}
                                 style={styles.carImage}
                             />
 
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoHeadingTextStyle}>Car Status :</Text>
-                                <View style={styles.activeCarNumberContainer}>
+                                {this.props.item.status == "1" ?
+                                    <View style={styles.activeCarNumberContainer}>
                                     <Text numberOfLines={1} style={styles.activeCarNumberTextStyle}>Active</Text>
-                                </View>
+                                    </View> :
+                                    <View style={styles.inActiveCarNumberContainer}>
+                                        <Text numberOfLines={1} style={styles.inActiveCarNumberTextStyle}>Inactive</Text>
+                                    </View> 
+                                }
+
                             </View>
 
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoHeadingTextStyle}>Fule Type :</Text>
-                                <Text style={styles.infoTextStyle}>Petrol</Text>
+                                <Text style={styles.infoTextStyle}>{this.props.item.fuel_type}</Text>
                             </View>
 
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoHeadingTextStyle}>Year :</Text>
-                                <Text style={styles.infoTextStyle}>2020</Text>
+                                <Text style={styles.infoTextStyle}>{this.props.item.year}</Text>
                             </View>
 
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoHeadingTextStyle}>Make :</Text>
-                                <Text style={styles.infoTextStyle}>Lorem Ipsum</Text>
+                                <Text style={styles.infoTextStyle}>{this.props.item.make}</Text>
                             </View>
 
 
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoHeadingTextStyle}>Hybrid :</Text>
+                                {this.props.item.is_hybrid == "Yes" ?
                                 <Text style={styles.infoTextStyle}>YES</Text>
+                                    :
+                                    <Text style={styles.infoTextStyle}>NO</Text>
+                                }
+
                             </View>
 
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoHeadingTextStyle}>Rego Expire Date :</Text>
-                                <Text style={styles.infoTextStyle}>2024</Text>
+                                <Text style={styles.infoTextStyle}>{this.props.item.rego_expire_date}</Text>
                             </View>
 
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoHeadingTextStyle}>Insurance Expire Date :</Text>
-                                <Text style={styles.infoTextStyle}>2023</Text>
+                                <Text style={styles.infoTextStyle}>{this.props.item.insurance_expire_date}</Text>
                             </View>
 
 
@@ -194,6 +207,19 @@ const styles = StyleSheet.create({
         fontSize: 12,
         // fontFamily: fontSelector("bold"),
         color: 'blue',
+        fontWeight: 'bold',
+        paddingHorizontal: 11,
+        paddingVertical: 3
+    },
+    inActiveCarNumberContainer: {
+        alignSelf: 'center',
+        borderRadius: 20,
+        backgroundColor: Colors.yellowBackground
+    },
+    inActiveCarNumberTextStyle: {
+        fontSize: 12,
+        // fontFamily: fontSelector("bold"),
+        color: Colors.yellow,
         fontWeight: 'bold',
         paddingHorizontal: 11,
         paddingVertical: 3

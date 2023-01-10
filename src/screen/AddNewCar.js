@@ -32,18 +32,19 @@ export default class AddNewCar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
             deviceType: "1",
-            carNo: "car-1234",
-            model: "TataV29878",
-            fuleType: "Diesel",
-            make: "Tata1",
+            carNo: "",
+            model: "",
+            fuleType: "",
+            make: "",
             year: "",
             regoExpireDate: "",
             insuranceExpireDate: "",
             carImage: null,
-            carId: "1",
+            carId: "",
             isHybridYes: false,
             isHybridNo: true,
             isCarStatusActive: true,
@@ -109,6 +110,26 @@ export default class AddNewCar extends React.Component {
     componentDidMount = async () => {
         this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
+
+        this.setState({
+            carNo: this.state.item.car_id,
+            carId: this.state.item.car_no,
+            model: this.state.item.model,
+            fuleType: this.state.item.fuel_type,
+            make: this.state.item.make,
+            year: this.state.item.year,
+            regoExpireDate: this.state.item.rego_expire_date,
+            insuranceExpireDate: this.state.item.insurance_expire_date,
+            imageUri: Links.BASEURL + this.state.item.car_image,
+            isHybridYes: this.state.item.is_hybrid === "Yes" ? true : false,
+            isHybridNo: this.state.item.is_hybrid === "No" ? true : false,
+            isHybridNo: this.state.item.is_hybrid === "" ? true : false,
+            isCarStatusActive: this.state.item.status === "1" ? true : false,
+            isCarStatusInactive: this.state.item.status === "0" ? true : false,
+            // com: item.company_id,
+            // insuranceExpireDate: item.company_name,
+            // insuranceExpireDate: item.company_code,
+        })
     }
 
     onClickSubmitButton() {
@@ -272,7 +293,7 @@ export default class AddNewCar extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <CommonAppBar title="Add New Car" navigation={this.props.navigation} />
+                <CommonAppBar title="Edit New Car" navigation={this.props.navigation} />
 
                 <ScrollView >
                     <View style={styles.bottomViewContainer}>
@@ -320,11 +341,11 @@ export default class AddNewCar extends React.Component {
                                 inputSearchStyle={styles.inputSearchStyle}
                                 iconStyle={styles.iconStyle}
                                 data={this.state.abnList}
-                                placeholder="Select ABN"
+                                placeholder="Select Fule Type"
                                 maxHeight={300}
                                 labelField="value"
                                 valueField="value"
-                                value={this.state.abn}
+                                value={this.state.fuleType}
                                 onChange={item => {
                                     this.onClickDropdownItem(item);
                                 }}

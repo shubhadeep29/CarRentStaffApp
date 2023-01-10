@@ -443,15 +443,14 @@ export default class AddRentOutVehicle extends React.Component {
         formData.append('device_type', this.state.deviceType);
         formData.append('user_id', this.userId);
         formData.append('driver_id', this.state.driverId);
-        formData.append('car_id', this.state.carId+"#$car-1234");
+        formData.append('car_id', this.state.carId);
         formData.append('odometer_reading', this.state.odometerReading);
         formData.append('basic_excess', this.state.basicExcess);
         formData.append('age_excess', this.state.ageExcess);
         formData.append('overseas_dL_excess', this.state.overseasDLExcess);
         formData.append('weekly_rent', this.state.weeklyRent);
         formData.append('bond_amount', this.state.bond);
-        //formData.append('company_id', this.state.companyId);
-        formData.append('company_id', 2);
+        formData.append('company_id', this.state.companyId);
         formData.append('expire', this.state.expire);
         formData.append('notes', this.state.notes);
         //formData.append('rent_out_id', this.state.rentOutId);

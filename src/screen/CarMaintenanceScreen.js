@@ -171,8 +171,11 @@ export default class CarMaintenanceScreen extends React.Component {
     }
 
 
-    openViewModal = () => {
-        this.setState({ isCarDetailsViewModalVisible: true });
+    openViewModal = (item) => {
+        this.setState({
+            isCarDetailsViewModalVisible: true,
+            item: item
+        });
     }
 
 
@@ -188,7 +191,7 @@ export default class CarMaintenanceScreen extends React.Component {
                         style={styles.carImage}
                     />
                     <View style={styles.indicatorContainer}>
-                        {item.status == "0" ?
+                        {item.status == "1" ?
                             <View style={styles.activeIndicator} />
                             :
                             <View style={styles.inactiveIndicator} />
@@ -196,13 +199,15 @@ export default class CarMaintenanceScreen extends React.Component {
                     </View>
 
                     <View style={styles.editAndViewContainer}>
-                        <TouchableOpacity style={styles.viewContainer} onPress={() => this.openViewModal()}>
+                        <TouchableOpacity style={styles.viewContainer} onPress={() => this.openViewModal(item)}>
                             <Image
                                 source={require('../images/ic_view.png')}
                                 style={styles.viewIcon}
                             />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.editContainer} onPress={() => this.props.navigation.navigate('AddNewCar')}>
+                        <TouchableOpacity style={styles.editContainer} onPress={() => this.props.navigation.navigate('AddNewCar', {
+                            item: item,
+                        })}>
                             <Image
                                 source={require('../images/ic_edit.png')}
                                 style={styles.viewIcon}
@@ -211,7 +216,7 @@ export default class CarMaintenanceScreen extends React.Component {
                     </View>
                 </View>
 
-                {item.status == "0" ?
+                {item.status == "1" ?
                     <View style={styles.activeCarNumberContainer}>
                         <Text numberOfLines={1} style={styles.activeCarNumberTextStyle}>{item.car_no}</Text>
                     </View>
@@ -352,6 +357,7 @@ export default class CarMaintenanceScreen extends React.Component {
                     <CarDetailsViewModal
                         isModalVisible={this.state.isCarDetailsViewModalVisible}
                         title="My modal"
+                        item={this.state.item}
                         buttonName="confirm"
                         updateModalState={this.handleUpdateViewModalState}
                         buttonOperation={this.onPressViewModalConfirmButton}
