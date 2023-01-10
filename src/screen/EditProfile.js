@@ -75,7 +75,7 @@ export default class MyProfile extends React.Component {
 
     callMyProfileApi = async () => {
         if(this.state.abn.length!=11){
-            Toast.show("Please enter Car No", Toast.SHORT);
+            Toast.show("ABN must be 11 digits only", Toast.SHORT);
         }else{
             this.setState({ isLoading: true });
 
