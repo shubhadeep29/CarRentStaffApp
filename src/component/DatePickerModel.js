@@ -29,9 +29,7 @@ export default () => {
                     testID="dateTimePicker"
                     value={mydate}
                     mode={displaymode}
-                    display={
-                        Platform.OS === "ios" ? "spinner" : "inline"
-                      }
+                    display={Platform.OS == "android" ? "calendar" : "spinner"}
                     onChange={changeSelectedDate}
                 />
             )}
