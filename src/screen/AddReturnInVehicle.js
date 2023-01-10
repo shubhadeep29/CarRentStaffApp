@@ -586,7 +586,7 @@ export default class AddReturnInVehicle extends React.Component {
                                 testID="dateTimePicker"
                                 value={new Date()}
                                 mode='date'
-                                display="default"
+                            display={Platform.OS == "android" ? "calendar" : "spinner"}
                                 onChange={this.setRentOutDate}
                             />
                         }
@@ -783,7 +783,7 @@ export default class AddReturnInVehicle extends React.Component {
                                 testID="dateTimePicker"
                                 value={new Date()}
                                 mode='date'
-                                display="default"
+                            display={Platform.OS == "android" ? "calendar" : "spinner"}
                                 onChange={this.setBondRefundDate}
                             />
                         }

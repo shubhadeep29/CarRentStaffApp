@@ -305,7 +305,7 @@ export default class ValidateStepOneScreen extends React.Component {
                                     testID="dateTimePicker"
                                     value={new Date()}
                                     mode='date'
-                                    display="default"
+                                display={Platform.OS == "android" ? "calendar" : "spinner"}
                                     onChange={this.setDate}
                                 />
                             }

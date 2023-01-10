@@ -296,7 +296,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                                     testID="dateTimePicker"
                                     value={new Date()}
                                     mode='date'
-                                    display="default"
+                                display={Platform.OS == "android" ? "calendar" : "spinner"}
                                     onChange={this.setDriverExpireDate}
                                 />
                             }
@@ -408,7 +408,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                                     testID="dateTimePicker"
                                     value={new Date()}
                                     mode='date'
-                                    display="default"
+                                display={Platform.OS == "android" ? "calendar" : "spinner"}
                                     onChange={this.setPassportExpireDate}
                                 />
                             }

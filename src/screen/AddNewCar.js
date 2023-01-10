@@ -232,7 +232,7 @@ export default class AddNewCar extends React.Component {
         formData.append('device_type', this.state.deviceType);
         formData.append('user_id', this.userId);
         formData.append('car_no', this.state.carNo);
-        
+
         formData.append('make', this.state.make);
         formData.append('model', this.state.model);
         formData.append('year', this.state.year);
@@ -403,7 +403,7 @@ export default class AddNewCar extends React.Component {
                                 testID="dateTimePicker"
                             value={new Date()}
                                 mode='date'
-                                display="default"
+                            display={Platform.OS == "android" ? "calendar" : "spinner"}
                             onChange={this.setYear}
                             />
                         }
@@ -437,7 +437,7 @@ export default class AddNewCar extends React.Component {
                                 testID="dateTimePicker"
                                 value={new Date()}
                                 mode='date'
-                                display="default"
+                            display={Platform.OS == "android" ? "calendar" : "spinner"}
                                 onChange={this.setInsuranceExpireDate}
                             />
                         }
@@ -470,7 +470,8 @@ export default class AddNewCar extends React.Component {
                                 testID="dateTimePicker"
                                 value={new Date()}
                                 mode='date'
-                                display="default"
+                            display={Platform.OS == "android" ? "calendar" : "spinner"}
+
                                 onChange={this.setRegoExpireDate}
                             />
                         }
