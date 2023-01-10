@@ -39,7 +39,7 @@ export default class MyProfile extends React.Component {
             genderList: [
                 { value: "Male" },
                 { value: "Female" },
-                { value: "Trans Gender" },
+                { value: "Others Gender" },
             ],
             abnList: [
                 { value: "Petrol" },
@@ -184,6 +184,7 @@ export default class MyProfile extends React.Component {
         this.setState({
             gender: value
         })
+        console.log("gender value" ,value)
     }
 
     onClickDropdownABN = (value) => {
@@ -226,7 +227,7 @@ export default class MyProfile extends React.Component {
 
                                         <Text
                                             numberOfLines={1}
-                                            maxLength={15}
+                                            maxLength={10}
                                             style={styles.filterImage} >
                                             {this.state.imageName}
                                         </Text>
@@ -268,14 +269,14 @@ export default class MyProfile extends React.Component {
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Role</Text>
 
                         <View style={styles.searchEditTextContainer}>
-                            <Text numberOfLines={1} style={styles.filterText} placeholder={"Role"}>{this.state.role}</Text>
+                            <Text numberOfLines={1} style={styles.filterGrayText} placeholder={"Role"}>{this.state.role}</Text>
 
                         </View>
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Your Email</Text>
                         <View style={styles.searchEditTextContainer}>
-                            <Text numberOfLines={1} style={styles.filterText} >{this.state.email}</Text>
+                            <Text numberOfLines={1} style={styles.filterGrayText} >{this.state.email}</Text>
 
                         </View>
 
@@ -289,7 +290,7 @@ export default class MyProfile extends React.Component {
                                 onChangeText={(value) => this.setState({ address: value })}
                                 autoCapitalize="none"
                                 placeholderTextColor={Colors.placeholderColor}
-                                blurOnSubmit={false}
+                                blurOnSubmit={true}
                             />
 
                         </View>
@@ -310,7 +311,7 @@ export default class MyProfile extends React.Component {
                                 valueField="value"
                                 value={this.state.gender}
                                 onChange={item => {
-                                    this.onClickDropdownGender(item);
+                                    this.onClickDropdownGender(item.value);
                                 }}
                             />
 
@@ -319,22 +320,16 @@ export default class MyProfile extends React.Component {
                         <Text numberOfLines={1} style={styles.headingTextStyle} >ABN</Text>
 
                         <View style={styles.searchEditTextContainer}>
-                            <Dropdown
-                                style={styles.dropdown}
-                                placeholderStyle={styles.placeholderStyle}
-                                selectedTextStyle={styles.selectedTextStyle}
-                                inputSearchStyle={styles.inputSearchStyle}
-                                iconStyle={styles.iconStyle}
-                                data={this.state.abnList}
-                                placeholder="Select ABN"
-                                maxHeight={300}
-                                labelField="value"
-                                valueField="value"
+                        <TextInput
+                                numberOfLines={1}
+                                style={styles.filterInputText}
                                 value={this.state.abn}
-                                onChange={item => {
-                                    this.onClickDropdownABN(item);
-                                }}
-                            />
+                                onChangeText={(value) => this.setState({ abn: value })}
+                                autoCapitalize="none"
+                                multiline={false}
+                                placeholderTextColor={Colors.placeholderColor}
+                                blurOnSubmit={false} />
+
                         </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >TFN</Text>
@@ -446,7 +441,7 @@ const styles = StyleSheet.create({
 
     },
     headingTextStyle: {
-        fontSize: 15,
+        fontSize: 16,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
         paddingHorizontal: 40,
@@ -476,7 +471,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     filterText: {
-        fontSize: 12,
+        fontSize: 16,
         color: Colors.black,
         alignItems: 'center',
         justifyContent: 'center',
@@ -484,14 +479,24 @@ const styles = StyleSheet.create({
         paddingTop: 15, 
 
     },
+    filterGrayText: {
+        fontSize: 16,
+        color: "#7F8C8D",
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 80,
+        paddingTop: 15, 
+
+    },
     filterImage: {
+        width:120,
         fontSize: 12,
         color: Colors.black,
         alignItems: 'center',
         alignSelf: 'center'
     },
     filterInputText: {
-        fontSize: 12,
+        fontSize: 16,
         color: Colors.black,
         alignItems: 'center',
         justifyContent: 'center',
@@ -563,13 +568,15 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.textColor1,
         borderRadius: 30,
         paddingVertical: 13,
-        flex: 1
+        flex: 1,
+        marginBottom:25
     },
     cancelButtonContainer: {
         backgroundColor: '#aaaaaa',
         borderRadius: 30,
         paddingVertical: 13,
-        flex: 1
+        flex: 1,
+        marginBottom:25
     },
     boxGap: {
         width: 15
@@ -591,7 +598,7 @@ const styles = StyleSheet.create({
         top: 8,
         zIndex: 999,
         paddingHorizontal: 8,
-        fontSize: 14,
+        fontSize: 16,
     },
     placeholderStyle: {
         fontSize: 16,

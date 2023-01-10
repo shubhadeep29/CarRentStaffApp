@@ -187,7 +187,7 @@ export default class AddReturnInVehicle extends React.Component {
                 })
             }
             if (this.state.item.rear_img != null && this.state.item.rear_img != "") {
-                this.setState({
+                this.setStafte({
                     rearImageUri: Links.BASEURL + this.state.item.rear_img,
                     rearImageName: this.state.item.rear_img.replace(/^.*[\\\/]/, ''),
                 })
