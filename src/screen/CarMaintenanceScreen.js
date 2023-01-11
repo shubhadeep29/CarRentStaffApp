@@ -20,6 +20,7 @@ import Constants from '../utils/Constants';
 import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView'
+import SearchBar from 'react-native-search-bar';
 
 const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
 
@@ -130,6 +131,7 @@ export default class CarMaintenanceScreen extends React.Component {
             device_type: "1",
             user_id: this.userId,
             token_key: this.apiKey,
+            search_text:this.state.searchText
         });
 
 
@@ -145,6 +147,7 @@ export default class CarMaintenanceScreen extends React.Component {
                 },
             });
             const responseJSON = await res.json();
+            this.state.data=[]
             console.log("Car list Response ===========>  ", JSON.stringify(responseJSON));
             if (responseJSON) {
                 this.setState({ isLoading: false });
@@ -169,6 +172,11 @@ export default class CarMaintenanceScreen extends React.Component {
             console.log("Exception in API call: " + error);
         }
     }
+    updateSearch = searchText => {
+        this.setState({ searchText }, this.callLoadingCarListApi);  
+        console.log("search text is: ", searchText)  
+      };
+    
 
 
     openViewModal = (item) => {
@@ -275,8 +283,7 @@ export default class CarMaintenanceScreen extends React.Component {
                                 />
                             </TouchableOpacity> */}
 
-                            <View style={styles.searchEditTextContainer}>
-                                <TextInput
+                                <SearchBar
                                     numberOfLines={1}
                                     style={styles.searchEditTextStyle}
                                     autoCapitalize="none"
@@ -284,17 +291,10 @@ export default class CarMaintenanceScreen extends React.Component {
                                     placeholderTextColor={Colors.placeholderColor}
                                     placeholder="Search by Model,Car No, Fuel type"
                                     value={this.state.searchText}
-                                    onChangeText={(value) => this.setState({ searchText: value })}
-                                    onSubmitEditing={() => { this.passwordTextInput.focus() }}
+                                    onChangeText={this.updateSearch}
                                     blurOnSubmit={false}
                                 />
-
-                                <Image
-                                    source={require('../images/ic_search.png')}
-                                    style={styles.searchIcon}
-                                />
-                            </View>
-
+                            
                         </View>
 
                         <View style={styles.mainContainer}>
@@ -366,6 +366,7 @@ export default class CarMaintenanceScreen extends React.Component {
                     null
                 }
 
+
             </SafeAreaView>
         );
     }
@@ -408,7 +409,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 30,
-        paddingHorizontal: 18,
+        paddingHorizontal: 1,
         marginStart: 20,
         marginEnd: 20,
         flexDirection: 'row',
@@ -440,7 +441,13 @@ const styles = StyleSheet.create({
         fontSize: 13,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
-        flex: 1
+        flex: 1,
+        backgroundColor: Colors.editTextBgColor,
+        borderRadius: 30,
+        marginStart:20, 
+        marginEnd:20,
+        flexDirection: 'row',
+        height: 40,
     },
     flatListStyle: {
         marginBottom: 5,
