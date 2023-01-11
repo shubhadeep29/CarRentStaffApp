@@ -27,7 +27,6 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Dropdown } from 'react-native-element-dropdown';
 
-
 export default class AddNewCar extends React.Component {
     constructor(props) {
         super(props);
@@ -61,7 +60,6 @@ export default class AddNewCar extends React.Component {
             abnList: [
                 { value: "Petrol" },
                 { value: "Diesel" },
-                { value: "Roller" },
                 { value: "LPG" },
             ]
 
@@ -293,7 +291,7 @@ export default class AddNewCar extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <CommonAppBar title="Edit New Car" navigation={this.props.navigation} />
+                <CommonAppBar title="Edit Car" navigation={this.props.navigation} />
 
                 <ScrollView >
                     <View style={styles.bottomViewContainer}>
@@ -404,6 +402,8 @@ export default class AddNewCar extends React.Component {
                             value={new Date()}
                                 mode='date'
                             display={Platform.OS == "android" ? "calendar" : "spinner"}
+                            maximumDate={new Date()}
+                            // minimumDate={new Date()}
                             onChange={this.setYear}
                             />
                         }
@@ -437,6 +437,8 @@ export default class AddNewCar extends React.Component {
                                 testID="dateTimePicker"
                                 value={new Date()}
                                 mode='date'
+                                // maximumDate={new Date()}
+                                minimumDate={new Date()}
                             display={Platform.OS == "android" ? "calendar" : "spinner"}
                                 onChange={this.setInsuranceExpireDate}
                             />
@@ -471,7 +473,8 @@ export default class AddNewCar extends React.Component {
                                 value={new Date()}
                                 mode='date'
                             display={Platform.OS == "android" ? "calendar" : "spinner"}
-
+                            // maximumDate={new Date()}
+                            minimumDate={new Date()}
                                 onChange={this.setRegoExpireDate}
                             />
                         }

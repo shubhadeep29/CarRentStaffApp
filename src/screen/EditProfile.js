@@ -74,7 +74,10 @@ export default class MyProfile extends React.Component {
     }
 
     callMyProfileApi = async () => {
-        this.setState({ isLoading: true });
+        if(this.state.abn.length!=11){
+            Toast.show("ABN must be 11 digits only", Toast.SHORT);
+        }else{
+            this.setState({ isLoading: true });
 
 
         var formData = new FormData();
@@ -142,7 +145,7 @@ export default class MyProfile extends React.Component {
         }
 
     }
-
+}
 
     openImageGallery() {
         let options = {
