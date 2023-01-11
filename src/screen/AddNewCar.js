@@ -112,8 +112,8 @@ export default class AddNewCar extends React.Component {
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
 
         this.setState({
-            carNo: this.state.item.car_id,
-            carId: this.state.item.car_no,
+            carNo: this.state.item.car_no,
+            carId: this.state.item.car_id,
             model: this.state.item.model,
             fuleType: this.state.item.fuel_type,
             make: this.state.item.make,
