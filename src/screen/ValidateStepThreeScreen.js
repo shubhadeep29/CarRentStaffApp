@@ -16,6 +16,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from '../utils/Constants';
 
+import Toast from 'react-native-simple-toast';
 
 export default class ValidateStepThreeScreen extends React.Component {
     constructor(props) {
@@ -52,6 +53,13 @@ export default class ValidateStepThreeScreen extends React.Component {
 
 
     goToNextScreen = () => {
+        if(this.state.accountName==""){
+            Toast.show("Please enter Account Name", Toast.SHORT);
+        }else if(this.state.bsb==""){
+            Toast.show("Please enter BSB", Toast.SHORT);
+        }else if(this.state.accountNumber==""){
+            Toast.show("Please enter Account Number", Toast.SHORT);
+        }else{
         let item = this.state.item
         item.bank_name = this.state.accountName;
         item.bsb = this.state.bsb;
@@ -67,6 +75,7 @@ export default class ValidateStepThreeScreen extends React.Component {
             item: item
         })
     }
+}
 
     render() {
         return (
@@ -156,20 +165,14 @@ export default class ValidateStepThreeScreen extends React.Component {
                                 <Text numberOfLines={1} style={styles.noOfAtFaultAccidentsText} >No of At Fault Accidents</Text>
                                 <View style={styles.dropdownContainer}>
                                     <Text numberOfLines={1} style={styles.dropdownTextStyle} >{this.state.numberOfAtFaultAccidents}</Text>
-                                    <Image
-                                        source={require('../images/down_arow.png')}
-                                        style={styles.dropDownIcon}
-                                    />
+                                    
                                 </View>
                             </View>
                             <View style={styles.accountHistoryRowView}>
                                 <Text numberOfLines={1} style={styles.noOfAtFaultAccidentsText} >No of Not At Fault Accidents</Text>
                                 <View style={styles.dropdownContainer}>
                                     <Text numberOfLines={1} style={styles.dropdownTextStyle} >{this.state.numberOfNotAtFaultAccidents}</Text>
-                                    <Image
-                                        source={require('../images/down_arow.png')}
-                                        style={styles.dropDownIcon}
-                                    />
+                                    
                                 </View>
                             </View>
 

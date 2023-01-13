@@ -15,8 +15,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from '../utils/Constants';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
-
+import Links from '../utils/Links';
+import Toast from 'react-native-simple-toast';
 
 export default class ValidateStepTwoScreen extends React.Component {
     constructor(props) {
@@ -53,7 +53,7 @@ export default class ValidateStepTwoScreen extends React.Component {
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
         // this.item = this.props.params.item;
 
-        console.log(this.state.item)
+        console.log("item", this.state.item)
 
         this.setState({
             selectedUtility: this.state.item.utility_bill,
@@ -61,6 +61,13 @@ export default class ValidateStepTwoScreen extends React.Component {
             passportNo: this.state.item.passport_no,
             driverExpireDate: this.state.item.licence_expiry,
             driverLICNo: this.state.item.licence_no,
+            licenceImage: this.state.item.licence_image,
+            passportNoImage: this.state.item.passport_no_image,
+            passportExpiryImage: this.state.item.passport_expiry_image,
+            utilityBillImage: this.state.item.utility_bill_image,
+            utilityBillImageName:this.state.item.utilityBillImageName,
+
+            licenceExpiryImage: this.state.item.licence_expiry_image,
             isAustralianLicenceYes: this.state.item.is_australian_licence === "Yes" ? true : false,
             isAustralianLicenceNo: this.state.item.is_australian_licence === "No" ? true : false,
 
@@ -69,17 +76,44 @@ export default class ValidateStepTwoScreen extends React.Component {
 
 
     goToNextScreen = () => {
+        if(this.state.driverLICNo==""){
+            Toast.show("Please enter Driving License Number", Toast.SHORT);
+        }else if(this.state.licenceImage==""){
+            Toast.show("Please enter Driving License Image", Toast.SHORT);
+        }else if(this.state.driverExpireDate==""){
+            Toast.show("Please enter Driving License Expiry Date", Toast.SHORT);
+        }else if(this.state.licenceExpiryImage==""){
+            Toast.show("Please enter Driving License Expiration Image", Toast.SHORT);
+        }else if(this.state.isAustralianLicenceYes&&this.state.passportNo==""){
+            Toast.show("Please enter Passport Number", Toast.SHORT);
+        }else if(this.state.isAustralianLicenceYes&&this.state.passportNoImage==""){
+            Toast.show("Please enter Passport Image", Toast.SHORT);
+        }else if(this.state.isAustralianLicenceYes&&this.state.passportExpireDate==""){
+            Toast.show("Please enter Passport Expiration Date", Toast.SHORT);
+        }else if(this.state.isAustralianLicenceYes&&this.state.passportExpiryImage==""){
+            Toast.show("Please enter Passport Expiration Image", Toast.SHORT);
+        }else if(this.state.isAustralianLicenceYes&&this.state.utilityBillImageName==""){
+            Toast.show("Please enter Utility Bill Name", Toast.SHORT);
+        }else if(this.state.isAustralianLicenceYes&&this.state.utilityBillImage==""){
+            Toast.show("Please enter Utility Bill Image", Toast.SHORT);
+        }else{
         let item = this.state.item
         item.utility_bill = this.state.selectedUtility;
         item.passport_expiry = this.state.passportExpireDate;
         item.passport_no = this.state.passportNo;
         item.licence_expiry = this.state.driverExpireDate;
+        
         item.licence_no = this.state.driverLICNo;
         item.is_australian_licence = this.state.isAustralianLicenceYes;
+        if(this.state.licenceImage!="")
         item.licence_image = this.state.licenceImage;
+        if(this.state.licenceExpiryImage!="")
         item.licence_expiry_image = this.state.licenceExpiryImage;
+        if(this.state.passportNoImage!="")
         item.passport_no_image = this.state.passportNoImage;
+        if(this.state.passportExpiryImage!="")
         item.passport_expiry_image = this.state.passportExpiryImage;
+        if(this.state.utilityBillImage!="")
         item.utility_bill_image = this.state.utilityBillImage;
         this.setState({
             item: item
@@ -90,6 +124,7 @@ export default class ValidateStepTwoScreen extends React.Component {
             item: item
         })
     }
+}
 
 
     openImageGallery(openImageGalleryFor) {
@@ -115,6 +150,8 @@ export default class ValidateStepTwoScreen extends React.Component {
                 console.log('response', JSON.stringify(res));
 
                 if (openImageGalleryFor == "licenceImage") {
+
+                    this.state.item.licence_image=res.assets[0].uri
                     this.setState({
                         resourcePath: res,
                         licenceImage: res.assets[0].uri,
@@ -122,6 +159,8 @@ export default class ValidateStepTwoScreen extends React.Component {
                     });
                 }
                 else if (openImageGalleryFor == "licenceExpiryImage") {
+
+                    this.state.item.licence_expiry_image=res.assets[0].uri
                     this.setState({
                         resourcePath: res,
                         licenceExpiryImage: res.assets[0].uri,
@@ -129,6 +168,8 @@ export default class ValidateStepTwoScreen extends React.Component {
                     });
                 }
                 else if (openImageGalleryFor == "passportNoImage") {
+
+                    this.state.item.passport_no_image=res.assets[0].uri
                     this.setState({
                         resourcePath: res,
                         passportNoImage: res.assets[0].uri,
@@ -137,13 +178,17 @@ export default class ValidateStepTwoScreen extends React.Component {
                     });
                 }
                 else if (openImageGalleryFor == "passportExpiryImage") {
+                    this.state.item.passport_expiry_image=res.assets[0].uri
                     this.setState({
                         resourcePath: res,
                         passportExpiryImage: res.assets[0].uri,
                         passportExpiryImageName: res.assets[0].fileName,
+                        
                     });
                 }
                 else if (openImageGalleryFor == "utilityBillImage") {
+
+                    this.state.item.utility_bill_image=res.assets[0].uri
                     this.setState({
                         resourcePath: res,
                         utilityBillImage: res.assets[0].uri,
@@ -151,6 +196,8 @@ export default class ValidateStepTwoScreen extends React.Component {
                     });
                 }
                 else if (openImageGalleryFor == "odometerImageUri") {
+
+                    this.state.item.odometerImageUri=res.assets[0].uri
                     this.setState({
                         resourcePath: res,
                         odometerImageUri: res.assets[0].uri,
@@ -258,7 +305,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                             </View>
 
                             <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("licenceImage")}>
-                                {this.state.licenceImage != null && this.state.licenceImage != "" ?
+                                {this.state.item.licence_image != null && this.state.item.licence_image != "" ?
                                     <Image
                                         source={{ uri: this.state.licenceImage }}
                                         style={styles.logoIcon}
@@ -295,6 +342,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 <DateTimePicker
                                     testID="dateTimePicker"
                                     value={new Date()}
+                                    minimumDate={new Date()}
                                     mode='date'
                                 display={Platform.OS == "android" ? "calendar" : "spinner"}
                                     onChange={this.setDriverExpireDate}
@@ -302,7 +350,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                             }
 
                             <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("licenceExpiryImage")}>
-                                {this.state.licenceExpiryImage != null && this.state.licenceExpiryImage != "" ?
+                                {this.state.item.licence_expiry_image != null && this.state.licence_expiry_image != "" ?
                                     <Image
                                         source={{ uri: this.state.licenceExpiryImage }}
                                         style={styles.logoIcon}
@@ -368,7 +416,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                             </View>
 
                             <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("passportNoImage")}>
-                                {this.state.passportNoImage != null && this.state.passportNoImage != "" ?
+                                {this.state.item.passport_no_image != null && this.state.item.passport_no_image != "" ?
                                     <Image
                                         source={{ uri: this.state.passportNoImage }}
                                         style={styles.logoIcon}
@@ -407,6 +455,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 <DateTimePicker
                                     testID="dateTimePicker"
                                     value={new Date()}
+                                    minimumDate={new Date()}
                                     mode='date'
                                 display={Platform.OS == "android" ? "calendar" : "spinner"}
                                     onChange={this.setPassportExpireDate}
@@ -414,7 +463,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                             }
 
                             <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("passportExpiryImage")}>
-                                {this.state.passportExpiryImage != null && this.state.passportExpiryImage != "" ?
+                                {this.state.item.passport_expiry_image != null && this.state.item.passport_expiry_image != "" ?
                                     <Image
                                         source={{ uri: this.state.passportExpiryImage }}
                                         style={styles.logoIcon}
@@ -454,7 +503,7 @@ export default class ValidateStepTwoScreen extends React.Component {
 
 
                             <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("utilityBillImage")}>
-                                {this.state.utilityBillImage != null && this.state.utilityBillImage != "" ?
+                                {this.state.item.utility_bill_image != null && this.state.utilityBillImage != "" ?
                                     <Image
                                         source={{ uri: this.state.utilityBillImage }}
                                         style={styles.logoIcon}
