@@ -573,8 +573,36 @@ export default class AddRentOutVehicle extends React.Component {
     }
 
 
+    renderDriver = (item) => {
+        return (
+            <View>
+                <Text style={styles.selectionListTextStyle}>{item.first_name}</Text>
+            </View>
+        );
+    };
 
+    renderCar = (item) => {
+        return (
+            <View>
+                <Text style={styles.selectionListTextStyle}>{item.car_no}</Text>
+            </View>
+        );
+    };
 
+    renderPayment = (item) => {
+        return (
+            <View>
+                <Text style={styles.selectionListTextStyle}>{item.value}</Text>
+            </View>
+        );
+    };
+    renderCompany = (item) => {
+        return (
+            <View>
+                <Text style={styles.selectionListTextStyle}>{item.company_name}</Text>
+            </View>
+        );
+    };
 
 
     render() {
@@ -608,6 +636,8 @@ export default class AddRentOutVehicle extends React.Component {
                                 onChange={item => {
                                     this.onValueChangeDriver(item.driver_id);
                                 }}
+                                renderItem={this.renderDriver}
+
                             />
 
                         </View>
@@ -633,6 +663,8 @@ export default class AddRentOutVehicle extends React.Component {
                                 onChange={item => {
                                     this.onValueChangeCar(item);
                                 }}
+                                renderItem={this.renderCar}
+
                             />
                         </View>
 
@@ -756,6 +788,8 @@ export default class AddRentOutVehicle extends React.Component {
                                 onChange={item => {
                                     this.onValueChangePayment(item);
                                 }}
+                                renderItem={this.renderPayment}
+
                             />
                         </View>
 
@@ -798,6 +832,8 @@ export default class AddRentOutVehicle extends React.Component {
                                 onChange={item => {
                                     this.onValueChangeCompany(item.company_id);
                                 }}
+                                renderItem={this.renderCompany}
+
                             />
 
                         </View>
@@ -1308,9 +1344,12 @@ const styles = StyleSheet.create({
     },
     placeholderStyle: {
         fontSize: 16,
+        color: Colors.black,
+
     },
     selectedTextStyle: {
         fontSize: 16,
+        color: Colors.black,
     },
     iconStyle: {
         width: 20,
@@ -1319,5 +1358,13 @@ const styles = StyleSheet.create({
     inputSearchStyle: {
         height: 40,
         fontSize: 16,
+    },
+
+    selectionListTextStyle: {
+        fontSize: 13,
+        color: Colors.black,
+        // fontFamily: fontSelector("regular"),
+        paddingHorizontal: 15,
+        paddingVertical: 12
     },
 });

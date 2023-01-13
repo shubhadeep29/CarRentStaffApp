@@ -287,6 +287,17 @@ export default class AddNewCar extends React.Component {
 
     }
 
+
+
+    renderFuleType = (item) => {
+        return (
+            <View>
+                <Text style={styles.selectionListTextStyle}>{item.value}</Text>
+            </View>
+        );
+    };
+
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
@@ -347,6 +358,8 @@ export default class AddNewCar extends React.Component {
                                 onChange={item => {
                                     this.onClickDropdownItem(item);
                                 }}
+                                renderItem={this.renderFuleType}
+
                             />
                         </View>
 
@@ -806,9 +819,12 @@ const styles = StyleSheet.create({
     },
     placeholderStyle: {
         fontSize: 16,
+        color: Colors.black,
+
     },
     selectedTextStyle: {
         fontSize: 16,
+        color: Colors.black,
     },
     iconStyle: {
         width: 20,
@@ -817,6 +833,14 @@ const styles = StyleSheet.create({
     inputSearchStyle: {
         height: 40,
         fontSize: 16,
+    },
+
+    selectionListTextStyle: {
+        fontSize: 13,
+        color: Colors.black,
+        // fontFamily: fontSelector("regular"),
+        paddingHorizontal: 15,
+        paddingVertical: 12
     },
 
 });

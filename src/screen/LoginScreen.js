@@ -199,6 +199,13 @@ export default class LoginScreen extends React.Component {
               />
             </View>
 
+
+
+            <Image
+              source={require('../images/ic_login_bottom.png')}
+              style={styles.bottomImage}
+            />
+
             <View style={styles.editTextContainer}>
               <TextInput
                 style={styles.emailIdEditTextStyle}
@@ -215,11 +222,6 @@ export default class LoginScreen extends React.Component {
                 blurOnSubmit={false}
               />
             </View>
-
-            <Image
-              source={require('../images/ic_login_bottom.png')}
-              style={styles.bottomImage}
-            />
 
             <TouchableOpacity style={styles.loginButtonContainer}
               onPress={() => this.callLoginValidation()}>
