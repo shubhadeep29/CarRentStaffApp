@@ -452,7 +452,7 @@ export default class AddNewCar extends React.Component {
                                 mode='date'
                                 // maximumDate={new Date()}
                                 minimumDate={new Date()}
-                            display={Platform.OS == "android" ? "calendar" : "spinner"}
+                                display={Platform.OS == "android" ? "calendar" : "spinner"}
                                 onChange={this.setInsuranceExpireDate}
                             />
                         }
