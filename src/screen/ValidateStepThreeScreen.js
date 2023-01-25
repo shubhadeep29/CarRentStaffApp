@@ -38,7 +38,7 @@ export default class ValidateStepThreeScreen extends React.Component {
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
         // this.item = this.props.params.item;
 
-        console.log(this.state.item)
+        console.log("Item 3",this.state.item)
 
         this.setState({
 

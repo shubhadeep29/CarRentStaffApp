@@ -57,7 +57,7 @@ export default class ValidateStepOneScreen extends React.Component {
             streetName: this.state.item.street_name,
             subrub: this.state.item.suburb,
             postCode: this.state.item.pin,
-            dob: this.state.item.do,
+            dob: this.state.item.dob,
             moileNo: this.state.item.mobile
         })
     }

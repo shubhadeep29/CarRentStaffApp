@@ -124,19 +124,16 @@ export default class ValidateStepFiveScreen extends React.Component {
             bondAmountDate:new Date().getMonth()+1+"/"+new Date().getDate()+"/"+new Date().getFullYear(),
             paymentMethod:this.state.item.bond_details.bond_payment_method,
             referenceNumber:this.state.item.bond_details.bond_reference_no,
-            adminNote:this.state.item.adminNote,
+            adminNote:this.state.item.admin_notes,
 
             licenceImage:this.state.item.licence_image,
             licenceExpiryImage:this.state.item.licence_expiry_image,
             passportNoImage:this.state.item.passport_no_image,
             passportExpiryImage:this.state.item.passport_expiry_image,
             utilityBillImage:this.state.item.utility_bill_image,
-            odometerImageUri:this.state.item.odometerImageUri
-
-                        
+            odometerImageUri:this.state.item.odometerImageUri     
 
         })
-        
 
     }
 
@@ -190,6 +187,13 @@ export default class ValidateStepFiveScreen extends React.Component {
         }
     }
 }
+
+goToMainScreen() {
+    this.props.navigation.reset({
+      index: 0,
+      routes: [{ name: 'MainDrawerScreen' }],
+    });
+  }
 
     callValidateDriverApi = async () => {
         
@@ -286,9 +290,7 @@ export default class ValidateStepFiveScreen extends React.Component {
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
-                    this.props.navigation.navigate('ValidateOrApproveDriverScreen', {
-                        
-                    })
+                    this.goToMainScreen()
 
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
@@ -402,9 +404,10 @@ export default class ValidateStepFiveScreen extends React.Component {
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
-                    this.props.navigation.navigate('ValidateOrApproveDriverScreen', {
+                    //this.props.navigation.navigate('ValidateOrApproveDriverScreen', {
                         
-                    })
+                   // })
+                   this.goToMainScreen()
 
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
@@ -724,7 +727,7 @@ export default class ValidateStepFiveScreen extends React.Component {
                                 :
                                 <View style={styles.editTextContainerForBond}>
                                         
-                                <Text style={styles.editTextStyle}
+                                <Text style={styles.adminNoteTextStyle}
                                         >{this.state.item.admin_notes}</Text>
                                 </View>
                                 
@@ -743,7 +746,11 @@ export default class ValidateStepFiveScreen extends React.Component {
                                 <View style={styles.boxGap} />
                                 <TouchableOpacity style={styles.cancelButtonContainer}
                                     onPress={() => this.onClickSubmitButton()}>
+                                        {this.state.item.status==0?
                                     <Text numberOfLines={1} style={styles.buttonText}>REJECT</Text>
+                                    :
+                                    <Text numberOfLines={1} style={styles.buttonText}>CANCEL</Text>
+                                    }
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -878,6 +885,7 @@ const styles = StyleSheet.create({
         height: 100
     },
     adminNoteTextStyle: {
+        marginTop: 8,
         fontSize: 15,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,

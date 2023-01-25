@@ -53,7 +53,7 @@ export default class ValidateStepTwoScreen extends React.Component {
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
         // this.item = this.props.params.item;
 
-        console.log("item", this.state.item)
+        console.log("item 2", this.state.item)
 
         this.setState({
             selectedUtility: this.state.item.utility_bill,
@@ -84,17 +84,17 @@ export default class ValidateStepTwoScreen extends React.Component {
             Toast.show("Please enter Driving License Expiry Date", Toast.SHORT);
         }else if(this.state.licenceExpiryImage==""){
             Toast.show("Please enter Driving License Expiration Image", Toast.SHORT);
-        }else if(this.state.isAustralianLicenceYes&&this.state.passportNo==""){
+        }else if(this.state.isAustralianLicenceNo&&this.state.passportNo==""){
             Toast.show("Please enter Passport Number", Toast.SHORT);
-        }else if(this.state.isAustralianLicenceYes&&this.state.passportNoImage==""){
+        }else if(this.state.isAustralianLicenceNo&&this.state.passportNoImage==""){
             Toast.show("Please enter Passport Image", Toast.SHORT);
-        }else if(this.state.isAustralianLicenceYes&&this.state.passportExpireDate==""){
+        }else if(this.state.isAustralianLicenceNo&&this.state.passportExpireDate==""){
             Toast.show("Please enter Passport Expiration Date", Toast.SHORT);
-        }else if(this.state.isAustralianLicenceYes&&this.state.passportExpiryImage==""){
+        }else if(this.state.isAustralianLicenceNo&&this.state.passportExpiryImage==""){
             Toast.show("Please enter Passport Expiration Image", Toast.SHORT);
-        }else if(this.state.isAustralianLicenceYes&&this.state.utilityBillImageName==""){
+        }else if(this.state.isAustralianLicenceNo&&this.state.utilityBillImageName==""){
             Toast.show("Please enter Utility Bill Name", Toast.SHORT);
-        }else if(this.state.isAustralianLicenceYes&&this.state.utilityBillImage==""){
+        }else if(this.state.isAustralianLicenceNo&&this.state.utilityBillImage==""){
             Toast.show("Please enter Utility Bill Image", Toast.SHORT);
         }else{
         let item = this.state.item
@@ -104,7 +104,7 @@ export default class ValidateStepTwoScreen extends React.Component {
         item.licence_expiry = this.state.driverExpireDate;
         
         item.licence_no = this.state.driverLICNo;
-        item.is_australian_licence = this.state.isAustralianLicenceYes;
+        item.is_australian_licence = this.state.isAustralianLicenceYes===true?"Yes":"No";
         if(this.state.licenceImage!="")
         item.licence_image = this.state.licenceImage;
         if(this.state.licenceExpiryImage!="")
@@ -350,7 +350,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                             }
 
                             <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("licenceExpiryImage")}>
-                                {this.state.item.licence_expiry_image != null && this.state.licence_expiry_image != "" ?
+                                {this.state.item.licence_expiry_image != null && this.state.item.licence_expiry_image != "" ?
                                     <Image
                                         source={{ uri: this.state.licenceExpiryImage }}
                                         style={styles.logoIcon}
@@ -398,8 +398,12 @@ export default class ValidateStepTwoScreen extends React.Component {
 
 
 
-                            <Text numberOfLines={1} style={styles.headingTextStyle} >Passport No.</Text>
+{this.state.isAustralianLicenceNo?
 
+                            <Text numberOfLines={1} style={styles.headingTextStyle} >Passport No.</Text>
+:
+null}
+                            {this.state.isAustralianLicenceNo?
                             <View style={styles.editTextContainer}>
                                 <TextInput
                                     style={styles.emailIdEditTextStyle}
@@ -414,7 +418,10 @@ export default class ValidateStepTwoScreen extends React.Component {
                                     blurOnSubmit={false}
                                 />
                             </View>
+:
+null}
 
+{this.state.isAustralianLicenceNo?
                             <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("passportNoImage")}>
                                 {this.state.item.passport_no_image != null && this.state.item.passport_no_image != "" ?
                                     <Image
@@ -435,9 +442,13 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 }
 
                             </TouchableOpacity>
+:null}
 
-
+{this.state.isAustralianLicenceNo?
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Passport Expire</Text>
+                            :null}
+
+{this.state.isAustralianLicenceNo?
                             <TouchableOpacity style={styles.bondDateContainer} onPress={this.showPassportExpireDate} >
                                 <View style={styles.editTextContainer}>
                                     <Text style={[styles.emailIdEditTextStyle, { paddingVertical: 16 }]}
@@ -450,6 +461,8 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 />
                             </View>
                             </TouchableOpacity>
+                            :
+                            null}
 
                             {this.state.isDisplayPassportExpireDate &&
                                 <DateTimePicker
@@ -462,6 +475,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 />
                             }
 
+{this.state.isAustralianLicenceNo?
                             <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("passportExpiryImage")}>
                                 {this.state.item.passport_expiry_image != null && this.state.item.passport_expiry_image != "" ?
                                     <Image
@@ -483,9 +497,12 @@ export default class ValidateStepTwoScreen extends React.Component {
 
                             </TouchableOpacity>
 
+:null}
+{this.state.isAustralianLicenceNo?
 
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Select Utility Bill</Text>
-
+                            :null}
+{this.state.isAustralianLicenceNo?
                             <View style={styles.editTextContainer}>
                                 <TextInput
                                     style={styles.emailIdEditTextStyle}
@@ -500,7 +517,8 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 />
                             </View>
 
-
+:null}
+{this.state.isAustralianLicenceNo?
 
                             <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("utilityBillImage")}>
                                 {this.state.item.utility_bill_image != null && this.state.utilityBillImage != "" ?
@@ -522,6 +540,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 }
 
                             </TouchableOpacity>
+:null}
 
                             <TouchableOpacity style={styles.buttonContainer}
                                 onPress={() => this.goToNextScreen()}>
@@ -531,6 +550,7 @@ export default class ValidateStepTwoScreen extends React.Component {
 
 
                         </View>
+                        
                     </ScrollView>
 
                 </View>
@@ -700,7 +720,7 @@ const styles = StyleSheet.create({
         borderColor: '#f1f1f1',
         borderWidth: 2,
         borderRadius: 10,
-        height: 125,
+        height: 130,
         marginTop: 8,
         marginLeft: 40,
         marginRight: 40,
@@ -711,8 +731,9 @@ const styles = StyleSheet.create({
     },
 
     logoIcon: {
-        width: 60,
-        height: 60,
+        margin:5,
+        width:600,
+        height: 100,
         resizeMode: 'contain',
     },
 
