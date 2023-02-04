@@ -21,6 +21,7 @@ import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView'
 import { color } from 'react-native-reanimated';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
 
@@ -33,72 +34,37 @@ export default class DashboardScreen extends React.Component {
             searchText: "",
             isCarDetailsViewModalVisible: false,
             data: [],
+            registeredDriverList: [],
+            carList: [],
+            topViewList: [
+                {
+                    id: 1,
+                    title: "Total Vehicle",
+                    car_count: "90",
+                    van_count: "10",
+                    image: "",
+                    color: Colors.blue
+
+                },
+                {
+                    id: 2,
+                    title: "On Rent",
+                    car_count: "90",
+                    van_count: "10",
+                    image: "",
+                    color: Colors.yellow
+                },
+                {
+                    id: 3,
+                    title: "Available For Rent",
+                    car_count: "90",
+                    van_count: "10",
+                    image: "",
+                    color: Colors.dark_shade_gray
+
+                }
+            ],
             isDropdownVisible: false,
-            // data: [
-            //     {
-            //         id: 1,
-            //         car_image: '../images/car_img.jpg',
-            //         car_number: "WB16 M9876",
-            //         serial_number: "K02315",
-            //         year: "2021",
-            //         fuel_type: "LPG",
-            //         is_available: true
-            //     },
-            //     {
-            //         id: 2,
-            //         car_image: '../images/car_img.jpg',
-            //         car_number: "WB16 M9876",
-            //         serial_number: "K02315",
-            //         year: "2022",
-            //         fuel_type: "Petrol",
-            //         is_available: false
-            //     },
-            //     {
-            //         id: 3,
-            //         car_image: '../images/car_img.jpg',
-            //         car_number: "WB16 M9876",
-            //         serial_number: "K02315",
-            //         year: "2020",
-            //         fuel_type: "Diesel",
-            //         is_available: false
-            //     },
-            //     {
-            //         id: 4,
-            //         car_image: '../images/car_img.jpg',
-            //         car_number: "WB16 M9876",
-            //         serial_number: "K02315",
-            //         year: "2021",
-            //         fuel_type: "Petrol",
-            //         is_available: true
-            //     },
-            //     {
-            //         id: 5,
-            //         car_image: '../images/car_img.jpg',
-            //         car_number: "WB16 M9876",
-            //         serial_number: "K02315",
-            //         year: "2020",
-            //         fuel_type: "LPG",
-            //         is_available: true
-            //     },
-            //     {
-            //         id: 6,
-            //         car_image: '../images/car_img.jpg',
-            //         car_number: "WB16 M9876",
-            //         serial_number: "K02315",
-            //         year: "2021",
-            //         fuel_type: "Petrol",
-            //         is_available: false
-            //     },
-            //     {
-            //         id: 7,
-            //         car_image: '../images/car_img.jpg',
-            //         car_number: "WB16 M9876",
-            //         serial_number: "K02315",
-            //         year: "2020",
-            //         fuel_type: "Diesel",
-            //         is_available: true
-            //     },
-            // ],
         }
     }
 
@@ -152,7 +118,9 @@ export default class DashboardScreen extends React.Component {
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
 
                     if (responseJSON.hasOwnProperty("car_list") && responseJSON.car_list != null) {
-                        this.setState({ data: responseJSON.car_list });
+                        this.setState({ registeredDriverList: responseJSON.car_list });
+                        this.setState({ carList: responseJSON.car_list });
+
                     }
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
@@ -233,6 +201,139 @@ export default class DashboardScreen extends React.Component {
         );
     }
 
+    setRenderRegisteredDriversItemView = ({ item, index }) => {
+        return (
+            <TouchableOpacity style={styles.topItemContainer} activeOpacity={1} key={item.id}
+            // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
+            >
+                <View >
+
+                    <Text numberOfLines={1} style={{
+                        fontSize: 14,
+                        color: Colors.dark_shade_gray,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+
+                    }}>20 Jan 2023</Text>
+                    <Text numberOfLines={1} style={{
+                        fontSize: 12,
+                        color: Colors.pink,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+
+                    }}
+                    >Validation Waited</Text>
+                    <Text numberOfLines={1} style={{
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                        paddingVertical: 3,
+                        color: Colors.dark_shade_pink_red,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+
+                    }}>Rahul Pathak</Text>
+
+                    <View style={{
+                        height: 2,
+                        justifyContent: 'center',
+                        alignSelf: 'center',
+                        alignContent: 'center',
+                        borderRadius: 50,
+                        elevation: 1,
+                        width: 25,
+                        backgroundColor: Colors.pink
+                    }} />
+
+                    <Text numberOfLines={1} style={{
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        color: Colors.blue,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+
+                    }}>+61 9876554321</Text>
+                    <Text numberOfLines={1} style={{
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        color: Colors.black,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+
+                    }}>Licence No.: 552427</Text>
+                    <Text numberOfLines={1} style={{
+                        fontSize: 10,
+                        color: Colors.dark_shade_gray,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+
+                    }}>Country : Australia</Text>
+
+                    <Text numberOfLines={1} style={{
+                        backgroundColor: Colors.textColor1,
+                        fontWeight: 'bold',
+                        color: Colors.white,
+                        borderRadius: 30,
+                        paddingVertical: 6,
+                        paddingHorizontal: 15,
+                        marginTop: 8,
+                        flex: 1,
+                        fontSize: 14,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+
+                    }}>VALIDATE DRIVER</Text>
+
+                </View>
+
+            </TouchableOpacity>
+        );
+    }
+
+
+    setTopItemView = ({ item, index }) => {
+        return (
+            <TouchableOpacity style={styles.topItemContainer} activeOpacity={1} key={item.id}
+            // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
+            >
+                <View >
+
+                    <Image
+                        source={require('../images/car_img.jpg')}
+                        // source={{ uri: Links.BASEURL + item.image }}
+                        style={styles.topViewImage}
+                    />
+
+                    <Text numberOfLines={1} style={styles.headingTwoTextStyle}>{item.title}</Text>
+
+                    <View style={styles.activeCarNumberContainer}>
+                        <Text numberOfLines={1} style={styles.activeCarNumberTextStyle}>CAR: {item.car_count}</Text>
+                    </View>
+
+                    <View style={styles.activeCarNumberContainer}>
+                        <Text numberOfLines={1} style={styles.activeCarNumberTextStyle}>VAN: {item.van_count}</Text>
+                    </View>
+
+                </View>
+
+            </TouchableOpacity>
+        );
+    }
+
+
     emptyPlaceHolderView = () => {
         return (
             <View style={styles.noDataPlaceHolderContainer}>
@@ -259,94 +360,83 @@ export default class DashboardScreen extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.mainContainer}>
-                    <AppBarWithMenu title="Dashboard" navigation={this.props.navigation} />
-
+                    <AppBarWithMenu title="Quantum Car Dashboard" navigation={this.props.navigation} />
                     <View style={styles.bottomViewContainer}>
-                        <View style={styles.filterMainContainer}>
-                            {/* <TouchableOpacity style={styles.allEditTextContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
-                                <Text numberOfLines={1} style={styles.filterText} >All</Text>
-                                <Image
-                                    source={require('../images/down_arow.png')}
-                                    style={styles.dropdownIcon}
-                                />
-                            </TouchableOpacity> */}
 
-                            {/* <View style={styles.searchEditTextContainer}>
-                                <TextInput
-                                    numberOfLines={1}
-                                    style={styles.searchEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    placeholder="Search by Model,Car No, Fuel type"
-                                    value={this.state.searchText}
-                                    onChangeText={(value) => this.setState({ searchText: value })}
-                                    onSubmitEditing={() => { this.passwordTextInput.focus() }}
-                                    blurOnSubmit={false}
-                                />
+                        <ScrollView
+                            nestedScrollEnabled // add this
+                        >
+                            <View style={styles.mainContainer}>
+                                {this.state.isNetworkAvailable ?
+                                    <View style={styles.mainContainer}>
+                                        {this.state.isLoading && <Loader />}
 
-                                <Image
-                                    source={require('../images/ic_search.png')}
-                                    style={styles.searchIcon}
-                                />
-                            </View> */}
+                                        <View style={{ flex: 1, marginTop: 20 }}>
+                                            {this.state.registeredDriverList.length > 0 ?
+                                                <FlatList
+                                                    data={this.state.topViewList}
+                                                    nestedScrollEnabled
+                                                    renderItem={(item, index) => this.setTopItemView(item, index)}
+                                                    listKey={(item, index) => 'LC' + item.id}
+                                                    keyExtractor={(item, index) => item.id}
+                                                    style={styles.flatListStyle}
+                                                    columnWrapperStyle={{ justifyContent: 'space-between', }}
+                                                    showsVerticalScrollIndicator={false}
+                                                    numColumns={3}
+                                                />
+                                                :
+                                                this.emptyPlaceHolderView()
+                                            }
 
-                        </View>
+                                        </View>
 
-                        <View style={styles.mainContainer}>
-                            {/* {this.state.isNetworkAvailable ?
-                                <View style={styles.mainContainer}>
-                                    {this.state.isLoading && <Loader />}
-                                    {this.state.data.length > 0 ?
-                                        <FlatList
-                                            data={this.state.data}
-                                            renderItem={(item, index) => this.setRenderItemView(item, index)}
-                                            listKey={(item, index) => 'LC' + item.id}
-                                            keyExtractor={(item, index) => item.id}
-                                            style={styles.flatListStyle}
-                                            columnWrapperStyle={{ justifyContent: 'space-between', }}
-                                            showsVerticalScrollIndicator={false}
-                                            numColumns={2}
-                                        />
-                                        :
-                                        this.emptyPlaceHolderView()
-                                    }
-                                </View>
-                                :
-                                null
-                            } */}
-                            <View style={styles.noDataPlaceHolderContainer}>
-                                <Text style={styles.noDataPlaceHolderTextStyle}>Welcome to Quantum Cars</Text>
+                                        <Text numberOfLines={1} style={styles.headingTextStyle}>New Registered Drivers</Text>
+
+                                        <View style={{ flex: 1 }}>
+                                            {this.state.registeredDriverList.length > 0 ?
+                                                <FlatList
+                                                    data={this.state.registeredDriverList}
+                                                    nestedScrollEnabled
+                                                    renderItem={(item, index) => this.setRenderRegisteredDriversItemView(item, index)}
+                                                    listKey={(item, index) => 'LC' + item.id}
+                                                    keyExtractor={(item, index) => item.id}
+                                                    style={styles.flatListStyle}
+                                                    columnWrapperStyle={{ justifyContent: 'space-between', }}
+                                                    showsVerticalScrollIndicator={false}
+                                                    numColumns={2}
+                                                />
+                                                :
+                                                this.emptyPlaceHolderView()
+                                            }
+
+                                        </View>
+
+                                        <Text numberOfLines={1} style={styles.headingTextStyle}>Cars & Vans Available For Rent</Text>
+
+                                        <View style={{ flex: 1 }}>
+                                            {this.state.carList.length > 0 ?
+                                                <FlatList
+                                                    data={this.state.carList}
+                                                    renderItem={(item, index) => this.setRenderItemView(item, index)}
+                                                    nestedScrollEnabled
+                                                    listKey={(item, index) => 'LC' + item.id}
+                                                    keyExtractor={(item, index) => item.id}
+                                                    style={styles.flatListStyle}
+                                                    columnWrapperStyle={{ justifyContent: 'space-between', }}
+                                                    showsVerticalScrollIndicator={false}
+                                                    numColumns={2}
+                                                />
+                                                :
+                                                this.emptyPlaceHolderView()
+                                            }
+                                        </View>
+                                    </View>
+                                    :
+                                    null
+                                }
+
                             </View>
-                        </View>
-
-                        {this.state.isDropdownVisible ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 1")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 1</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 2")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 2</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 3")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 3</Text>
-                                </TouchableOpacity>
-
-                                <View style={styles.divider} />
-
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 4")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 4</Text>
-                                </TouchableOpacity>
-                            </View>
-                            : null}
-
-
+                        </ScrollView>
 
                     </View>
                 </View>
@@ -443,7 +533,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginHorizontal: 16,
         backgroundColor: Colors.white,
-        // flex: 1
+        flex: 1
     },
     noDataPlaceHolderContainer: {
         flex: 1,
@@ -464,11 +554,30 @@ const styles = StyleSheet.create({
         elevation: 5,
         paddingBottom: 8,
     },
+    topItemContainer: {
+        flex: 0.5,
+        padding: 10,
+        marginHorizontal: 5,
+        marginVertical: 5,
+        borderRadius: 10,
+        backgroundColor: Colors.light_shade_gray,
+        elevation: 5,
+    },
     carImage: {
         width: '100%',
         height: 130,
         resizeMode: 'contain',
         borderRadius: 10,
+    },
+
+    topViewImage: {
+        width: 60,
+        height: 60,
+        resizeMode: 'contain',
+        borderRadius: 50,
+        justifyContent: 'center',
+        alignSelf: 'center',
+        alignItems: 'center',
     },
     carInfoContainer: {
         flexDirection: 'row',
@@ -501,6 +610,24 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingHorizontal: 13,
         paddingVertical: 4
+    },
+    headingTextStyle: {
+        fontSize: 16,
+        color: Colors.dark_shade_gray,
+        fontWeight: 'bold',
+        paddingHorizontal: 18,
+        paddingVertical: 6
+    },
+    headingTwoTextStyle: {
+        fontSize: 12,
+        color: Colors.dark_shade_gray,
+        fontWeight: 'bold',
+        paddingHorizontal: 6,
+        paddingVertical: 6,
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
     },
     inactiveCarNumberContainer: {
         alignSelf: 'center',
