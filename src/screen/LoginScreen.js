@@ -201,10 +201,10 @@ export default class LoginScreen extends React.Component {
 
 
 
-            <Image
+            {/* <Image
               source={require('../images/ic_login_bottom.png')}
               style={styles.bottomImage}
-            />
+            /> */}
 
             <View style={styles.editTextContainer}>
               <TextInput
