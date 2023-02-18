@@ -37,18 +37,26 @@ export default class AddNewCar extends React.Component {
             deviceType: "1",
             carNo: "",
             model: "",
+            company:"",
+            companyId:"",
             fuleType: "",
             make: "",
             year: "",
+            odometer:"",
+            serviceKilometer:"",
+            transmissionService:"",
+            sparkPlug:"",
             regoExpireDate: "",
             insuranceExpireDate: "",
             carImage: null,
             carId: "",
+            vehicleId:"",
             isHybridYes: false,
             isHybridNo: true,
             isCarStatusActive: true,
             isCarStatusInactive: false,
             resourcePath: {},
+            companyList: [],
             imageUri: null,
             imageName: "",
             imageSize: "",
@@ -57,6 +65,10 @@ export default class AddNewCar extends React.Component {
             isDisplayRegoExpireDate: false,
             isDisplayInsuranceExpireDate: false,
             isDropdownVisible: false,
+            vehicleType:[
+                {value: "Car"},
+                {value: "Van"}
+            ],
             abnList: [
                 { value: "Petrol" },
                 { value: "Diesel" },
@@ -108,10 +120,18 @@ export default class AddNewCar extends React.Component {
     componentDidMount = async () => {
         this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
-
+        console.log("item value:",this.state.item)
+        this.getCompanyList()
         this.setState({
             carNo: this.state.item.car_no,
             carId: this.state.item.car_id,
+            vehicleId:this.state.item.vehicle_type,
+            company:this.state.item.company_name,
+            companyId:this.state.item.company_id,
+            odometer:this.state.item.total_odometer_reading,
+            serviceKilometer:this.state.item.service_kilometer,
+            transmissionService:this.state.item.transmission_service,
+            sparkPlug:this.state.item.spark_plug_for_eg,
             model: this.state.item.model,
             fuleType: this.state.item.fuel_type,
             make: this.state.item.make,
@@ -119,24 +139,42 @@ export default class AddNewCar extends React.Component {
             regoExpireDate: this.state.item.rego_expire_date,
             insuranceExpireDate: this.state.item.insurance_expire_date,
             imageUri: Links.BASEURL + this.state.item.car_image,
-            isHybridYes: this.state.item.is_hybrid === "Yes" ? true : false,
-            isHybridNo: this.state.item.is_hybrid === "No" ? true : false,
-            isHybridNo: this.state.item.is_hybrid === "" ? true : false,
+            isHybridYes: this.state.item.is_hybrid === "1" ? true : false,
+            isHybridNo: this.state.item.is_hybrid === "0" ? true : false,
+            //isHybridNo: this.state.item.is_hybrid === "" ? true : false,
             isCarStatusActive: this.state.item.status === "1" ? true : false,
             isCarStatusInactive: this.state.item.status === "0" ? true : false,
             // com: item.company_id,
             // insuranceExpireDate: item.company_name,
             // insuranceExpireDate: item.company_code,
         })
+        
     }
-
+    goToMainScreen() {
+        this.props.navigation.reset({
+          index: 0,
+          routes: [{ name: 'MainDrawerScreen' }],
+        });
+      }
     onClickSubmitButton() {
 
     }
+    async onValueChangeCompany(value) {
+        this.setState({
+            companyId: value,
+        });
+        console.log("this.state.companyId", value)
 
+    }
     onClickDropdownItem(fuleType) {
         this.setState({
             fuleType: fuleType,
+        })
+    }
+
+    onClickVehicleDropdownItem(vehicleId) {
+        this.setState({
+            vehicleId: vehicleId,
         })
     }
 
@@ -177,12 +215,82 @@ export default class AddNewCar extends React.Component {
         });
     }
 
+    getCompanyList() {
+        try {
+            NetInfo.fetch().then(state => {
+                if (state.isConnected) {
+                    this.getCompanyListApi();
+                }
+                else {
+                    Utils.showMessageAlert("No internet connection")
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error in webservice call : " + error);
+        }
+    }
+
+    getCompanyListApi = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call Rent Out company_list API Link ========>  ", Links.getCompanyList);
+            console.log("Rent Out company_list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.getCompanyList, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Rent Out company_list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    if (responseJSON.hasOwnProperty("company_list") && responseJSON.company_list != null) {
+                        this.setState({ companyList: responseJSON.company_list });
+
+                        console.log("company_id", this.state.companyList)
+
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
 
 
     callAddNewCarValidation() {
         Keyboard.dismiss();
         if (this.state.carNo == "") {
             Toast.show("Please enter Car No", Toast.SHORT);
+        }
+        else if (this.state.vehicleId == null||this.state.vehicleId == "") {
+            Toast.show("Please select vehicle type", Toast.SHORT);
+        }
+        else if (this.state.company == "") {
+            Toast.show("Please select company name", Toast.SHORT);
         }
         else if (this.state.model == "") {
             Toast.show("Please enter model", Toast.SHORT);
@@ -196,10 +304,17 @@ export default class AddNewCar extends React.Component {
         else if (this.state.year == "") {
             Toast.show("Please enter Year", Toast.SHORT);
         }
-        else if (this.state.regoExpireDate == "") {
+        else if (this.state.odometer == null||this.state.odometer == "") {
+            Toast.show("Please enter Odometer value", Toast.SHORT);
+            console.log("vehicle id", vehicleId)
+        }
+        else if (this.state.serviceKilometer ==null||this.state.serviceKilometer == "") {
+            Toast.show("Please enter Service Kilometers value", Toast.SHORT);
+        }
+        else if (this.state.regoExpireDate ==null||this.state.regoExpireDate == "") {
             Toast.show("Please enter Rego Expire Date", Toast.SHORT);
         }
-        else if (this.state.insuranceExpireDate == "") {
+        else if (this.state.insuranceExpireDate ==null||this.state.insuranceExpireDate == "") {
             Toast.show("Please enter Insurance Expire Date", Toast.SHORT);
         }
         // else if (this.state.carImage == null) {
@@ -231,19 +346,29 @@ export default class AddNewCar extends React.Component {
         formData.append('user_id', this.userId);
         formData.append('car_no', this.state.carNo);
 
+        formData.append('company_id', this.state.companyId);
+        formData.append('vehicle_type', this.state.vehicleId);
+        formData.append('odometer_reading', this.state.odometer);
+
+        formData.append('service_kilometer', this.state.serviceKilometer);
+        formData.append('transmission_service', this.state.transmissionService);
+        formData.append('spark_plug_for_eg', this.state.sparkPlug);
+
         formData.append('make', this.state.make);
         formData.append('model', this.state.model);
         formData.append('year', this.state.year);
         formData.append('fuel_type', this.state.fuleType);
-        formData.append('is_hybrid', this.state.isHybridYes);
-        formData.append('status', this.state.isCarStatusActive);
+        formData.append('is_hybrid', this.state.isHybridYes === true ? "1" : "0");
+        formData.append('status', this.state.isCarStatusActive === true ? "1" : "0");
         formData.append('rego_expire_date', this.state.regoExpireDate);
         formData.append('insurance_expire_date', this.state.insuranceExpireDate);
+        if(this.state.imageName.trim().length>0){
         formData.append('car_image', {
             uri: Platform.OS === 'ios' ? this.state.imageUri.replace('file://', '') : this.state.imageUri,
             name: this.state.imageName,
             type: this.state.imageType
         });
+    }
         formData.append('car_id', this.state.carId);
 
 
@@ -267,7 +392,8 @@ export default class AddNewCar extends React.Component {
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
-                    this.props.navigation.goBack()
+                    this.goToMainScreen()
+                    //this.props.navigation.goBack()
 
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
@@ -298,6 +424,22 @@ export default class AddNewCar extends React.Component {
     };
 
 
+renderCompany = (item) => {
+        return (
+            <View>
+                <Text style={styles.selectionListTextStyle}>{item.company_name}</Text>
+            </View>
+        );
+    };
+
+    renderVehicleType = (item) => {
+        return (
+            <View>
+                <Text style={styles.selectionListTextStyle}>{item.value}</Text>
+            </View>
+        );
+    };
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
@@ -316,11 +458,75 @@ export default class AddNewCar extends React.Component {
                                 // placeholder="Email Id"
                                 value={this.state.carNo}
                                 onChangeText={(value) => this.setState({ carNo: value })}
-                                onSubmitEditing={() => { this.modelTextInput.focus() }}
+                                onSubmitEditing={() => { this.makeTextInput.focus() }}
                                 blurOnSubmit={false}
                             />
                         </View>
 
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Vehicle Type *</Text>
+
+<View style={styles.editTextContainer}>
+    <Dropdown
+        style={styles.dropdown}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        inputSearchStyle={styles.inputSearchStyle}
+        iconStyle={styles.iconStyle}
+        data={this.state.vehicleType}
+        placeholder="Select Vehicle Type"
+        maxHeight={300}
+        labelField="value"
+        valueField="value"
+        value={this.state.vehicleId}
+        onChange={item => {
+            this.onClickVehicleDropdownItem(item.value);
+        }}
+        renderItem={this.renderVehicleType}
+
+    />
+</View>
+
+
+
+<Text numberOfLines={1} style={styles.headingTextStyle} >Company *</Text>
+
+<View style={styles.editTextContainer}>
+
+    <Dropdown
+        style={styles.dropdown}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        inputSearchStyle={styles.inputSearchStyle}
+        iconStyle={styles.iconStyle}
+        data={this.state.companyList}
+        placeholder="Select Company"
+        maxHeight={300}
+        labelField="company_name"
+        valueField="company_id"
+        value={this.state.companyId}
+        onChange={item => {
+            this.onValueChangeCompany(item.company_id);
+        }}
+        renderItem={this.renderCompany}
+
+        />
+</View>
+
+<Text numberOfLines={1} style={styles.headingTextStyle} >Make</Text>
+                        <View style={styles.editTextContainer}>
+                            <TextInput
+                                style={styles.emailIdEditTextStyle}
+                                autoCapitalize="none"
+                                multiline={false}
+                                placeholderTextColor={Colors.placeholderColor}
+                                // placeholder="Email Id"
+                                value={this.state.make}
+                                onChangeText={(value) => this.setState({ make: value })}
+                                onSubmitEditing={() => { this.modelTextInput.focus() }}
+                                ref={(input) => { this.makeTextInput = input; }}
+                                blurOnSubmit={false}
+                            />
+                        </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Model *</Text>
                         <View style={styles.editTextContainer}>
@@ -338,34 +544,7 @@ export default class AddNewCar extends React.Component {
                             />
                         </View>
 
-
-
-                        <Text numberOfLines={1} style={styles.headingTextStyle} >Fuel Type</Text>
-
-                        <View style={styles.editTextContainer}>
-                            <Dropdown
-                                style={styles.dropdown}
-                                placeholderStyle={styles.placeholderStyle}
-                                selectedTextStyle={styles.selectedTextStyle}
-                                inputSearchStyle={styles.inputSearchStyle}
-                                iconStyle={styles.iconStyle}
-                                data={this.state.abnList}
-                                placeholder="Select Fule Type"
-                                maxHeight={300}
-                                labelField="value"
-                                valueField="value"
-                                value={this.state.fuleType}
-                                onChange={item => {
-                                    this.onClickDropdownItem(item);
-                                }}
-                                renderItem={this.renderFuleType}
-
-                            />
-                        </View>
-
-
-
-                        <Text numberOfLines={1} style={styles.headingTextStyle} >Make</Text>
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Odometer *</Text>
                         <View style={styles.editTextContainer}>
                             <TextInput
                                 style={styles.emailIdEditTextStyle}
@@ -373,13 +552,17 @@ export default class AddNewCar extends React.Component {
                                 multiline={false}
                                 placeholderTextColor={Colors.placeholderColor}
                                 // placeholder="Email Id"
-                                value={this.state.make}
-                                onChangeText={(value) => this.setState({ make: value })}
+                                value={this.state.odometer}
+                                onChangeText={(value) => this.setState({ odometer: value })}
                                 onSubmitEditing={() => { this.yearTextInput.focus() }}
-                                ref={(input) => { this.makeTextInput = input; }}
-                                blurOnSubmit={false}
+                                blurOnSubmit={true}
                             />
                         </View>
+
+
+
+
+
 
 
 
@@ -396,7 +579,7 @@ export default class AddNewCar extends React.Component {
                                     placeholder="DD/MM/YYYY"
                                     value={this.state.year}
                                     onChangeText={(value) => this.setState({ year: value })}
-                                    onSubmitEditing={() => { this.insuranceExpireDateTextInput.focus() }}
+                                    onSubmitEditing={() => { this.fuelTypeTextInput.focus() }}
                                     ref={(input) => { this.yearTextInput = input; }}
                                     blurOnSubmit={false}
                                 />
@@ -420,6 +603,79 @@ export default class AddNewCar extends React.Component {
                             onChange={this.setYear}
                             />
                         }
+
+<Text numberOfLines={1} style={styles.headingTextStyle} >Fuel Type</Text>
+
+<View style={styles.editTextContainer}>
+    <Dropdown
+        style={styles.dropdown}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        inputSearchStyle={styles.inputSearchStyle}
+        iconStyle={styles.iconStyle}
+        data={this.state.abnList}
+        placeholder="Select Fuel Type"
+        maxHeight={300}
+        labelField="value"
+        valueField="value"
+        value={this.state.fuleType}
+        onChange={item => {
+            this.onClickDropdownItem(item);
+        }}
+        renderItem={this.renderFuleType}
+
+    />
+</View>
+
+<Text numberOfLines={1} style={styles.headingTextStyle} >Service Kilometer *</Text>
+                        <View style={styles.editTextContainer}>
+                            <TextInput
+                                style={styles.emailIdEditTextStyle}
+                                autoCapitalize="none"
+                                multiline={false}
+                                placeholderTextColor={Colors.placeholderColor}
+                                // placeholder="Email Id"
+                                value={this.state.serviceKilometer}
+                                onChangeText={(value) => this.setState({ serviceKilometer: value })}
+                                onSubmitEditing={() => { this.transmissionServiceTextInput.focus() }}
+                                ref={(input) => { this.serviceKilometerTextInput = input; }}
+                                blurOnSubmit={false}
+                            />
+                        </View>
+
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Transmission Service </Text>
+                        <View style={styles.editTextContainer}>
+                            <TextInput
+                                style={styles.emailIdEditTextStyle}
+                                autoCapitalize="none"
+                                multiline={false}
+                                placeholderTextColor={Colors.placeholderColor}
+                                // placeholder="Email Id"
+                                value={this.state.transmissionService}
+                                onChangeText={(value) => this.setState({ transmissionService: value })}
+                                onSubmitEditing={() => { this.sparkPlugTextInput.focus() }}
+                                ref={(input) => { this.transmissionServiceTextInput = input; }}
+                                blurOnSubmit={false}
+                            />
+                        </View>
+
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Spark Plug for EG </Text>
+                        <View style={styles.editTextContainer}>
+                            <TextInput
+                                style={styles.emailIdEditTextStyle}
+                                autoCapitalize="none"
+                                multiline={false}
+                                placeholderTextColor={Colors.placeholderColor}
+                                // placeholder="Email Id"
+                                value={this.state.sparkPlug}
+                                onChangeText={(value) => this.setState({ sparkPlug: value })}
+                                onSubmitEditing={() => { this.insuranceExpireDateTextInput.focus() }}
+                                ref={(input) => { this.sparkPlugTextInput = input; }}
+                                blurOnSubmit={false}
+                            />
+                        </View>
+
+
 
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Insurance Expire Date *</Text>
@@ -452,7 +708,7 @@ export default class AddNewCar extends React.Component {
                                 mode='date'
                                 // maximumDate={new Date()}
                                 minimumDate={new Date()}
-                            display={Platform.OS == "android" ? "calendar" : "spinner"}
+                                display={Platform.OS == "android" ? "calendar" : "spinner"}
                                 onChange={this.setInsuranceExpireDate}
                             />
                         }
@@ -508,7 +764,7 @@ export default class AddNewCar extends React.Component {
 
 
                             {this.state.fileName != "" ?
-                                <Text numberOfLines={2} style={styles.uploadImageNameText} >{this.state.imageName}</Text>
+                                <Text numberOfLines={1} style={styles.uploadImageNameText} >{this.state.imageName}</Text>
                                 : <Text numberOfLines={1} style={styles.uploadPhotoText} >Upload Photo</Text>
 
                             }
@@ -602,8 +858,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     logoIcon: {
-        width: 60,
-        height: 60,
+        marginTop:5,
+        width: 1000,
+        height: 100,
         resizeMode: 'contain',
     },
     centerView: {

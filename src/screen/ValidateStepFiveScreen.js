@@ -30,10 +30,12 @@ export default class ValidateStepFiveScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            url:"",
             item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
 
+            deviceType: "1",
             firstName: "",
             lastName: "",
             middleName: "",
@@ -87,8 +89,9 @@ export default class ValidateStepFiveScreen extends React.Component {
         this.getPaymentMethod()
 
 
-        console.log(this.state.item)
-
+        console.log("item", this.state.item)
+        console.log("componentDidMount1", this.state.item.bond_details.bond_payment_method)
+        
         this.setState({
             firstName: this.state.item.first_name,
             lastName: this.state.item.last_name,
@@ -117,9 +120,20 @@ export default class ValidateStepFiveScreen extends React.Component {
             numberOfNotAtFaultAccidents: this.state.item.no_of_not_at_fault_accidents,
 
 
+            bondAmount:this.state.item.bond_details.bond_amount,
+            bondAmountDate:new Date().getMonth()+1+"/"+new Date().getDate()+"/"+new Date().getFullYear(),
+            paymentMethod:this.state.item.bond_details.bond_payment_method,
+            referenceNumber:this.state.item.bond_details.bond_reference_no,
+            adminNote:this.state.item.admin_notes,
+
+            licenceImage:this.state.item.licence_image,
+            licenceExpiryImage:this.state.item.licence_expiry_image,
+            passportNoImage:this.state.item.passport_no_image,
+            passportExpiryImage:this.state.item.passport_expiry_image,
+            utilityBillImage:this.state.item.utility_bill_image,
+            odometerImageUri:this.state.item.odometerImageUri     
 
         })
-
 
     }
 
@@ -141,10 +155,27 @@ export default class ValidateStepFiveScreen extends React.Component {
 
     callValidateDriverValidation() {
         Keyboard.dismiss();
+        if(this.state.bondAmount==""||this.state.bondAmount==null){
+            Toast.show("Enter Bond Amount", Toast.SHORT);
+        }else if(this.state.bondAmountDate==""||this.state.bondAmountDate==null){
+            Toast.show("Enter Bond Date", Toast.SHORT);
+        }else if(this.state.paymentMethod==""||this.state.paymentMethod==null){
+            Toast.show("Enter Payment Method", Toast.SHORT);
+        }else if(this.state.referenceNumber==""||this.state.referenceNumber==null){
+            Toast.show("Enter Reference Number", Toast.SHORT);
+        }else if(this.state.adminNote==""||this.state.bondAmount==null){
+            Toast.show("Enter Admin Notes", Toast.SHORT);
+        }else{
+        
         try {
             NetInfo.fetch().then(state => {
                 if (state.isConnected) {
-                    this.callValidateDriverApi();
+                    if(this.state.item.status==0){
+                        this.callValidateDriverApi();
+                    }else{
+                        this.editDriverApi();
+                    }
+                
                 }
                 else {
                     Utils.showMessageAlert("No internet connection")
@@ -155,8 +186,17 @@ export default class ValidateStepFiveScreen extends React.Component {
             console.log("Error in webservice call : " + error);
         }
     }
+}
+
+goToMainScreen() {
+    this.props.navigation.reset({
+      index: 0,
+      routes: [{ name: 'MainDrawerScreen' }],
+    });
+  }
 
     callValidateDriverApi = async () => {
+        
         this.setState({ isLoading: true });
 
         var formData = new FormData();
@@ -172,9 +212,9 @@ export default class ValidateStepFiveScreen extends React.Component {
         formData.append('flat_no', this.state.flatNo);
         formData.append('street_no', this.state.streetNo);
         formData.append('street_name', this.state.streetName);
-        formData.append('suburb', this.state.suburb);
-        formData.append('pin', this.state.pin);
-        formData.append('mobile', this.state.mobile);
+        formData.append('suburb', this.state.item.suburb);
+        formData.append('pin', this.state.item.pin);
+        formData.append('mobile', this.state.item.mobile);
         formData.append('dob', this.state.dob);
         formData.append('licence_no', this.state.driverLICNo);
         formData.append('licence_expiry', this.state.driverExpireDate);
@@ -189,6 +229,7 @@ export default class ValidateStepFiveScreen extends React.Component {
         formData.append('bond_date', this.state.bondAmountDate);
         formData.append('bond_payment_method', this.state.paymentMethod);
         formData.append('bond_reference_no', this.state.referenceNumber);
+        formData.append('admin_notes', this.state.adminNote);
 
 
         if (this.state.licenceImage != null && this.state.licenceImage != "")
@@ -228,6 +269,8 @@ export default class ValidateStepFiveScreen extends React.Component {
         try {
             console.log("Call Validate Driver API Link ========>  ", Links.validateDriver);
             console.log("Validate Driver Input ========>  ", JSON.stringify(formData));
+            
+
             const res = await fetch(Links.validateDriver, {
                 method: 'POST',
                 body: formData,
@@ -247,12 +290,130 @@ export default class ValidateStepFiveScreen extends React.Component {
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
-                    this.props.navigation.goBack()
+                    this.goToMainScreen()
 
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+
+    }
+
+    editDriverApi = async () => {
+        
+        this.setState({ isLoading: true });
+
+        var formData = new FormData();
+
+        formData.append('token_key', this.apiKey);
+        formData.append('device_type', this.state.deviceType);
+        formData.append('user_id', this.userId);
+        formData.append('driver_id', this.state.item.driver_id);
+
+        formData.append('first_name', this.state.firstName);
+        formData.append('middle_name', this.state.middleName);
+        formData.append('last_name', this.state.lastName);
+        formData.append('flat_no', this.state.flatNo);
+        formData.append('street_no', this.state.streetNo);
+        formData.append('street_name', this.state.streetName);
+        formData.append('suburb', this.state.item.suburb);
+        formData.append('pin', this.state.item.pin);
+        formData.append('mobile', this.state.item.mobile);
+        formData.append('dob', this.state.dob);
+        formData.append('licence_no', this.state.driverLICNo);
+        formData.append('licence_expiry', this.state.driverExpireDate);
+        formData.append('is_australian_licence', this.state.isAustralianLicenceYes ? "Yes" : "No");
+        formData.append('passport_no', this.state.passportNo);
+        formData.append('passport_expiry', this.state.passportExpireDate);
+        formData.append('utility_bill', this.state.selectedUtility);
+        formData.append('bank_name', this.state.accountName);
+        formData.append('bsb', this.state.bsb);
+        formData.append('account_no', this.state.accountNumber);
+        formData.append('bond_amount', this.state.bondAmount);
+        formData.append('bond_date', this.state.bondAmountDate);
+        formData.append('bond_payment_method', this.state.paymentMethod);
+        formData.append('bond_reference_no', this.state.referenceNumber);
+        formData.append('admin_notes', this.state.adminNote);
+
+
+        if (this.state.licenceImage != null && this.state.licenceImage != "")
+            formData.append('licence_image', {
+                uri: Platform.OS === 'ios' ? this.state.licenceImage.replace('file://', '') : this.state.licenceImage,
+                name: "licenceImage.jpeg",
+                type: "jpeg"
+            });
+        if (this.state.licenceExpiryImage != null && this.state.licenceExpiryImage != "")
+            formData.append('licence_expiry_image', {
+                uri: Platform.OS === 'ios' ? this.state.licenceExpiryImage.replace('file://', '') : this.state.licenceExpiryImage,
+                name: "licenceExpiryImage.jpeg",
+                type: "jpeg"
+            });
+        if (this.state.passportNoImage != null && this.state.passportNoImage != "")
+            formData.append('passport_no_image', {
+                uri: Platform.OS === 'ios' ? this.state.passportNoImage.replace('file://', '') : this.state.passportNoImage,
+                name: "passportNoImage.jpeg",
+                type: "jpeg"
+            });
+        if (this.state.passportExpiryImage != null && this.state.passportExpiryImage != "")
+            formData.append('passport_expiry_image', {
+                uri: Platform.OS === 'ios' ? this.state.passportExpiryImage.replace('file://', '') : this.state.passportExpiryImage,
+                name: "passportExpiryImage.jpeg",
+                type: "jpeg"
+            });
+        if (this.state.utilityBillImage != null && this.state.utilityBillImage != "")
+            formData.append('utility_bill_image', {
+                uri: Platform.OS === 'ios' ? this.state.utilityBillImage.replace('file://', '') : this.state.utilityBillImage,
+                name: "utilityBillImage.jpeg",
+                type: "jpeg"
+            });
+
+
+
+
+        try {
+            console.log("Call Edit Driver API Link ========>  ", Links.editDriver);
+            console.log("Edit Driver Input ========>  ", JSON.stringify(formData));
+            
+
+            const res = await fetch(Links.editDriver, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "multipart/form-data",
+
+                },
+            });
+            const responseJSON = await res.json();
+
+            console.log("Car Edit Driver Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+                    //this.props.navigation.navigate('ValidateOrApproveDriverScreen', {
+                        
+                   // })
+                   this.goToMainScreen()
+
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                        console.log("response",responseJSON)
                     } else {
                         Toast.show("something went wrong", Toast.SHORT);
                     }
@@ -354,7 +515,9 @@ export default class ValidateStepFiveScreen extends React.Component {
     }
 
     onClickSubmitButton(){
-        
+        this.props.navigation.navigate('ValidateOrApproveDriverScreen', {
+            item: this.state.item
+        })
     }
 
 
@@ -425,6 +588,7 @@ export default class ValidateStepFiveScreen extends React.Component {
                                 <View style={styles.bondAmountContainer}>
                                     <Text numberOfLines={1} style={styles.bondAmountText} >Bond Amount</Text>
                                     <View style={styles.editTextContainerForBond}>
+                                        {this.state.item.status==0?
                                         <TextInput
                                             style={styles.editTextStyle}
                                             autoCapitalize="none"
@@ -436,6 +600,13 @@ export default class ValidateStepFiveScreen extends React.Component {
                                             onSubmitEditing={() => { this.dateTextInput.focus() }}
                                             blurOnSubmit={false}
                                         />
+                                        :
+                                        <View style={styles.editTextContainerForBond}>
+                                        
+                                <Text style={styles.editTextStyle}
+                                        >{this.state.item.bond_details.bond_amount}</Text>
+                                </View>
+    }
                                     </View>
                                 </View>
 
@@ -443,6 +614,7 @@ export default class ValidateStepFiveScreen extends React.Component {
 
                                 <View style={styles.bondAmountContainer}>
                                     <Text numberOfLines={1} style={styles.bondAmountText} >Date</Text>
+                                    {this.state.item.status==0?
                                     <TouchableOpacity style={styles.bondDateContainer} onPress={this.showDate} >
                                         <View style={styles.editTextContainerForBond}>
                                             <Text style={styles.editTextStyle}
@@ -453,7 +625,13 @@ export default class ValidateStepFiveScreen extends React.Component {
                                             />
                                         </View>
                                     </TouchableOpacity>
-
+                                    :
+                                    <View style={styles.editTextContainerForBond}>
+                                        
+                                    <Text style={styles.editTextStyle}
+                                            >{this.state.item.bond_details.bond_date}</Text>
+                                            </View>
+    }
                                 </View>
 
                                 {this.state.isDisplayDate &&
@@ -472,6 +650,8 @@ export default class ValidateStepFiveScreen extends React.Component {
 
 
                             <View style={styles.editTextContainer}>
+                                {this.state.item.status==0?
+                                
                                 <Dropdown
                                     style={styles.dropdown}
                                     placeholderStyle={styles.placeholderStyle}
@@ -490,12 +670,20 @@ export default class ValidateStepFiveScreen extends React.Component {
                                     renderItem={this.renderPayment}
 
                                 />
+                                :
+                                <View style={styles.editTextContainerForBond}>
+                                        
+                                <Text style={styles.editTextStyle}
+                                        >{this.state.item.bond_details.bond_payment_method}</Text>
+                                </View>
+                                }
                             </View>
 
 
 
                             <Text numberOfLines={1} style={styles.headingTextStyle} >Refarence Number</Text>
                             <View style={styles.editTextContainer}>
+                            {this.state.item.status==0?
                                 <TextInput
                                     style={styles.editTextStyle}
                                     autoCapitalize="none"
@@ -508,33 +696,61 @@ export default class ValidateStepFiveScreen extends React.Component {
                                     ref={(input) => { this.referenceNumberTextInput = input; }}
                                     blurOnSubmit={false}
                                 />
+                                :
+                                <View style={styles.editTextContainerForBond}>
+                                        
+                                <Text style={styles.editTextStyle}
+                                        >{this.state.item.bond_details.bond_reference_no}</Text>
+                                </View>
+                                
+                            }
                             </View>
 
 
                             <Text numberOfLines={1} style={styles.headingOneTextStyle} >Admin Notes</Text>
                             <View style={styles.adminNoteContainer}>
+                            {this.state.item.status==0?
+                                    
+                                
                                 <TextInput
                                     style={styles.adminNoteTextStyle}
                                     autoCapitalize="none"
                                     multiline={true}
                                     placeholderTextColor={Colors.placeholderColor}
                                     placeholder="Type Notes"
+                                    
                                     value={this.state.adminNote}
                                     onChangeText={(value) => this.setState({ adminNote: value })}
                                     ref={(input) => { this.radminNoteTextInput = input; }}
                                     blurOnSubmit={false}
                                 />
+                                :
+                                <View style={styles.editTextContainerForBond}>
+                                        
+                                <Text style={styles.adminNoteTextStyle}
+                                        >{this.state.item.admin_notes}</Text>
+                                </View>
+                                
+                            }
                             </View>
 
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity style={styles.approveButtonContainer}
-                                    onPress={() => this.callValidateDriverValidation()}>
+                                onPress={() => this.callValidateDriverValidation()}>
+                                    {this.state.item.status ==0 ?
                                     <Text numberOfLines={1} style={styles.buttonText}>APPROVE</Text>
+                                    :
+                                    <Text numberOfLines={1} style={styles.buttonText}>SUBMIT</Text>
+    }
                                 </TouchableOpacity>
                                 <View style={styles.boxGap} />
                                 <TouchableOpacity style={styles.cancelButtonContainer}
                                     onPress={() => this.onClickSubmitButton()}>
+                                        {this.state.item.status==0?
                                     <Text numberOfLines={1} style={styles.buttonText}>REJECT</Text>
+                                    :
+                                    <Text numberOfLines={1} style={styles.buttonText}>CANCEL</Text>
+                                    }
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -649,7 +865,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         paddingHorizontal: 17,
         // marginStart: 30,
-        marginTop: 8,
+        marginTop: 2,
         flexDirection: 'row',
         flex: 1
     },
@@ -669,6 +885,7 @@ const styles = StyleSheet.create({
         height: 100
     },
     adminNoteTextStyle: {
+        marginTop: 8,
         fontSize: 15,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,

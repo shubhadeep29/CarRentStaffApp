@@ -171,6 +171,12 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
         })
     }
 
+    openViewModal = (item) => {
+        this.setState({
+            item: item
+        });
+    }
+
     setRenderItemView = ({ item, index }) => {
         return (
             <TouchableOpacity style={styles.listItemContainer} activeOpacity={1} key={item.id}

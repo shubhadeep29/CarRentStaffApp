@@ -16,7 +16,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from '../utils/Constants';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import Toast from 'react-native-simple-toast';
 
 
 export default class ValidateStepOneScreen extends React.Component {
@@ -57,12 +57,33 @@ export default class ValidateStepOneScreen extends React.Component {
             streetName: this.state.item.street_name,
             subrub: this.state.item.suburb,
             postCode: this.state.item.pin,
-            dob: this.state.item.do,
+            dob: this.state.item.dob,
             moileNo: this.state.item.mobile
         })
     }
 
     goToNextScreen = () => {
+        if(this.state.firstName==""){
+            Toast.show("Please enter first name", Toast.SHORT);
+        }else if(this.state.lastName==""){
+            Toast.show("Please enter last name", Toast.SHORT);
+        }else if(this.state.email==""){
+            Toast.show("Please enter email address", Toast.SHORT);
+        }else if(this.state.flatNo==""){
+            Toast.show("Please enter Flat No", Toast.SHORT);
+        }else if(this.state.streetNo==""){
+            Toast.show("Please enter Street No", Toast.SHORT);
+        }else if(this.state.streetName==""){
+            Toast.show("Please enter Street Name", Toast.SHORT);
+        }else if(this.state.subrub==""){
+            Toast.show("Please enter Suburb", Toast.SHORT);
+        }else if(this.state.postCode==""){
+            Toast.show("Please enter Postal Code", Toast.SHORT);
+        }else if(this.state.dob==""){
+            Toast.show("Please enter date of birth", Toast.SHORT);
+        }else if(this.state.mobil==""){
+            Toast.show("Please enter Mobile No", Toast.SHORT);
+        }else{
         let item = this.state.item
         item.first_name = this.state.firstName;
         item.last_name = this.state.lastName;
@@ -83,6 +104,7 @@ export default class ValidateStepOneScreen extends React.Component {
         this.props.navigation.navigate('ValidateStepTwoScreen', {
             item: item
         })
+    }
     }
 
 
@@ -304,6 +326,7 @@ export default class ValidateStepOneScreen extends React.Component {
                                 <DateTimePicker
                                     testID="dateTimePicker"
                                     value={new Date()}
+                                    maximumDate={new Date()}
                                     mode='date'
                                 display={Platform.OS == "android" ? "calendar" : "spinner"}
                                     onChange={this.setDate}
