@@ -422,47 +422,47 @@ export default class AddReturnInVehicle extends React.Component {
         formData.append('notes', this.state.notes);
 
         if (this.state.damageImageUri != null && this.state.damageImageUri != "")
-        formData.append('damage_img', {
-            uri: Platform.OS === 'ios' ? this.state.damageImageUri.replace('file://', '') : this.state.damageImageUri,
-            name: this.state.damageImageName,
-            type: this.state.damageImageType
-        });
+            formData.append('damage_img', {
+                uri: Platform.OS === 'ios' ? this.state.damageImageUri.replace('file://', '') : this.state.damageImageUri,
+                name: this.state.damageImageName,
+                type: this.state.damageImageType
+            });
         if (this.state.frontImageUri != null && this.state.frontImageUri != "")
-        formData.append('front_img', {
-            uri: Platform.OS === 'ios' ? this.state.frontImageUri.replace('file://', '') : this.state.frontImageUri,
-            name: this.state.frontImageName,
-            type: this.state.frontImageType
-        });
+            formData.append('front_img', {
+                uri: Platform.OS === 'ios' ? this.state.frontImageUri.replace('file://', '') : this.state.frontImageUri,
+                name: this.state.frontImageName,
+                type: this.state.frontImageType
+            });
         if (this.state.rearImageUri != null && this.state.rearImageUri != "")
-        formData.append('rear_img', {
-            uri: Platform.OS === 'ios' ? this.state.rearImageUri.replace('file://', '') : this.state.rearImageUri,
-            name: this.state.rearImageName,
-            type: this.state.rearImageType
-        });
+            formData.append('rear_img', {
+                uri: Platform.OS === 'ios' ? this.state.rearImageUri.replace('file://', '') : this.state.rearImageUri,
+                name: this.state.rearImageName,
+                type: this.state.rearImageType
+            });
         if (this.state.driverSideImageUri != null && this.state.driverSideImageUri != "")
-        formData.append('driver_side_img', {
-            uri: Platform.OS === 'ios' ? this.state.driverSideImageUri.replace('file://', '') : this.state.driverSideImageUri,
-            name: this.state.driverSideImageName,
-            type: this.state.driverSideImageType
-        });
+            formData.append('driver_side_img', {
+                uri: Platform.OS === 'ios' ? this.state.driverSideImageUri.replace('file://', '') : this.state.driverSideImageUri,
+                name: this.state.driverSideImageName,
+                type: this.state.driverSideImageType
+            });
         if (this.state.passengerSideImageUri != null && this.state.passengerSideImageUri != "")
-        formData.append('passenger_side_img', {
-            uri: Platform.OS === 'ios' ? this.state.passengerSideImageUri.replace('file://', '') : this.state.passengerSideImageUri,
-            name: this.state.passengerSideImageName,
-            type: this.state.passengerSideImageType
-        });
+            formData.append('passenger_side_img', {
+                uri: Platform.OS === 'ios' ? this.state.passengerSideImageUri.replace('file://', '') : this.state.passengerSideImageUri,
+                name: this.state.passengerSideImageName,
+                type: this.state.passengerSideImageType
+            });
         if (this.state.odometerImageUri != null && this.state.odometerImageUri != "")
-        formData.append('odometer_img', {
-            uri: Platform.OS === 'ios' ? this.state.odometerImageUri.replace('file://', '') : this.state.odometerImageUri,
-            name: this.state.odometerImageName,
-            type: this.state.odometerImageType
-        });
+            formData.append('odometer_img', {
+                uri: Platform.OS === 'ios' ? this.state.odometerImageUri.replace('file://', '') : this.state.odometerImageUri,
+                name: this.state.odometerImageName,
+                type: this.state.odometerImageType
+            });
         if (this.state.fuelGuageImageUri != null && this.state.fuelGuageImageUri != "")
-        formData.append('fuel_guage_img', {
-            uri: Platform.OS === 'ios' ? this.state.fuelGuageImageUri.replace('file://', '') : this.state.fuelGuageImageUri,
-            name: this.state.fuelGuageImageName,
-            type: this.state.fuelGuageImageType
-        });
+            formData.append('fuel_guage_img', {
+                uri: Platform.OS === 'ios' ? this.state.fuelGuageImageUri.replace('file://', '') : this.state.fuelGuageImageUri,
+                name: this.state.fuelGuageImageName,
+                type: this.state.fuelGuageImageType
+            });
 
 
 

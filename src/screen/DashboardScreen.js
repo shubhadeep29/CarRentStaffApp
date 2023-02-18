@@ -279,6 +279,7 @@ export default class DashboardScreen extends React.Component {
                         alignSelf: 'center',
 
                     }}>Country : Australia</Text>
+                    <TouchableOpacity>
 
                     <Text numberOfLines={1} style={{
                         backgroundColor: Colors.textColor1,
@@ -296,6 +297,8 @@ export default class DashboardScreen extends React.Component {
                         alignSelf: 'center',
 
                     }}>VALIDATE DRIVER</Text>
+                    </TouchableOpacity>
+
 
                 </View>
 
