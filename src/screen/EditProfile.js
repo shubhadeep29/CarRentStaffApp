@@ -69,8 +69,18 @@ export default class MyProfile extends React.Component {
 
     }
 
-    onClickCancelButton = async () => {
-        this.props.navigation.goBack()
+    onClickCancelButton() {
+        // this.props.navigation.goBack()
+
+        this.props.navigation.reset({
+            index: 0,
+            routes: [{
+                name: 'MyProfile',
+                // params: {
+                //     userType: "student"
+                // }
+            }],
+        });
     }
 
     callMyProfileApi = async () => {
@@ -121,7 +131,7 @@ export default class MyProfile extends React.Component {
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
-                    this.props.navigation.goBack()
+                    this.onClickCancelButton()
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {

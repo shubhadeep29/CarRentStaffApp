@@ -583,8 +583,8 @@ goToMainScreen() {
 
                     <ScrollView>
                         <View>
-                            <Text numberOfLines={1} style={styles.headingOneTextStyle} >Bond Setup</Text>
-                            <View style={styles.bondContainer}>
+                            {/* <Text numberOfLines={1} style={styles.headingOneTextStyle} >Bond Setup</Text>
+                             <View style={styles.bondContainer}>
                                 <View style={styles.bondAmountContainer}>
                                     <Text numberOfLines={1} style={styles.bondAmountText} >Bond Amount</Text>
                                     <View style={styles.editTextContainerForBond}>
@@ -602,7 +602,7 @@ goToMainScreen() {
                                         />
                                         :
                                         <View style={styles.editTextContainerForBond}>
-                                        
+
                                 <Text style={styles.editTextStyle}
                                         >{this.state.item.bond_details.bond_amount}</Text>
                                 </View>
@@ -627,7 +627,7 @@ goToMainScreen() {
                                     </TouchableOpacity>
                                     :
                                     <View style={styles.editTextContainerForBond}>
-                                        
+
                                     <Text style={styles.editTextStyle}
                                             >{this.state.item.bond_details.bond_date}</Text>
                                             </View>
@@ -651,7 +651,7 @@ goToMainScreen() {
 
                             <View style={styles.editTextContainer}>
                                 {this.state.item.status==0?
-                                
+
                                 <Dropdown
                                     style={styles.dropdown}
                                     placeholderStyle={styles.placeholderStyle}
@@ -672,7 +672,7 @@ goToMainScreen() {
                                 />
                                 :
                                 <View style={styles.editTextContainerForBond}>
-                                        
+
                                 <Text style={styles.editTextStyle}
                                         >{this.state.item.bond_details.bond_payment_method}</Text>
                                 </View>
@@ -698,13 +698,13 @@ goToMainScreen() {
                                 />
                                 :
                                 <View style={styles.editTextContainerForBond}>
-                                        
+
                                 <Text style={styles.editTextStyle}
                                         >{this.state.item.bond_details.bond_reference_no}</Text>
                                 </View>
-                                
+
                             }
-                            </View>
+                            </View> */}
 
 
                             <Text numberOfLines={1} style={styles.headingOneTextStyle} >Admin Notes</Text>

@@ -211,7 +211,36 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
                 </View>
 
                 <Text style={styles.infoTextStyle}>{item.email}</Text>
-                <Text style={styles.infoTextStyle}>{item.flat_no}, {item.street_name}, {item.street_no}, {item.suburb}, {item.pin}</Text>
+                <View style={{
+                    flexDirection: 'row'
+                }}>
+                    {item.flat_no != "" ?
+                        <Text style={styles.infoTextStyle}>{item.flat_no}, </Text>
+                        :
+                        null
+                    }
+                    {item.street_name != "" ?
+                        <Text style={styles.infoTextStyle}>{item.street_name}, </Text>
+                        :
+                        null
+                    }
+
+                    {item.street_no != "" ?
+                        <Text style={styles.infoTextStyle}>{item.street_no}, </Text>
+                        :
+                        null
+                    }
+                    {item.suburb != "" ?
+                        <Text style={styles.infoTextStyle}>{item.suburb}, </Text>
+                        :
+                        null
+                    }
+                    {item.pin != "" ?
+                        <Text style={styles.infoTextStyle}>{item.pin}</Text>
+                        :
+                        null
+                    }
+                </View>
 
 
                 <View style={styles.infoContainer}>

@@ -18,6 +18,7 @@ import Constants from '../utils/Constants';
 import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 export default class LoginScreen extends React.Component {
@@ -165,6 +166,8 @@ export default class LoginScreen extends React.Component {
       <SafeAreaView style={styles.container}>
         {this.state.isLoading && <LoaderView />}
 
+
+
         <View style={styles.mainContainer}>
           <AdaptiveStatusBar />
 
@@ -182,6 +185,12 @@ export default class LoginScreen extends React.Component {
           <View style={styles.bottomViewContainer}>
             <Text numberOfLines={1} style={styles.loginYourAccountText}>Login to your account</Text>
 
+
+            {/* <Image
+              source={require('../images/ic_login_bottom.png')}
+              style={styles.bottomImage}
+            /> */}
+
             <View style={styles.editTextContainer}>
               <TextInput
                 style={styles.emailIdEditTextStyle}
@@ -194,17 +203,10 @@ export default class LoginScreen extends React.Component {
                 placeholder="Email Id"
                 value={this.state.email}
                 onChangeText={(value) => this.setState({ email: value })}
-                onSubmitEditing={() => { this.passwordTextInput.focus() }}
                 blurOnSubmit={false}
               />
             </View>
 
-
-
-            {/* <Image
-              source={require('../images/ic_login_bottom.png')}
-              style={styles.bottomImage}
-            /> */}
 
             <View style={styles.editTextContainer}>
               <TextInput
@@ -217,11 +219,12 @@ export default class LoginScreen extends React.Component {
                 placeholder="Password"
                 value={this.state.password}
                 onChangeText={(value) => this.setState({ password: value })}
-                ref={(input) => { this.passwordTextInput = input; }}
                 onSubmitEditing={() => { this.callLoginValidation() }}
                 blurOnSubmit={false}
               />
             </View>
+
+
 
             <TouchableOpacity style={styles.loginButtonContainer}
               onPress={() => this.callLoginValidation()}>
@@ -233,8 +236,13 @@ export default class LoginScreen extends React.Component {
               <Text numberOfLines={1} style={styles.forgotPasswordText}>Forgot Password</Text>
             </TouchableOpacity>
 
+
+
           </View>
         </View>
+
+
+
       </SafeAreaView>
     );
   }

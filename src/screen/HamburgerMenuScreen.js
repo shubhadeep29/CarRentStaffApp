@@ -205,10 +205,10 @@ export default class HamburgerMenuScreen extends Component {
 
                     <Text style={[styles.menuTextStyle, { flex: 1 }]}>{item.title}</Text>
 
-                    <Image
+                    {/* <Image
                         source={require('../images/ic_right_arrow.png')}
                         style={styles.logoIcon}
-                    />
+                    /> */}
                 </View>
 
                 {this.state.menuList.length - 1 == index ?

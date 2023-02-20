@@ -25,23 +25,23 @@ import { Dimensions } from 'react-native';
 const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
 
 
-export default class MyProfile extends React.Component{
-    constructor(props){
+export default class MyProfile extends React.Component {
+    constructor(props) {
         super(props);
-        this.state={
+        this.state = {
             isNetworkAvailable: true,
             isLoading: false,
             data: {},
-            fullName:"kk",
-            email:"kk@gmail.com",
-            mobile:"8787878787",
-            role:"Driver Manager",
-            address:"Salkia Howrah-711106 ",
-            gender:"Male",
-            abn:"ABN",
-            tfn:"TFN"
+            fullName: "kk",
+            email: "kk@gmail.com",
+            mobile: "8787878787",
+            role: "Driver Manager",
+            address: "Salkia Howrah-711106 ",
+            gender: "Male",
+            abn: "ABN",
+            tfn: "TFN"
         }
-                    
+
 
     }
 
@@ -58,7 +58,7 @@ export default class MyProfile extends React.Component{
             });
         }
         catch (error) {
-            
+
             console.log("Error in webservice call : " + error);
         }
     }
@@ -97,7 +97,7 @@ export default class MyProfile extends React.Component{
                 this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
                     this.setState({ data: responseJSON.profile_details });
-                    this.setState({ fullName: responseJSON.profile_details.full_name});
+                    this.setState({ fullName: responseJSON.profile_details.full_name });
                     this.setState({ email: responseJSON.profile_details.email });
                     this.setState({ mobile: responseJSON.profile_details.mobile_no });
                     this.setState({ role: responseJSON.profile_details.role_name });
@@ -105,9 +105,9 @@ export default class MyProfile extends React.Component{
                     this.setState({ address: responseJSON.profile_details.address });
                     this.setState({ abn: responseJSON.profile_details.abn });
                     this.setState({ tfn: responseJSON.profile_details.tfn });
-                    this.setState({ imageUrl: Links.BASEURL+responseJSON.profile_details.user_image });
+                    this.setState({ imageUrl: Links.BASEURL + responseJSON.profile_details.user_image });
                     console.log("MyProfile Response ===========>  ", imageUrl);
-            
+
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, this.state.fullName);
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, this.state.email);
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, this.state.mobile);
@@ -119,7 +119,7 @@ export default class MyProfile extends React.Component{
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_GENDER, this.state.gender);
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_ROLE, this.state.role);
                     await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_IMAGE, this.state.imageUrl);
-                   // console.log("MyProfile AsyncStorageResponse ===========>  ", JSON.stringify(fullName));
+                    // console.log("MyProfile AsyncStorageResponse ===========>  ", JSON.stringify(fullName));
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
@@ -151,77 +151,81 @@ export default class MyProfile extends React.Component{
         return (
             <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <AppBarWithMenu title="My Account" navigation={this.props.navigation}  />
-                <ScrollView style={styles.bottomViewContainer}>
+                <AppBarWithMenu title="My Account" navigation={this.props.navigation} />
+                <ScrollView >
                 <View style={styles.bottomViewContainer}>
-                    
-                <View style={styles.headingEditTextStyle} >
-                        
-                <TouchableOpacity style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('EditProfile')}>    
-                        <View style={styles.rowViewEdit}>
-                        <Image
-                                source={require('../images/ic_edit.png')}
-                                style={styles.viewIcon}
-                            />
-                        <Text style={styles.editTextStyle}>Edit</Text>
-                        </View>
-                            
-                        </TouchableOpacity>
-                    </View>
-                       <View style={styles.column}>
-                        <View style={styles.rowView}>
-                        
-                        <Image
+
+                        <View style={{
+                            flexDirection: 'row',
+                            marginHorizontal: 20,
+                            marginTop: 20,
+                            justifyContent: 'center',
+
+
+                        }} >
+
+                            <Image
                                 source={{ uri: this.state.imageUrl }}
                                 style={styles.viewImage}
                             />
+                            <TouchableOpacity style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('EditProfile')}>
+                                <View style={styles.rowViewEdit}>
+                                    <Image
+                                        source={require('../images/ic_edit.png')}
+                                        style={styles.viewIcon}
+                                    />
+                                    <Text style={styles.editTextStyle}>Edit</Text>
+                                </View>
+                        </TouchableOpacity>
 
-                            </View>
+                    </View>
+                        <View style={styles.column}>
+
                         <Text numberOfLines={1} style={styles.headingBigTextStyle} >{this.state.fullName}</Text>
                         <Text numberOfLines={1} style={styles.headingSmallTextStyle} >{this.state.mobile}</Text>
                         <Text numberOfLines={1} style={styles.headingSmallTextStyle} >{this.state.email}</Text>
-                    
+
                         </View>
-                        
-                        
-                    
-                    
-                <View style={styles.searchEditTextContainer}>
-                    <Text style={styles.infoHeadingTextStyle}>Role :</Text>
-                    <Text style={styles.infoTextStyle}>{this.state.role}</Text>
-                </View>
-
-                <View style={styles.largeTextContainer}>
-                    <Text numberOfLines={1} style={styles.filterGrayText} >Full Address</Text>
-                    <Text style={styles.filterText} >{this.state.address}</Text>                    
-                </View>
 
 
-                <View style={styles.searchEditTextContainer}>
-                    <Text style={styles.infoHeadingTextStyle}>Gender</Text>
-                    <Text style={styles.infoTextStyle}>{this.state.gender}</Text>
-                </View>
 
 
-                <View style={styles.searchEditTextContainer}>
-                    <Text style={styles.infoHeadingTextStyle}>ABN</Text>
-                    <Text style={styles.infoTextStyle}>{this.state.abn}</Text>
-                </View>
+                        <View style={styles.searchEditTextContainer}>
+                            <Text style={styles.infoHeadingTextStyle}>Role :</Text>
+                            <Text style={styles.infoTextStyle}>{this.state.role}</Text>
+                        </View>
+
+                        <View style={styles.largeTextContainer}>
+                            <Text numberOfLines={1} style={styles.filterGrayText} >Full Address</Text>
+                            <Text style={styles.filterText} >{this.state.address}</Text>
+                        </View>
 
 
-                <View style={styles.searchEditTextContainer}>
-                    <Text style={styles.infoHeadingTextStyle}>TBN</Text>
-                    <Text style={styles.infoTextStyle}>{this.state.tfn}</Text>
-                </View>
+                        <View style={styles.searchEditTextContainer}>
+                            <Text style={styles.infoHeadingTextStyle}>Gender</Text>
+                            <Text style={styles.infoTextStyle}>{this.state.gender}</Text>
+                        </View>
 
-                    
+
+                        <View style={styles.searchEditTextContainer}>
+                            <Text style={styles.infoHeadingTextStyle}>ABN</Text>
+                            <Text style={styles.infoTextStyle}>{this.state.abn}</Text>
+                        </View>
+
+
+                        <View style={styles.searchEditTextContainer}>
+                            <Text style={styles.infoHeadingTextStyle}>TBN</Text>
+                            <Text style={styles.infoTextStyle}>{this.state.tfn}</Text>
+                        </View>
+
+
                 </View>
             </ScrollView>
             </SafeAreaView>
         );
     }
 
-    
+
 }
 const styles = StyleSheet.create({
     container: {
@@ -234,31 +238,34 @@ const styles = StyleSheet.create({
         height: 100,
         resizeMode: 'cover',
         alignSelf: 'center',
-        marginStart:0,
-        borderRadius:50
+        alignContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginStart: 0,
+        borderRadius: 50
     },
     viewIcon: {
         width: 20,
         height: 10,
         resizeMode: 'contain',
-        alignSelf: 'baseline',
-        marginStart: 10,
+        alignSelf: 'center',
+        marginEnd: 10,
     },
     editContainer: {
         // flex: 1,
         borderRadius: 20,
         backgroundColor: Colors.textColor1,
         alignSelf: 'baseline',
-    
+
     },
     editTextStyle: {
-        fontSize: 8,
+        fontSize: 12,
         // fontFamily: fontSelector("bold"),
         color: Colors.white,
         paddingHorizontal: 0,
         paddingVertical: 0,
         alignItems: "flex-start",
-        
+
     },
     editRightTextStyle: {
         fontSize: 8,
@@ -267,7 +274,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 0,
         paddingVertical: 0,
         alignItems: "flex-end",
-        
+
     },
     mainContainer: {
         flex: 1,
@@ -292,14 +299,14 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         paddingHorizontal: 15,
         marginHorizontal: 30,
-        textAlign:'center',
+        textAlign: 'center',
         flex: 1,
-        marginTop:15,
-        height:48,
-        alignItems:'baseline',
-        justifyContent:'center',
+        marginTop: 15,
+        height: 48,
+        alignItems: 'baseline',
+        justifyContent: 'center',
         paddingBottom: 12,
-        
+
     },
     emailIdEditTextStyle: {
         fontSize: 15,
@@ -314,9 +321,8 @@ const styles = StyleSheet.create({
         color: Colors.textColor1,
         paddingHorizontal: 20,
         marginTop: 15,
-        marginBottom:10,
-        alignSelf:'flex-end',
-        textAlign:'center'
+        marginBottom: 10,
+
     },
     headingBigTextStyle: {
         fontSize: 22,
@@ -324,8 +330,8 @@ const styles = StyleSheet.create({
         color: Colors.textColor1,
         paddingHorizontal: 20,
         marginTop: 15,
-        marginBottom:10,
-        textAlign:'center'
+        marginBottom: 10,
+        textAlign: 'center'
     },
     headingSmallTextStyle: {
         fontSize: 15,
@@ -333,9 +339,9 @@ const styles = StyleSheet.create({
         color: Colors.black,
         paddingHorizontal: 20,
         marginTop: 15,
-        marginBottom:10,
+        marginBottom: 10,
 
-        textAlign:'center'
+        textAlign: 'center'
     },
     headingTextStyle: {
         fontSize: 15,
@@ -343,20 +349,21 @@ const styles = StyleSheet.create({
         color: Colors.black,
         paddingHorizontal: 40,
         marginTop: 15,
-        marginBottom:10,
+        marginBottom: 10,
     },
     buttonContainer: {
         backgroundColor: Colors.textColor1,
         borderRadius: 20,
-        paddingVertical: 5,
-        marginHorizontal: 10,
-        marginTop: 35,
-        width:70,
-        height:20,
-        bottom: 20,
-        left: 0,
+        alignItems: 'center',
+        alignSelf: 'center',
+        justifyContent: 'space-between',
+        marginStart: 15,
+        flexWrap: 'wrap',
+        paddingVertical: 6,
+        paddingHorizontal: 20,
+        position: 'absolute',
         right: 0,
-        justifyContent:"center"
+        top: 0
     },
     buttonText: {
         fontSize: 15,
@@ -367,44 +374,42 @@ const styles = StyleSheet.create({
     filterText: {
         fontSize: 12,
         color: Colors.black,
-        alignItems:'center',
-        justifyContent:'center',
-        height:48,
-        paddingTop:15
-        
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 48,
+        paddingTop: 15
+
     },
 
     filterGrayText: {
         fontSize: 12,
         color: "#7F8C8D",
-        alignItems:'center',
-        justifyContent:'center',
-        height:48,
-        paddingTop:15
-        
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 48,
+        paddingTop: 15
+
     },
     dropdownIcon: {
         width: 12,
         height: 12,
-        justifyContent:'center',
-        alignItems:'center',
+        justifyContent: 'center',
+        alignItems: 'center',
         alignSelf: 'flex-end',
     },
     rowView: {
-        alignItems:'center',
         flexDirection: 'row',
-        alignSelf:'center'
     },
-    rowViewEdit:{
-        flexDirection:'row',
+    rowViewEdit: {
+        flexDirection: 'row',
     },
-    column:{
+    column: {
         flexDirection: 'column',
-        alignContent:'flex-start',
-        justifyContent:'center',
-        textAlign:''
-        
-    },filterMainContainer: {
+        alignContent: 'flex-start',
+        justifyContent: 'center',
+        textAlign: ''
+
+    }, filterMainContainer: {
         paddingBottom: 12,
     },
     infoContainer: {
@@ -421,7 +426,7 @@ const styles = StyleSheet.create({
         // fontFamily: fontSelector("bold"),
         color: '#7F8C8D',
     },
-    
+
     infoHeadingTextStyle: {
         fontSize: 13,
         // fontFamily: fontSelector("bold"),
@@ -435,15 +440,15 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         flexDirection: 'row',
         height: 48,
-        paddingTop:15,
-         marginTop:10,
-         marginBottom:10
-    },largeTextContainer: {
+        paddingTop: 15,
+        marginTop: 10,
+        marginBottom: 10
+    }, largeTextContainer: {
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 15,
         paddingHorizontal: 18,
         marginHorizontal: 20,
-        textAlign:'center',
+        textAlign: 'center',
         height: 100,
     },
     searchEditTextStyle: {
@@ -458,5 +463,5 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginStart: 10
     },
-    
+
 });

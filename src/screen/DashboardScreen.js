@@ -209,7 +209,7 @@ export default class DashboardScreen extends React.Component {
                 <View >
 
                     <Text numberOfLines={1} style={{
-                        fontSize: 14,
+                        fontSize: 12,
                         color: Colors.dark_shade_gray,
                         justifyContent: 'center',
                         alignContent: 'center',
@@ -217,20 +217,23 @@ export default class DashboardScreen extends React.Component {
                         alignSelf: 'center',
 
                     }}>20 Jan 2023</Text>
+
+
                     <Text numberOfLines={1} style={{
-                        fontSize: 12,
+                        fontSize: 10,
                         color: Colors.pink,
                         justifyContent: 'center',
                         alignContent: 'center',
                         alignItems: 'center',
                         alignSelf: 'center',
+                        marginVertical: 4
 
                     }}
                     >Validation Waited</Text>
+
                     <Text numberOfLines={1} style={{
-                        fontSize: 18,
+                        fontSize: 14,
                         fontWeight: 'bold',
-                        paddingVertical: 3,
                         color: Colors.dark_shade_pink_red,
                         justifyContent: 'center',
                         alignContent: 'center',
@@ -246,12 +249,13 @@ export default class DashboardScreen extends React.Component {
                         alignContent: 'center',
                         borderRadius: 50,
                         elevation: 1,
+                        marginVertical: 6,
                         width: 25,
                         backgroundColor: Colors.pink
                     }} />
 
                     <Text numberOfLines={1} style={{
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: 'bold',
                         color: Colors.blue,
                         justifyContent: 'center',
@@ -260,10 +264,12 @@ export default class DashboardScreen extends React.Component {
                         alignSelf: 'center',
 
                     }}>+61 9876554321</Text>
+
                     <Text numberOfLines={1} style={{
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: 'bold',
                         color: Colors.black,
+                        marginVertical: 4,
                         justifyContent: 'center',
                         alignContent: 'center',
                         alignItems: 'center',
@@ -271,7 +277,7 @@ export default class DashboardScreen extends React.Component {
 
                     }}>Licence No.: 552427</Text>
                     <Text numberOfLines={1} style={{
-                        fontSize: 10,
+                        fontSize: 9,
                         color: Colors.dark_shade_gray,
                         justifyContent: 'center',
                         alignContent: 'center',
@@ -279,24 +285,25 @@ export default class DashboardScreen extends React.Component {
                         alignSelf: 'center',
 
                     }}>Country : Australia</Text>
-                    <TouchableOpacity>
-
-                    <Text numberOfLines={1} style={{
-                        backgroundColor: Colors.textColor1,
-                        fontWeight: 'bold',
-                        color: Colors.white,
+                    <TouchableOpacity style={{
                         borderRadius: 30,
-                        paddingVertical: 6,
+                        paddingVertical: 8,
                         paddingHorizontal: 15,
+                        backgroundColor: Colors.textColor1,
                         marginTop: 8,
-                        flex: 1,
-                        fontSize: 14,
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        alignSelf: 'center',
+                    }}>
 
-                    }}>VALIDATE DRIVER</Text>
+                        <Text numberOfLines={1} style={{
+                            fontWeight: '600',
+                            color: Colors.white,
+                            flex: 1,
+                            fontSize: 12,
+                            justifyContent: 'center',
+                            alignContent: 'center',
+                            alignItems: 'center',
+                            alignSelf: 'center',
+
+                        }}>VALIDATE DRIVER</Text>
                     </TouchableOpacity>
 
 
@@ -312,7 +319,7 @@ export default class DashboardScreen extends React.Component {
             <TouchableOpacity style={styles.topItemContainer} activeOpacity={1} key={item.id}
             // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
             >
-                <View >
+                <View style={{ flex: 1 }}>
 
                     <Image
                         source={require('../images/car_img.jpg')}
@@ -320,7 +327,7 @@ export default class DashboardScreen extends React.Component {
                         style={styles.topViewImage}
                     />
 
-                    <Text numberOfLines={1} style={styles.headingTwoTextStyle}>{item.title}</Text>
+                    <Text style={styles.headingTwoTextStyle}>{item.title}</Text>
 
                     <View style={styles.activeCarNumberContainer}>
                         <Text numberOfLines={1} style={styles.activeCarNumberTextStyle}>CAR: {item.car_count}</Text>
@@ -576,7 +583,7 @@ const styles = StyleSheet.create({
     topViewImage: {
         width: 60,
         height: 60,
-        resizeMode: 'contain',
+        resizeMode: 'cover',
         borderRadius: 50,
         justifyContent: 'center',
         alignSelf: 'center',
@@ -625,12 +632,11 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: Colors.dark_shade_gray,
         fontWeight: 'bold',
+        flexWrap: 'wrap',
+        flex: 1,
         paddingHorizontal: 6,
         paddingVertical: 6,
-        justifyContent: 'center',
-        alignContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center',
+        textAlign: 'center',
     },
     inactiveCarNumberContainer: {
         alignSelf: 'center',

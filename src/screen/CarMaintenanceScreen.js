@@ -274,16 +274,16 @@ export default class CarMaintenanceScreen extends React.Component {
                     <AppBarWithMenu title="List of Cars" navigation={this.props.navigation} />
 
                     <View style={styles.bottomViewContainer}>
-                        <View style={styles.filterMainContainer}>
-                            {/* <TouchableOpacity style={styles.allEditTextContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
+                        {/* <View style={styles.filterMainContainer}>
+                            <TouchableOpacity style={styles.allEditTextContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
                                 <Text numberOfLines={1} style={styles.filterText} >All</Text>
                                 <Image
                                     source={require('../images/down_arow.png')}
                                     style={styles.dropdownIcon}
                                 />
-                            </TouchableOpacity> */}
+                            </TouchableOpacity>
 
-                                <SearchBar
+                            <SearchBar
                                     numberOfLines={1}
                                     style={styles.searchEditTextStyle}
                                     autoCapitalize="none"
@@ -294,7 +294,30 @@ export default class CarMaintenanceScreen extends React.Component {
                                     onChangeText={this.updateSearch}
                                     blurOnSubmit={false}
                                 />
-                            
+
+
+                        </View> */}
+
+                        <View style={styles.filterMainContainer}>
+                            <View style={styles.searchEditTextContainer}>
+                                <Image
+                                    source={require('../images/ic_search.png')}
+                                    style={styles.searchIcon}
+                                />
+                                <TextInput
+                                    numberOfLines={1}
+                                    style={styles.searchEditTextStyle}
+                                    autoCapitalize="none"
+                                    multiline={false}
+                                    placeholderTextColor={Colors.placeholderColor}
+                                    placeholder="Search by Model,Car No, Fuel type"
+                                    value={this.state.searchText}
+                                    onChangeText={this.updateSearch}
+                                    blurOnSubmit={false}
+                                />
+
+
+                            </View>
                         </View>
 
                         <View style={styles.mainContainer}>
@@ -413,7 +436,6 @@ const styles = StyleSheet.create({
         marginStart: 20,
         marginEnd: 20,
         flexDirection: 'row',
-        height: 40,
     },
     filterText: {
         fontSize: 12,
@@ -444,10 +466,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 30,
-        marginStart:20, 
-        marginEnd:20,
+        marginHorizontal: 20, 
         flexDirection: 'row',
-        height: 40,
+        paddingVertical: Platform.OS == "ios" ? 16 : 12
     },
     flatListStyle: {
         marginBottom: 5,
