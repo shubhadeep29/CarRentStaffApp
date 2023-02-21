@@ -132,7 +132,7 @@ export default class ValidateStepFourScreen extends React.Component {
                                         style={styles.checkUncheckIcon}
                                     />
                                 </TouchableOpacity>
-                                <Text style={styles.infoText}>I WILL SEND SERVICE STICKER AND SPEEDO METER PHOTO EVERY WEEK</Text>
+                                <Text style={styles.infoText}>I WILL SEND SERVICE STICKER AND SPEEDO METER PHOTO EVERY 14 DAYS</Text>
                             </View>
 
                             <View style={styles.rowView}>
@@ -142,7 +142,7 @@ export default class ValidateStepFourScreen extends React.Component {
                                         style={styles.checkUncheckIcon}
                                     />
                                 </TouchableOpacity>
-                                <Text style={styles.infoText}>I WILL PAY $10 PER NOMINATION FOR ANY LATE TOLL INVOICES</Text>
+                                <Text style={styles.infoText}>I AM LIABLE FOR $20 SURCHARGE FOR ANY LATE TOLL INVOICES NOMINATED TO ME</Text>
                             </View>
 
                             <View style={styles.rowView}>
@@ -173,6 +173,16 @@ export default class ValidateStepFourScreen extends React.Component {
                                     />
                                 </TouchableOpacity>
                                 <Text style={styles.infoText}>I AGREE TO TERMS AND CONDITIONS LISTED ON CAR RENTAL WEBSITE</Text>
+                            </View>
+
+                            <View style={styles.rowView}>
+                                <TouchableOpacity >
+                                    <Image
+                                        source={this.state.isSeventhOptionChecked ? require('../images/ic_checked.png') : require('../images/ic_uncheck.png')}
+                                        style={styles.checkUncheckIcon}
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.infoText}>I AGREE THAT I HAVE RENTED THIS CAR FOR MY USE NOT FOR OTHER PERSON</Text>
                             </View>
 
                             <View style={styles.rowView}>

@@ -61,12 +61,6 @@ const MainStackNavigator = () => {
         <Stack.Screen name="AddReturnInVehicle" component={AddReturnInVehicle} />
         <Stack.Screen name="AddRentOutVehicle" component={AddRentOutVehicle} />
 
-
-
-
-
-
-
       </Stack.Navigator>
     </NavigationContainer>
   );

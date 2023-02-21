@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from '../utils/Constants';
 
 import Toast from 'react-native-simple-toast';
+import { Dropdown } from 'react-native-element-dropdown';
 
 export default class ValidateStepThreeScreen extends React.Component {
     constructor(props) {
@@ -30,6 +31,18 @@ export default class ValidateStepThreeScreen extends React.Component {
             accountNumber: "",
             numberOfAtFaultAccidents: "",
             numberOfNotAtFaultAccidents: "",
+            numberList: [
+                { value: '1' },
+                { value: '2' },
+                { value: '3' },
+                { value: '4' },
+                { value: '5' },
+                { value: '6' },
+                { value: '7' },
+                { value: '8' },
+                { value: '9' },
+                { value: '10' },
+            ]
         }
     }
 
@@ -38,7 +51,7 @@ export default class ValidateStepThreeScreen extends React.Component {
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
         // this.item = this.props.params.item;
 
-        console.log("Item 3",this.state.item)
+        console.log("Item 3", this.state.item)
 
         this.setState({
 
@@ -53,29 +66,50 @@ export default class ValidateStepThreeScreen extends React.Component {
 
 
     goToNextScreen = () => {
-        if(this.state.accountName==""){
+        if (this.state.accountName == "") {
             Toast.show("Please enter Account Name", Toast.SHORT);
-        }else if(this.state.bsb==""){
+        } else if (this.state.bsb == "") {
             Toast.show("Please enter BSB", Toast.SHORT);
-        }else if(this.state.accountNumber==""){
+        } else if (this.state.accountNumber == "") {
             Toast.show("Please enter Account Number", Toast.SHORT);
-        }else{
-        let item = this.state.item
-        item.bank_name = this.state.accountName;
-        item.bsb = this.state.bsb;
-        item.account_no = this.state.accountNumber;
-        item.no_of_at_fault_accidents = this.state.numberOfAtFaultAccidents;
-        item.no_of_not_at_fault_accidents = this.state.numberOfNotAtFaultAccidents;
+        } else {
+            let item = this.state.item
+            item.bank_name = this.state.accountName;
+            item.bsb = this.state.bsb;
+            item.account_no = this.state.accountNumber;
+            item.no_of_at_fault_accidents = this.state.numberOfAtFaultAccidents;
+            item.no_of_not_at_fault_accidents = this.state.numberOfNotAtFaultAccidents;
+            this.setState({
+                item: item
+            })
+
+            console.log("++++++++++++", item)
+            this.props.navigation.navigate('ValidateStepFourScreen', {
+                item: item
+            })
+        }
+    }
+
+    onClickAtFaultAccidentsItem(item) {
         this.setState({
-            item: item
+            numberOfAtFaultAccidents: item.value,
         })
 
-        console.log("++++++++++++", item)
-        this.props.navigation.navigate('ValidateStepFourScreen', {
-            item: item
-        })
     }
-}
+    onClickNotAtFaultAccidentsItem(item) {
+        this.setState({
+            numberOfNotAtFaultAccidents: item.value,
+        })
+
+    }
+
+    renderVehicleType = (item) => {
+        return (
+            <View>
+                <Text style={styles.selectionListTextStyle}>{item.value}</Text>
+            </View>
+        );
+    };
 
     render() {
         return (
@@ -164,15 +198,49 @@ export default class ValidateStepThreeScreen extends React.Component {
                             <View style={styles.accountHistoryRowView}>
                                 <Text numberOfLines={1} style={styles.noOfAtFaultAccidentsText} >No of At Fault Accidents</Text>
                                 <View style={styles.dropdownContainer}>
-                                    <Text numberOfLines={1} style={styles.dropdownTextStyle} >{this.state.numberOfAtFaultAccidents}</Text>
-                                    
+                                    {/* <Text numberOfLines={1} style={styles.dropdownTextStyle} >{this.state.numberOfAtFaultAccidents}</Text> */}
+                                    <Dropdown
+                                        style={styles.dropdown}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        data={this.state.numberList}
+                                        placeholder="No of At Fault Accidents"
+                                        maxHeight={300}
+                                        labelField="value"
+                                        valueField="value"
+                                        value={this.state.numberOfAtFaultAccidents}
+                                        onChange={item => {
+                                            this.onClickAtFaultAccidentsItem(item);
+                                        }}
+                                        renderItem={this.renderVehicleType}
+
+                                    />
                                 </View>
                             </View>
                             <View style={styles.accountHistoryRowView}>
                                 <Text numberOfLines={1} style={styles.noOfAtFaultAccidentsText} >No of Not At Fault Accidents</Text>
                                 <View style={styles.dropdownContainer}>
-                                    <Text numberOfLines={1} style={styles.dropdownTextStyle} >{this.state.numberOfNotAtFaultAccidents}</Text>
-                                    
+                                    {/* <Text numberOfLines={1} style={styles.dropdownTextStyle} >{this.state.numberOfNotAtFaultAccidents}</Text> */}
+                                    <Dropdown
+                                        style={styles.dropdown}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        data={this.state.numberList}
+                                        placeholder="No of Not At Fault Accidents"
+                                        maxHeight={300}
+                                        labelField="value"
+                                        valueField="value"
+                                        value={this.state.numberOfNotAtFaultAccidents}
+                                        onChange={item => {
+                                            this.onClickNotAtFaultAccidentsItem(item);
+                                        }}
+                                        renderItem={this.renderVehicleType}
+
+                                    />
                                 </View>
                             </View>
 
@@ -337,19 +405,16 @@ const styles = StyleSheet.create({
 
     },
     accountHistoryRowView: {
-        flexDirection: 'row',
         flex: 1,
         marginTop: 15,
-        alignContent: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginHorizontal: 40
+        marginHorizontal: 30
     },
     noOfAtFaultAccidentsText: {
         fontSize: 14,
         // fontFamily: fontSelector("regular"),
         color: Colors.black,
         flex: 1,
+        marginHorizontal: 10,
     },
     boxGap: {
         width: 15
@@ -377,11 +442,11 @@ const styles = StyleSheet.create({
     dropdownContainer: {
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 30,
-        paddingHorizontal: 17,
         flexDirection: 'row',
         justifyContent: 'center',
         paddingHorizontal: 15,
-        paddingVertical: 8
+        paddingVertical: 8,
+        marginTop: 8,
     },
     dropdownTextStyle: {
         fontSize: 13,
@@ -394,5 +459,72 @@ const styles = StyleSheet.create({
         height: 15,
         width: 15,
         marginStart: 30
-    }
+    },
+
+    dropdownIcon: {
+        width: 15,
+        height: 15,
+        resizeMode: 'contain',
+        alignSelf: 'center',
+        marginStart: 10
+    },
+
+
+    dropdownItemTextContainer: {
+        paddingVertical: 15
+    },
+    dropdownItemTextStyle: {
+        fontSize: 11,
+        // fontFamily: fontSelector("bold"),
+        color: Colors.black,
+        alignSelf: 'center'
+    },
+    divider: {
+        backgroundColor: Colors.borderColor,
+        height: 0.5
+    },
+
+    dropdown: {
+        flex: 1,
+        borderColor: 'gray',
+        borderRadius: 8,
+        paddingHorizontal: 8,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+    },
+    placeholderStyle: {
+        fontSize: 12,
+        color: Colors.black,
+
+    },
+    selectedTextStyle: {
+        fontSize: 12,
+        color: Colors.black,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },
+
+    selectionListTextStyle: {
+        fontSize: 12,
+        color: Colors.black,
+        // fontFamily: fontSelector("regular"),
+        paddingHorizontal: 15,
+        paddingVertical: 12
+    },
 });

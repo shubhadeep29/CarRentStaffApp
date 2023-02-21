@@ -205,7 +205,6 @@ goToMainScreen() {
         formData.append('device_type', this.state.deviceType);
         formData.append('user_id', this.userId);
         formData.append('driver_id', this.state.item.driver_id);
-
         formData.append('first_name', this.state.firstName);
         formData.append('middle_name', this.state.middleName);
         formData.append('last_name', this.state.lastName);
@@ -219,49 +218,58 @@ goToMainScreen() {
         formData.append('licence_no', this.state.driverLICNo);
         formData.append('licence_expiry', this.state.driverExpireDate);
         formData.append('is_australian_licence', this.state.isAustralianLicenceYes ? "Yes" : "No");
-        formData.append('passport_no', this.state.passportNo);
+        formData.append('passport_no', this.state.passportNo == null ? "" : this.state.passportNo);
         formData.append('passport_expiry', this.state.passportExpireDate);
-        formData.append('utility_bill', this.state.selectedUtility);
+        formData.append('utility_bill_id', this.state.selectedUtility == null ? "" : this.state.selectedUtility);
         formData.append('bank_name', this.state.accountName);
         formData.append('bsb', this.state.bsb);
         formData.append('account_no', this.state.accountNumber);
+        formData.append('no_of_at_fault_accidents', this.state.numberOfAtFaultAccidents);
+        formData.append('no_of_not_at_fault_accidents', this.state.numberOfNotAtFaultAccidents);
+        formData.append('admin_notes', this.state.adminNote);
         formData.append('bond_amount', this.state.bondAmount);
         formData.append('bond_date', this.state.bondAmountDate);
         formData.append('bond_payment_method', this.state.paymentMethod);
         formData.append('bond_reference_no', this.state.referenceNumber);
-        formData.append('admin_notes', this.state.adminNote);
+
 
 
         if (this.state.licenceImage != null && this.state.licenceImage != "")
             formData.append('licence_image', {
                 uri: Platform.OS === 'ios' ? this.state.licenceImage.replace('file://', '') : this.state.licenceImage,
                 name: "licenceImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
         if (this.state.licenceExpiryImage != null && this.state.licenceExpiryImage != "")
             formData.append('licence_expiry_image', {
                 uri: Platform.OS === 'ios' ? this.state.licenceExpiryImage.replace('file://', '') : this.state.licenceExpiryImage,
                 name: "licenceExpiryImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
         if (this.state.passportNoImage != null && this.state.passportNoImage != "")
             formData.append('passport_no_image', {
                 uri: Platform.OS === 'ios' ? this.state.passportNoImage.replace('file://', '') : this.state.passportNoImage,
                 name: "passportNoImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
         if (this.state.passportExpiryImage != null && this.state.passportExpiryImage != "")
             formData.append('passport_expiry_image', {
                 uri: Platform.OS === 'ios' ? this.state.passportExpiryImage.replace('file://', '') : this.state.passportExpiryImage,
                 name: "passportExpiryImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
         if (this.state.utilityBillImage != null && this.state.utilityBillImage != "")
             formData.append('utility_bill_image', {
                 uri: Platform.OS === 'ios' ? this.state.utilityBillImage.replace('file://', '') : this.state.utilityBillImage,
                 name: "utilityBillImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
+        // if (this.state.profile_image != null && this.state.profile_image != "")
+        //     formData.append('profile_image', {
+        //         uri: Platform.OS === 'ios' ? this.state.utilityBillImage.replace('file://', '') : this.state.utilityBillImage,
+        //         name: "utilityBillImage.jpeg",
+        //         type: "jpeg"
+        //     });
 
 
 
@@ -320,7 +328,6 @@ goToMainScreen() {
         formData.append('device_type', this.state.deviceType);
         formData.append('user_id', this.userId);
         formData.append('driver_id', this.state.item.driver_id);
-
         formData.append('first_name', this.state.firstName);
         formData.append('middle_name', this.state.middleName);
         formData.append('last_name', this.state.lastName);
@@ -334,48 +341,51 @@ goToMainScreen() {
         formData.append('licence_no', this.state.driverLICNo);
         formData.append('licence_expiry', this.state.driverExpireDate);
         formData.append('is_australian_licence', this.state.isAustralianLicenceYes ? "Yes" : "No");
-        formData.append('passport_no', this.state.passportNo);
+        formData.append('passport_no', this.state.passportNo == null ? "" : this.state.passportNo);
         formData.append('passport_expiry', this.state.passportExpireDate);
-        formData.append('utility_bill', this.state.selectedUtility);
+        formData.append('utility_bill_id', this.state.selectedUtility == null ? "" : this.state.selectedUtility);
         formData.append('bank_name', this.state.accountName);
         formData.append('bsb', this.state.bsb);
         formData.append('account_no', this.state.accountNumber);
-        formData.append('bond_amount', this.state.bondAmount);
-        formData.append('bond_date', this.state.bondAmountDate);
-        formData.append('bond_payment_method', this.state.paymentMethod);
-        formData.append('bond_reference_no', this.state.referenceNumber);
+        formData.append('no_of_at_fault_accidents', this.state.numberOfAtFaultAccidents);
+        formData.append('no_of_not_at_fault_accidents', this.state.numberOfNotAtFaultAccidents);
+        //  formData.append('bond_amount', this.state.bondAmount);
+        // formData.append('bond_date', this.state.bondAmountDate);
+        // formData.append('bond_payment_method', this.state.paymentMethod);
+        // formData.append('bond_reference_no', this.state.referenceNumber);
         formData.append('admin_notes', this.state.adminNote);
+
 
 
         if (this.state.licenceImage != null && this.state.licenceImage != "")
             formData.append('licence_image', {
                 uri: Platform.OS === 'ios' ? this.state.licenceImage.replace('file://', '') : this.state.licenceImage,
                 name: "licenceImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
         if (this.state.licenceExpiryImage != null && this.state.licenceExpiryImage != "")
             formData.append('licence_expiry_image', {
                 uri: Platform.OS === 'ios' ? this.state.licenceExpiryImage.replace('file://', '') : this.state.licenceExpiryImage,
                 name: "licenceExpiryImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
         if (this.state.passportNoImage != null && this.state.passportNoImage != "")
             formData.append('passport_no_image', {
                 uri: Platform.OS === 'ios' ? this.state.passportNoImage.replace('file://', '') : this.state.passportNoImage,
                 name: "passportNoImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
         if (this.state.passportExpiryImage != null && this.state.passportExpiryImage != "")
             formData.append('passport_expiry_image', {
                 uri: Platform.OS === 'ios' ? this.state.passportExpiryImage.replace('file://', '') : this.state.passportExpiryImage,
                 name: "passportExpiryImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
         if (this.state.utilityBillImage != null && this.state.utilityBillImage != "")
             formData.append('utility_bill_image', {
                 uri: Platform.OS === 'ios' ? this.state.utilityBillImage.replace('file://', '') : this.state.utilityBillImage,
                 name: "utilityBillImage.jpeg",
-                type: "jpeg"
+                type: "image/jpeg"
             });
 
 
@@ -709,7 +719,7 @@ goToMainScreen() {
 
                             <Text numberOfLines={1} style={styles.headingOneTextStyle} >Admin Notes</Text>
                             <View style={styles.adminNoteContainer}>
-                            {this.state.item.status==0?
+                                {/* {this.state.item.status==0? */}
                                     
                                 
                                 <TextInput
@@ -724,14 +734,14 @@ goToMainScreen() {
                                     ref={(input) => { this.radminNoteTextInput = input; }}
                                     blurOnSubmit={false}
                                 />
-                                :
+                                {/* :
                                 <View style={styles.editTextContainerForBond}>
-                                        
+
                                 <Text style={styles.adminNoteTextStyle}
                                         >{this.state.item.admin_notes}</Text>
                                 </View>
-                                
-                            }
+
+                            } */}
                             </View>
 
                             <View style={styles.buttonContainer}>

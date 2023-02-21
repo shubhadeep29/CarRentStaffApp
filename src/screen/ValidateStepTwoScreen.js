@@ -81,9 +81,11 @@ export default class ValidateStepTwoScreen extends React.Component {
     goToNextScreen = () => {
         if (this.state.driverLICNo == "") {
             Toast.show("Please enter Driving License Number", Toast.SHORT);
-        } else if (this.state.licenceImage == "") {
+        }
+        else if (this.state.licenceImage == "") {
             Toast.show("Please enter Driving License Image", Toast.SHORT);
-        } else if (this.state.driverExpireDate == "") {
+        }
+        else if (this.state.driverExpireDate == "") {
             Toast.show("Please enter Driving License Expiry Date", Toast.SHORT);
         } else if (this.state.licenceExpiryImage == "") {
             Toast.show("Please enter Driving License Expiration Image", Toast.SHORT);
