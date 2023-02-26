@@ -30,7 +30,7 @@ export default class ValidateStepFiveScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            url:"",
+            url: "",
             item: props.route.params.item,
             isNetworkAvailable: true,
             isLoading: false,
@@ -91,7 +91,7 @@ export default class ValidateStepFiveScreen extends React.Component {
 
         console.log("item", this.state.item)
         console.log("componentDidMount1", this.state.item.bond_details.bond_payment_method)
-        
+
         this.setState({
             firstName: this.state.item.first_name,
             lastName: this.state.item.last_name,
@@ -120,18 +120,18 @@ export default class ValidateStepFiveScreen extends React.Component {
             numberOfNotAtFaultAccidents: this.state.item.no_of_not_at_fault_accidents,
 
 
-            bondAmount:this.state.item.bond_details.bond_amount,
-            bondAmountDate:new Date().getMonth()+1+"/"+new Date().getDate()+"/"+new Date().getFullYear(),
-            paymentMethod:this.state.item.bond_details.bond_payment_method,
-            referenceNumber:this.state.item.bond_details.bond_reference_no,
-            adminNote:this.state.item.admin_notes,
+            bondAmount: this.state.item.bond_details.bond_amount,
+            bondAmountDate: new Date().getMonth() + 1 + "/" + new Date().getDate() + "/" + new Date().getFullYear(),
+            paymentMethod: this.state.item.bond_details.bond_payment_method,
+            referenceNumber: this.state.item.bond_details.bond_reference_no,
+            adminNote: this.state.item.admin_notes,
 
-            licenceImage:this.state.item.licence_image,
-            licenceExpiryImage:this.state.item.licence_expiry_image,
-            passportNoImage:this.state.item.passport_no_image,
-            passportExpiryImage:this.state.item.passport_expiry_image,
-            utilityBillImage:this.state.item.utility_bill_image,
-            odometerImageUri:this.state.item.odometerImageUri     
+            licenceImage: this.state.item.licence_image,
+            licenceExpiryImage: this.state.item.licence_expiry_image,
+            passportNoImage: this.state.item.passport_no_image,
+            passportExpiryImage: this.state.item.passport_expiry_image,
+            utilityBillImage: this.state.item.utility_bill_image,
+            odometerImageUri: this.state.item.odometerImageUri
 
         })
 
@@ -153,50 +153,50 @@ export default class ValidateStepFiveScreen extends React.Component {
     }
 
 
-    callValidateDriverValidation() {
+    callValidateDriverValidation(approve_or_reject) {
         Keyboard.dismiss();
-        if(this.state.bondAmount==""||this.state.bondAmount==null){
+        if (this.state.bondAmount == "" || this.state.bondAmount == null) {
             Toast.show("Enter Bond Amount", Toast.SHORT);
-        }else if(this.state.bondAmountDate==""||this.state.bondAmountDate==null){
+        } else if (this.state.bondAmountDate == "" || this.state.bondAmountDate == null) {
             Toast.show("Enter Bond Date", Toast.SHORT);
-        }else if(this.state.paymentMethod==""||this.state.paymentMethod==null){
+        } else if (this.state.paymentMethod == "" || this.state.paymentMethod == null) {
             Toast.show("Enter Payment Method", Toast.SHORT);
-        }else if(this.state.referenceNumber==""||this.state.referenceNumber==null){
+        } else if (this.state.referenceNumber == "" || this.state.referenceNumber == null) {
             Toast.show("Enter Reference Number", Toast.SHORT);
-        }else if(this.state.adminNote==""||this.state.bondAmount==null){
+        } else if (this.state.adminNote == "" || this.state.bondAmount == null) {
             Toast.show("Enter Admin Notes", Toast.SHORT);
-        }else{
-        
-        try {
-            NetInfo.fetch().then(state => {
-                if (state.isConnected) {
-                    if(this.state.item.status==0){
-                        this.callValidateDriverApi();
-                    }else{
-                        this.editDriverApi();
+        } else {
+
+            try {
+                NetInfo.fetch().then(state => {
+                    if (state.isConnected) {
+                        if (this.state.item.status == 0) {
+                            this.callValidateDriverApi(approve_or_reject);
+                        } else {
+                            this.editDriverApi();
+                        }
+
                     }
-                
-                }
-                else {
-                    Utils.showMessageAlert("No internet connection")
-                }
-            });
-        }
-        catch (error) {
-            console.log("Error in webservice call : " + error);
+                    else {
+                        Utils.showMessageAlert("No internet connection")
+                    }
+                });
+            }
+            catch (error) {
+                console.log("Error in webservice call : " + error);
+            }
         }
     }
-}
 
-goToMainScreen() {
-    this.props.navigation.reset({
-      index: 0,
-      routes: [{ name: 'MainDrawerScreen' }],
-    });
-  }
+    goToMainScreen() {
+        this.props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'MainDrawerScreen' }],
+        });
+    }
 
-    callValidateDriverApi = async () => {
-        
+    callValidateDriverApi = async (approve_or_reject) => {
+
         this.setState({ isLoading: true });
 
         var formData = new FormData();
@@ -231,6 +231,7 @@ goToMainScreen() {
         formData.append('bond_date', this.state.bondAmountDate);
         formData.append('bond_payment_method', this.state.paymentMethod);
         formData.append('bond_reference_no', this.state.referenceNumber);
+        formData.append('approve_or_reject', approve_or_reject);
 
 
 
@@ -277,7 +278,7 @@ goToMainScreen() {
         try {
             console.log("Call Validate Driver API Link ========>  ", Links.validateDriver);
             console.log("Validate Driver Input ========>  ", JSON.stringify(formData));
-            
+
 
             const res = await fetch(Links.validateDriver, {
                 method: 'POST',
@@ -319,7 +320,7 @@ goToMainScreen() {
     }
 
     editDriverApi = async () => {
-        
+
         this.setState({ isLoading: true });
 
         var formData = new FormData();
@@ -394,7 +395,7 @@ goToMainScreen() {
         try {
             console.log("Call Edit Driver API Link ========>  ", Links.editDriver);
             console.log("Edit Driver Input ========>  ", JSON.stringify(formData));
-            
+
 
             const res = await fetch(Links.editDriver, {
                 method: 'POST',
@@ -415,15 +416,15 @@ goToMainScreen() {
                         Toast.show(responseJSON.message, Toast.SHORT);
                     }
                     //this.props.navigation.navigate('ValidateOrApproveDriverScreen', {
-                        
-                   // })
-                   this.goToMainScreen()
+
+                    // })
+                    this.goToMainScreen()
 
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
                     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
                         Toast.show(responseJSON.message, Toast.SHORT);
-                        console.log("response",responseJSON)
+                        console.log("response", responseJSON)
                     } else {
                         Toast.show("something went wrong", Toast.SHORT);
                     }
@@ -524,10 +525,14 @@ goToMainScreen() {
 
     }
 
-    onClickSubmitButton(){
-        this.props.navigation.navigate('ValidateOrApproveDriverScreen', {
-            item: this.state.item
-        })
+    onClickSubmitButton() {
+        // this.props.navigation.navigate('ValidateOrApproveDriverScreen', {
+        //     item: this.state.item
+        // })
+        this.props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'MainDrawerScreen' }],
+        });
     }
 
 
@@ -720,15 +725,15 @@ goToMainScreen() {
                             <Text numberOfLines={1} style={styles.headingOneTextStyle} >Admin Notes</Text>
                             <View style={styles.adminNoteContainer}>
                                 {/* {this.state.item.status==0? */}
-                                    
-                                
+
+
                                 <TextInput
                                     style={styles.adminNoteTextStyle}
                                     autoCapitalize="none"
                                     multiline={true}
                                     placeholderTextColor={Colors.placeholderColor}
                                     placeholder="Type Notes"
-                                    
+
                                     value={this.state.adminNote}
                                     onChangeText={(value) => this.setState({ adminNote: value })}
                                     ref={(input) => { this.radminNoteTextInput = input; }}
@@ -746,20 +751,26 @@ goToMainScreen() {
 
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity style={styles.approveButtonContainer}
-                                onPress={() => this.callValidateDriverValidation()}>
-                                    {this.state.item.status ==0 ?
-                                    <Text numberOfLines={1} style={styles.buttonText}>APPROVE</Text>
-                                    :
-                                    <Text numberOfLines={1} style={styles.buttonText}>SUBMIT</Text>
-    }
+                                    onPress={() => this.callValidateDriverValidation(1)}>
+                                    {this.state.item.status == 0 ?
+                                        <Text numberOfLines={1} style={styles.buttonText}>APPROVE</Text>
+                                        :
+                                        <Text numberOfLines={1} style={styles.buttonText}>SUBMIT</Text>
+                                    }
                                 </TouchableOpacity>
                                 <View style={styles.boxGap} />
                                 <TouchableOpacity style={styles.cancelButtonContainer}
-                                    onPress={() => this.onClickSubmitButton()}>
-                                        {this.state.item.status==0?
-                                    <Text numberOfLines={1} style={styles.buttonText}>REJECT</Text>
-                                    :
-                                    <Text numberOfLines={1} style={styles.buttonText}>CANCEL</Text>
+                                    onPress={() => {
+                                        this.state.item.status == 0 ?
+                                            this.callValidateDriverValidation(2)
+                                            :
+                                            this.onClickSubmitButton()
+                                    }
+                                    }>
+                                    {this.state.item.status == 0 ?
+                                        <Text numberOfLines={1} style={styles.buttonText}>REJECT</Text>
+                                        :
+                                        <Text numberOfLines={1} style={styles.buttonText}>CANCEL</Text>
                                     }
                                 </TouchableOpacity>
                             </View>

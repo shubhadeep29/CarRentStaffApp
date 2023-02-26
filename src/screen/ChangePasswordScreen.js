@@ -82,7 +82,7 @@ export default class ChangePasswordScreen extends React.Component {
 
 
         try {
-            console.log("Call Change password API Link ========>  ", Links.LOGOUT);
+            console.log("Call Change password API Link ========>  ", Links.CHANGE_PASSWORD);
             console.log("Change password Input ========>  ", JSON.stringify(inputBody));
             const res = await fetch(Links.CHANGE_PASSWORD, {
                 method: 'POST',

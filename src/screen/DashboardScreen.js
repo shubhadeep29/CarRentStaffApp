@@ -34,8 +34,14 @@ export default class DashboardScreen extends React.Component {
             searchText: "",
             isCarDetailsViewModalVisible: false,
             data: [],
-            registeredDriverList: [],
-            carList: [],
+            pendingDriverValidate: [],
+            availableVehicleList: [],
+            totalVehicleCar: 0,
+            totalVehicleVan: 0,
+            onGoingVehicleCar: 0,
+            onGoingVehicleVan: 0,
+            availableVehicleCar: 0,
+            availableVehicleVan: 0,
             topViewList: [
                 {
                     id: 1,
@@ -71,14 +77,14 @@ export default class DashboardScreen extends React.Component {
     componentDidMount = async () => {
         this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
         this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
-        this.loadingCarList()
+        this.loadingList()
     }
 
-    loadingCarList() {
+    loadingList() {
         try {
             NetInfo.fetch().then(state => {
                 if (state.isConnected) {
-                    this.callLoadingCarListApi();
+                    this.getVehicle();
                 }
                 else {
                     Utils.showMessageAlert("No internet connection")
@@ -89,6 +95,272 @@ export default class DashboardScreen extends React.Component {
             console.log("Error in webservice call : " + error);
         }
     }
+
+    getVehicle = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call driver list API Link ========>  ", Links.getVehicle);
+            console.log("Driver list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.getVehicle, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.getOnGoingVehicle()
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+
+                    if (responseJSON.hasOwnProperty("total_vehicle") && responseJSON.total_vehicle != null) {
+                        this.setState({
+                            totalVehicleCar: responseJSON.total_vehicle.total_car,
+                            totalVehicleVan: responseJSON.total_vehicle.total_van,
+                        });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+
+                    this.props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'LoginScreen' }],
+                    });
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
+    getOnGoingVehicle = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call driver list API Link ========>  ", Links.getOnGoingVehicle);
+            console.log("Driver list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.getOnGoingVehicle, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.getPendingDriverValidate()
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+
+                    if (responseJSON.hasOwnProperty("on_going_vehicle") && responseJSON.on_going_vehicle != null) {
+                        this.setState({
+                            onGoingVehicleCar: responseJSON.on_going_vehicle.total_car,
+                            onGoingVehicleVan: responseJSON.on_going_vehicle.total_van,
+                        });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+
+                    this.props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'LoginScreen' }],
+                    });
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
+
+
+    getPendingDriverValidate = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call driver list API Link ========>  ", Links.getPendingDriverValidate);
+            console.log("Driver list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.getPendingDriverValidate, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.getAvailableVehicleList()
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+
+                    if (responseJSON.hasOwnProperty("pending_driver_validate") && responseJSON.pending_driver_validate != null) {
+                        this.setState({ pendingDriverValidate: responseJSON.pending_driver_validate });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+
+                    this.props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'LoginScreen' }],
+                    });
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
+
+    getAvailableVehicleList = async () => {
+        this.setState({ isLoading: true });
+
+        var inputBody = JSON.stringify({
+            device_type: "1",
+            user_id: this.userId,
+            token_key: this.apiKey,
+        });
+
+
+        try {
+            console.log("Call driver list API Link ========>  ", Links.getAvailableVehicleList);
+            console.log("Driver list Input ========>  ", JSON.stringify(inputBody));
+            const res = await fetch(Links.getAvailableVehicleList, {
+                method: 'POST',
+                body: inputBody,
+                headers: {
+                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                // this.getPendingDriverValidate()
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+
+                    if (responseJSON.hasOwnProperty("available_vehicle_list") && responseJSON.available_vehicle_list != null) {
+                        this.setState({ availableVehicleList: responseJSON.available_vehicle_list });
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+
+                    this.props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'LoginScreen' }],
+                    });
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+    }
+
 
     callLoadingCarListApi = async () => {
         this.setState({ isLoading: true });
@@ -118,7 +390,6 @@ export default class DashboardScreen extends React.Component {
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
 
                     if (responseJSON.hasOwnProperty("car_list") && responseJSON.car_list != null) {
-                        this.setState({ registeredDriverList: responseJSON.car_list });
                         this.setState({ carList: responseJSON.car_list });
 
                     }
@@ -129,6 +400,22 @@ export default class DashboardScreen extends React.Component {
                     } else {
                         Toast.show("something went wrong", Toast.SHORT);
                     }
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+
+                    this.props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'LoginScreen' }],
+                    });
                 }
             }
         }
@@ -153,18 +440,18 @@ export default class DashboardScreen extends React.Component {
                 <View >
                     <Image
                         // source={require('../images/car_img.jpg')}
-                        source={{ uri: Links.BASEURL + item.car_image }}
+                        source={{ uri: Links.BASEURL + item.insurance_expire_pic }}
                         style={styles.carImage}
                     />
-                    <View style={styles.indicatorContainer}>
+                    {/* <View style={styles.indicatorContainer}>
                         {item.status == "0" ?
                             <View style={styles.activeIndicator} />
                             :
                             <View style={styles.inactiveIndicator} />
                         }
-                    </View>
+                    </View> */}
 
-                    <View style={styles.editAndViewContainer}>
+                    {/* <View style={styles.editAndViewContainer}>
                         <TouchableOpacity style={styles.viewContainer} onPress={() => this.openViewModal()}>
                             <Image
                                 source={require('../images/ic_view.png')}
@@ -177,7 +464,7 @@ export default class DashboardScreen extends React.Component {
                                 style={styles.viewIcon}
                             />
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
                 </View>
 
                 {item.status == "0" ?
@@ -194,7 +481,7 @@ export default class DashboardScreen extends React.Component {
                 <View style={styles.carInfoContainer}>
                     <Text numberOfLines={1} style={styles.serialNumberTextStyle}>{item.model}  |</Text>
                     <Text numberOfLines={1} style={styles.yearTextStyle}>{item.year}</Text>
-                    <Text numberOfLines={1} style={styles.serialNumberTextStyle}>|  {item.fuel_type}</Text>
+                    {/* <Text numberOfLines={1} style={styles.serialNumberTextStyle}>|  {item.fuel_type}</Text> */}
                 </View>
 
             </TouchableOpacity>
@@ -240,7 +527,7 @@ export default class DashboardScreen extends React.Component {
                         alignItems: 'center',
                         alignSelf: 'center',
 
-                    }}>Rahul Pathak</Text>
+                    }}>{item.driver_name}</Text>
 
                     <View style={{
                         height: 2,
@@ -263,7 +550,7 @@ export default class DashboardScreen extends React.Component {
                         alignItems: 'center',
                         alignSelf: 'center',
 
-                    }}>+61 9876554321</Text>
+                    }}>{item.mobile}</Text>
 
                     <Text numberOfLines={1} style={{
                         fontSize: 10,
@@ -275,7 +562,7 @@ export default class DashboardScreen extends React.Component {
                         alignItems: 'center',
                         alignSelf: 'center',
 
-                    }}>Licence No.: 552427</Text>
+                    }}>Licence No.: {item.licence_no}</Text>
                     <Text numberOfLines={1} style={{
                         fontSize: 9,
                         color: Colors.dark_shade_gray,
@@ -284,7 +571,7 @@ export default class DashboardScreen extends React.Component {
                         alignItems: 'center',
                         alignSelf: 'center',
 
-                    }}>Country : Australia</Text>
+                    }}>Country : {item.is_australian_licence == "No "}Australia</Text>
                     <TouchableOpacity style={{
                         borderRadius: 30,
                         paddingVertical: 8,
@@ -381,8 +668,8 @@ export default class DashboardScreen extends React.Component {
                                     <View style={styles.mainContainer}>
                                         {this.state.isLoading && <Loader />}
 
-                                        <View style={{ flex: 1, marginTop: 20 }}>
-                                            {this.state.registeredDriverList.length > 0 ?
+                                        <View style={{ flex: 1, flexDirection: 'row', marginTop: 20, marginHorizontal: 16 }}>
+                                            {/* {this.state.pendingDriverValidate.length > 0 ?
                                                 <FlatList
                                                     data={this.state.topViewList}
                                                     nestedScrollEnabled
@@ -396,16 +683,91 @@ export default class DashboardScreen extends React.Component {
                                                 />
                                                 :
                                                 this.emptyPlaceHolderView()
-                                            }
+                                            } */}
+
+                                            <TouchableOpacity style={styles.topItemContainer} activeOpacity={1}
+                                            // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
+                                            >
+                                                <View style={{ flex: 1 }}>
+
+                                                    <Image
+                                                        source={require('../images/car_img.jpg')}
+                                                        // source={{ uri: Links.BASEURL + item.image }}
+                                                        style={styles.topViewImage}
+                                                    />
+
+                                                    <Text style={styles.headingTwoTextStyle}>Total Vehicle</Text>
+
+                                                    <View style={styles.activeCarNumberContainer}>
+                                                        <Text numberOfLines={1} style={styles.activeCarNumberTextStyle}>CAR: {this.state.totalVehicleCar}</Text>
+                                                    </View>
+
+                                                    <View style={styles.activeCarNumberContainer}>
+                                                        <Text numberOfLines={1} style={styles.activeCarNumberTextStyle}>VAN: {this.state.totalVehicleVan}</Text>
+                                                    </View>
+
+                                                </View>
+
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity style={styles.topItemContainer} activeOpacity={1}
+                                            // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
+                                            >
+                                                <View style={{ flex: 1 }}>
+
+                                                    <Image
+                                                        source={require('../images/car_img.jpg')}
+                                                        // source={{ uri: Links.BASEURL + item.image }}
+                                                        style={styles.topViewImage}
+                                                    />
+
+                                                    <Text style={styles.headingTwoTextStyle}>On Rent</Text>
+
+                                                    <View style={styles.inactiveCarNumberContainer}>
+                                                        <Text numberOfLines={1} style={styles.inactiveCarNumberTextStyle}>CAR: {this.state.onGoingVehicleCar}</Text>
+                                                    </View>
+
+                                                    <View style={styles.inactiveCarNumberContainer}>
+                                                        <Text numberOfLines={1} style={styles.inactiveCarNumberTextStyle}>VAN: {this.state.onGoingVehicleVan}</Text>
+                                                    </View>
+
+                                                </View>
+
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity style={styles.topItemContainer} activeOpacity={1}
+                                            // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
+                                            >
+                                                <View style={{ flex: 1 }}>
+
+                                                    <Image
+                                                        source={require('../images/car_img.jpg')}
+                                                        // source={{ uri: Links.BASEURL + item.image }}
+                                                        style={styles.topViewImage}
+                                                    />
+
+                                                    <Text style={styles.headingTwoTextStyle}>Available For Rent</Text>
+
+                                                    <View style={styles.greenCarNumberContainer}>
+                                                        <Text numberOfLines={1} style={styles.greenCarNumberTextStyle}>CAR: {this.state.totalVehicleCar - this.state.onGoingVehicleCar}</Text>
+                                                    </View>
+
+                                                    <View style={styles.greenCarNumberContainer}>
+                                                        <Text numberOfLines={1} style={styles.greenCarNumberTextStyle}>VAN: {this.state.totalVehicleVan - this.state.onGoingVehicleVan}</Text>
+                                                    </View>
+
+                                                </View>
+
+                                            </TouchableOpacity>
 
                                         </View>
 
                                         <Text numberOfLines={1} style={styles.headingTextStyle}>New Registered Drivers</Text>
 
                                         <View style={{ flex: 1 }}>
-                                            {this.state.registeredDriverList.length > 0 ?
+                                            {this.state.pendingDriverValidate.length > 0 ?
                                                 <FlatList
-                                                    data={this.state.registeredDriverList}
+                                                    data={this.state.pendingDriverValidate}
                                                     nestedScrollEnabled
                                                     renderItem={(item, index) => this.setRenderRegisteredDriversItemView(item, index)}
                                                     listKey={(item, index) => 'LC' + item.id}
@@ -424,9 +786,9 @@ export default class DashboardScreen extends React.Component {
                                         <Text numberOfLines={1} style={styles.headingTextStyle}>Cars & Vans Available For Rent</Text>
 
                                         <View style={{ flex: 1 }}>
-                                            {this.state.carList.length > 0 ?
+                                            {this.state.availableVehicleList.length > 0 ?
                                                 <FlatList
-                                                    data={this.state.carList}
+                                                    data={this.state.availableVehicleList}
                                                     renderItem={(item, index) => this.setRenderItemView(item, index)}
                                                     nestedScrollEnabled
                                                     listKey={(item, index) => 'LC' + item.id}
@@ -617,6 +979,20 @@ const styles = StyleSheet.create({
         fontSize: 12,
         // fontFamily: fontSelector("bold"),
         color: Colors.blue,
+        fontWeight: 'bold',
+        paddingHorizontal: 13,
+        paddingVertical: 4
+    },
+    greenCarNumberContainer: {
+        alignSelf: 'center',
+        borderRadius: 20,
+        marginTop: 8,
+        backgroundColor: Colors.greenBackground
+    },
+    greenCarNumberTextStyle: {
+        fontSize: 12,
+        // fontFamily: fontSelector("bold"),
+        color: Colors.green,
         fontWeight: 'bold',
         paddingHorizontal: 13,
         paddingVertical: 4

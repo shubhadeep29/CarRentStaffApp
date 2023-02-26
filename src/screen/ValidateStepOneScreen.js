@@ -69,9 +69,11 @@ export default class ValidateStepOneScreen extends React.Component {
             Toast.show("Please enter last name", Toast.SHORT);
         }else if(this.state.email==""){
             Toast.show("Please enter email address", Toast.SHORT);
-        }else if(this.state.flatNo==""){
-            Toast.show("Please enter Flat No", Toast.SHORT);
-        }else if(this.state.streetNo==""){
+        }
+        // else if(this.state.flatNo==""){
+        //     Toast.show("Please enter Flat No", Toast.SHORT);
+        // }
+        else if (this.state.streetNo == "") {
             Toast.show("Please enter Street No", Toast.SHORT);
         }else if(this.state.streetName==""){
             Toast.show("Please enter Street Name", Toast.SHORT);

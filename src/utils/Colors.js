@@ -9,9 +9,11 @@ export const placeholderColor ='#c1c1c1'
 export const editTextBgColor ='#f6f6f4'
 export const pink ='#EB4655'
 export const blue ='#6286f7'
+export const green = '#74CB77'
 export const yellow ='#f4ba5d'
 export const yellowBackground ='#f5eee4'
 export const blueBackground ='#d2ddfc'
+export const greenBackground = '#E9F8F3'
 
 
 
