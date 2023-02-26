@@ -178,6 +178,18 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
     }
 
     setRenderItemView = ({ item, index }) => {
+        var status = "";
+        if (item.status == "1") {
+            status = "Active"
+        } else if (item.status == "2") {
+            status = "Inactive"
+        } else if (item.status == "3") {
+            status = "Deleted"
+        } else if (item.status == "4") {
+            status = "Rejected"
+        } else {
+            status = "Pending"
+        }
         return (
             <TouchableOpacity style={styles.listItemContainer} activeOpacity={1} key={item.id}
             // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
@@ -185,7 +197,10 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
                 <View style={styles.rowView}>
                     <View style={styles.mainContainer}>
                         <View style={item.status == "1" ? styles.statusContainer : styles.pendingStatusContainer}>
-                            <Text style={item.status == "1" ? styles.statusTextStyle : styles.pendingStatusTextStyle}>{item.status == "1" ? "Active" : "Pending"}</Text>
+                            <Text style={item.status == "1" ? styles.statusTextStyle : styles.pendingStatusTextStyle}>
+                                {status}
+                                {/* {item.status == "1" ? "Active" : "Pending"} */}
+                            </Text>
                         </View>
                     </View>
 
@@ -194,10 +209,10 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
                             source={require('../images/ic_edit_white.png')}
                             style={styles.validateIcon}
                         />
-                        {item.status == "1" ?
-                            < Text style={styles.validateTextStyle}>Edit</Text>
+                        {item.status == "0" ?
+                            < Text style={styles.validateTextStyle}>Validate</Text>
                             :
-                            <Text style={styles.validateTextStyle}>Validate</Text>
+                            <Text style={styles.validateTextStyle}>Edit</Text>
                         }
                     </TouchableOpacity>
                 </View>

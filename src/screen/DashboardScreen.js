@@ -42,34 +42,7 @@ export default class DashboardScreen extends React.Component {
             onGoingVehicleVan: 0,
             availableVehicleCar: 0,
             availableVehicleVan: 0,
-            topViewList: [
-                {
-                    id: 1,
-                    title: "Total Vehicle",
-                    car_count: "90",
-                    van_count: "10",
-                    image: "",
-                    color: Colors.blue
 
-                },
-                {
-                    id: 2,
-                    title: "On Rent",
-                    car_count: "90",
-                    van_count: "10",
-                    image: "",
-                    color: Colors.yellow
-                },
-                {
-                    id: 3,
-                    title: "Available For Rent",
-                    car_count: "90",
-                    van_count: "10",
-                    image: "",
-                    color: Colors.dark_shade_gray
-
-                }
-            ],
             isDropdownVisible: false,
         }
     }
@@ -119,9 +92,9 @@ export default class DashboardScreen extends React.Component {
             });
             const responseJSON = await res.json();
             console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
+            this.getOnGoingVehicle()
             if (responseJSON) {
-                this.getOnGoingVehicle()
-                this.setState({ isLoading: false });
+                // this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
 
                     if (responseJSON.hasOwnProperty("total_vehicle") && responseJSON.total_vehicle != null) {
@@ -186,9 +159,9 @@ export default class DashboardScreen extends React.Component {
             });
             const responseJSON = await res.json();
             console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
+            this.getPendingDriverValidate()
             if (responseJSON) {
-                this.getPendingDriverValidate()
-                this.setState({ isLoading: false });
+                // this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
 
                     if (responseJSON.hasOwnProperty("on_going_vehicle") && responseJSON.on_going_vehicle != null) {
@@ -255,9 +228,9 @@ export default class DashboardScreen extends React.Component {
             });
             const responseJSON = await res.json();
             console.log("Driver list Response ===========>  ", JSON.stringify(responseJSON));
+            this.getAvailableVehicleList()
             if (responseJSON) {
-                this.getAvailableVehicleList()
-                this.setState({ isLoading: false });
+                // this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
 
                     if (responseJSON.hasOwnProperty("pending_driver_validate") && responseJSON.pending_driver_validate != null) {
@@ -503,7 +476,7 @@ export default class DashboardScreen extends React.Component {
                         alignItems: 'center',
                         alignSelf: 'center',
 
-                    }}>20 Jan 2023</Text>
+                    }}>{item.created_ts}</Text>
 
 
                     <Text numberOfLines={1} style={{
@@ -571,14 +544,16 @@ export default class DashboardScreen extends React.Component {
                         alignItems: 'center',
                         alignSelf: 'center',
 
-                    }}>Country : {item.is_australian_licence == "No "}Australia</Text>
+                    }}>Country : {item.country}</Text>
                     <TouchableOpacity style={{
                         borderRadius: 30,
                         paddingVertical: 8,
                         paddingHorizontal: 15,
                         backgroundColor: Colors.textColor1,
                         marginTop: 8,
-                    }}>
+                    }}
+                        onPress={() => this.props.navigation.navigate('ValidateOrApproveDriverScreen')}
+                    >
 
                         <Text numberOfLines={1} style={{
                             fontWeight: '600',
