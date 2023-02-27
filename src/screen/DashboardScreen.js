@@ -233,8 +233,8 @@ export default class DashboardScreen extends React.Component {
                 // this.setState({ isLoading: false });
                 if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
 
-                    if (responseJSON.hasOwnProperty("pending_driver_validate") && responseJSON.pending_driver_validate != null) {
-                        this.setState({ pendingDriverValidate: responseJSON.pending_driver_validate });
+                    if (responseJSON.hasOwnProperty("driver_list") && responseJSON.driver_list != null) {
+                        this.setState({ pendingDriverValidate: responseJSON.driver_list });
                     }
                 }
                 else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
@@ -399,7 +399,12 @@ export default class DashboardScreen extends React.Component {
         }
     }
 
+    goToValidatedScreen = (item) => {
+        this.props.navigation.navigate('ValidateStepOneScreen', {
+            item: item
+        })
 
+    }
     openViewModal = () => {
         this.setState({ isCarDetailsViewModalVisible: true });
     }
@@ -413,7 +418,7 @@ export default class DashboardScreen extends React.Component {
                 <View >
                     <Image
                         // source={require('../images/car_img.jpg')}
-                        source={{ uri: Links.BASEURL + item.insurance_expire_pic }}
+                        source={{ uri: item.insurance_expire_pic }}
                         style={styles.carImage}
                     />
                     {/* <View style={styles.indicatorContainer}>
@@ -500,7 +505,7 @@ export default class DashboardScreen extends React.Component {
                         alignItems: 'center',
                         alignSelf: 'center',
 
-                    }}>{item.driver_name}</Text>
+                    }}>{item.first_name+" "+item.last_name}</Text>
 
                     <View style={{
                         height: 2,
@@ -552,7 +557,7 @@ export default class DashboardScreen extends React.Component {
                         backgroundColor: Colors.textColor1,
                         marginTop: 8,
                     }}
-                        onPress={() => this.props.navigation.navigate('ValidateOrApproveDriverScreen')}
+                        onPress={() => this.goToValidatedScreen(item)}
                     >
 
                         <Text numberOfLines={1} style={{

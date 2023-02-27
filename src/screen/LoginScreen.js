@@ -203,6 +203,7 @@ export default class LoginScreen extends React.Component {
                 placeholder="Email Id"
                 value={this.state.email}
                 onChangeText={(value) => this.setState({ email: value })}
+                onSubmitEditing={()=>{this.passTextInput.focus()}}
                 blurOnSubmit={false}
               />
             </View>
@@ -218,6 +219,7 @@ export default class LoginScreen extends React.Component {
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}
                 placeholder="Password"
                 value={this.state.password}
+                ref={(input) => { this.passTextInput = input; }}
                 onChangeText={(value) => this.setState({ password: value })}
                 onSubmitEditing={() => { this.callLoginValidation() }}
                 blurOnSubmit={false}
