@@ -58,8 +58,16 @@ export default class ValidateStepTwoScreen extends React.Component {
         this.getUtility()
         console.log("item 2", this.state.item)
 
+        for (var i = 0; i < this.state.utility_bill_list.length; i++) {
+            if (this.state.item.utility_bill_id == this.state.utility_bill_list[i].utility_bill_id) {
+                this.setState({
+                    selectedUtility: this.state.item.utility_bill_name
+                })
+            }
+        }
+
         this.setState({
-            selectedUtility: this.state.item.utility_bill,
+            selectedUtility: this.state.item.utility_bill_id,
             passportExpireDate: this.state.item.passport_expiry,
             passportNo: this.state.item.passport_no,
             driverExpireDate: this.state.item.licence_expiry,
@@ -588,17 +596,7 @@ export default class ValidateStepTwoScreen extends React.Component {
                                 : null}
                             {this.state.isAustralianLicenceNo ?
                                 <View style={styles.editTextContainer}>
-                                    {/* <TextInput
-                                        style={styles.emailIdEditTextStyle}
-                                        autoCapitalize="none"
-                                        multiline={false}
-                                        placeholderTextColor={Colors.placeholderColor}
-                                        // placeholder="Email Id"
-                                        value={this.state.selectedUtility}
-                                        onChangeText={(value) => this.setState({ selectedUtility: value })}
-                                        ref={(input) => { this.selectedUtilityTextInput = input; }}
-                                        blurOnSubmit={false}
-                                    /> */}
+
 
                                     <Dropdown
                                         style={styles.dropdown}

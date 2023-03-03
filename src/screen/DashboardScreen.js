@@ -22,6 +22,7 @@ import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView'
 import { color } from 'react-native-reanimated';
 import { ScrollView } from 'react-native-gesture-handler';
+import Moment from 'moment';
 
 const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
 
@@ -481,7 +482,7 @@ export default class DashboardScreen extends React.Component {
                         alignItems: 'center',
                         alignSelf: 'center',
 
-                    }}>{item.created_ts}</Text>
+                    }}>{Moment(item.created_ts).format('d/MM/yyyy')}</Text>
 
 
                     <Text numberOfLines={1} style={{

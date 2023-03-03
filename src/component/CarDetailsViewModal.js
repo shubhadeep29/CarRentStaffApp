@@ -93,7 +93,7 @@ export default class CarDetailsViewModal extends Component {
 
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoHeadingTextStyle}>Hybrid :</Text>
-                                {this.props.item.is_hybrid == "Yes" ?
+                                {this.props.item.is_hybrid == "1" ?
                                 <Text style={styles.infoTextStyle}>YES</Text>
                                     :
                                     <Text style={styles.infoTextStyle}>NO</Text>
