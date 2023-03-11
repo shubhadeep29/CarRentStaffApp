@@ -32,6 +32,7 @@ export default class ValidateStepThreeScreen extends React.Component {
             numberOfAtFaultAccidents: "",
             numberOfNotAtFaultAccidents: "",
             numberList: [
+                { value: '0' },
                 { value: '1' },
                 { value: '2' },
                 { value: '3' },

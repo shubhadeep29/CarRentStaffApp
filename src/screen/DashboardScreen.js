@@ -179,22 +179,22 @@ export default class DashboardScreen extends React.Component {
                         Toast.show("something went wrong", Toast.SHORT);
                     }
                 }
-                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+                // else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
 
-                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
-                        Toast.show(responseJSON.message, Toast.SHORT);
-                    }
+                //     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                //         Toast.show(responseJSON.message, Toast.SHORT);
+                //     }
 
-                    this.props.navigation.reset({
-                        index: 0,
-                        routes: [{ name: 'LoginScreen' }],
-                    });
-                }
+                //     this.props.navigation.reset({
+                //         index: 0,
+                //         routes: [{ name: 'LoginScreen' }],
+                //     });
+                // }
             }
         }
         catch (error) {
@@ -245,22 +245,22 @@ export default class DashboardScreen extends React.Component {
                         Toast.show("something went wrong", Toast.SHORT);
                     }
                 }
-                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+                // else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
 
-                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
-                        Toast.show(responseJSON.message, Toast.SHORT);
-                    }
+                //     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                //         Toast.show(responseJSON.message, Toast.SHORT);
+                //     }
 
-                    this.props.navigation.reset({
-                        index: 0,
-                        routes: [{ name: 'LoginScreen' }],
-                    });
-                }
+                //     this.props.navigation.reset({
+                //         index: 0,
+                //         routes: [{ name: 'LoginScreen' }],
+                //     });
+                // }
             }
         }
         catch (error) {
@@ -310,22 +310,22 @@ export default class DashboardScreen extends React.Component {
                         Toast.show("something went wrong", Toast.SHORT);
                     }
                 }
-                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
-                    await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
+                // else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 2) {
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, "");
+                //     await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, "");
 
-                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
-                        Toast.show(responseJSON.message, Toast.SHORT);
-                    }
+                //     if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                //         Toast.show(responseJSON.message, Toast.SHORT);
+                //     }
 
-                    this.props.navigation.reset({
-                        index: 0,
-                        routes: [{ name: 'LoginScreen' }],
-                    });
-                }
+                //     this.props.navigation.reset({
+                //         index: 0,
+                //         routes: [{ name: 'LoginScreen' }],
+                //     });
+                // }
             }
         }
         catch (error) {
@@ -482,7 +482,7 @@ export default class DashboardScreen extends React.Component {
                         alignItems: 'center',
                         alignSelf: 'center',
 
-                    }}>{Moment(item.created_ts).format('d/MM/yyyy')}</Text>
+                    }}>{item.created_ts}</Text>
 
 
                     <Text numberOfLines={1} style={{

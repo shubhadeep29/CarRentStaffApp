@@ -26,6 +26,7 @@ import DatePickerModel from '../component/DatePickerModel';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Dropdown } from 'react-native-element-dropdown';
+import AppBarWithMenu from '../component/AppBarWithMenu';
 
 export default class AddNewCar extends React.Component {
     constructor(props) {
@@ -139,11 +140,11 @@ export default class AddNewCar extends React.Component {
             regoExpireDate: this.state.item.rego_expire_date,
             insuranceExpireDate: this.state.item.insurance_expire_date,
             imageUri: Links.BASEURL + this.state.item.car_image,
-            isHybridYes: this.state.item.is_hybrid === "1" ? true : false,
-            isHybridNo: this.state.item.is_hybrid === "0" ? true : false,
+            isHybridYes: this.state.item.is_hybrid === "0" ? true : false,
+            isHybridNo: this.state.item.is_hybrid === "1" ? true : false,
             //isHybridNo: this.state.item.is_hybrid === "" ? true : false,
-            isCarStatusActive: this.state.item.status === "1" ? true : false,
-            isCarStatusInactive: this.state.item.status === "0" ? true : false,
+            isCarStatusActive: this.state.item.status === "0" ? true : false,
+            isCarStatusInactive: this.state.item.status === "1" ? true : false,
             // com: item.company_id,
             // insuranceExpireDate: item.company_name,
             // insuranceExpireDate: item.company_code,
@@ -321,7 +322,12 @@ export default class AddNewCar extends React.Component {
             try {
                 NetInfo.fetch().then(state => {
                     if (state.isConnected) {
-                        this.callAddNewCarApi();
+                        {
+                            this.state.item != null ?
+                                this.callEditNewCarApi()
+                                :
+                                this.callAddNewCarApi()
+                        }
                     }
                     else {
                         Utils.showMessageAlert("No internet connection")
@@ -355,8 +361,83 @@ export default class AddNewCar extends React.Component {
         formData.append('model', this.state.model);
         formData.append('year', this.state.year);
         formData.append('fuel_type', this.state.fuleType);
-        formData.append('is_hybrid', this.state.isHybridYes === true ? "1" : "0");
-        formData.append('status', this.state.isCarStatusActive === true ? "1" : "0");
+        formData.append('is_hybrid', this.state.isHybridYes === true ? "0" : "1");
+        formData.append('status', this.state.isCarStatusActive === true ? "0" : "1");
+        formData.append('rego_expire_date', this.state.regoExpireDate);
+        formData.append('insurance_expire_date', this.state.insuranceExpireDate);
+        if (this.state.imageName.trim().length > 0) {
+            formData.append('car_image', {
+                uri: Platform.OS === 'ios' ? this.state.imageUri.replace('file://', '') : this.state.imageUri,
+                name: this.state.imageName,
+                type: this.state.imageType
+            });
+        }
+        formData.append('car_id', this.state.carId);
+
+
+
+        try {
+            console.log("Call Car Edit API ========>  ", JSON.stringify(formData));
+            const res = await fetch(Links.addCar, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    Accept: "application/json",
+                    //   'Content-Type': 'application/json',
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            const responseJSON = await res.json();
+            console.log("Car Edit Response ===========>  ", JSON.stringify(responseJSON));
+            if (responseJSON) {
+                this.setState({ isLoading: false });
+                if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    }
+                    this.goToMainScreen()
+                    //this.props.navigation.goBack()
+
+                }
+                else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
+                    if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+                        Toast.show(responseJSON.message, Toast.SHORT);
+                    } else {
+                        Toast.show("something went wrong", Toast.SHORT);
+                    }
+                }
+            }
+        }
+        catch (error) {
+            this.setState({ isLoading: false });
+            Toast.show("something went wrong", Toast.SHORT);
+            console.log("Exception in API call: " + error);
+        }
+
+    }
+    callEditNewCarApi = async () => {
+        this.setState({ isLoading: true });
+
+        var formData = new FormData();
+        formData.append('token_key', this.apiKey);
+        formData.append('device_type', this.state.deviceType);
+        formData.append('user_id', this.userId);
+        formData.append('car_no', this.state.carNo);
+
+        formData.append('company_id', this.state.companyId);
+        formData.append('vehicle_type', this.state.vehicleId);
+        formData.append('odometer_reading', this.state.odometer);
+
+        formData.append('service_kilometer', this.state.serviceKilometer);
+        formData.append('transmission_service', this.state.transmissionService);
+        formData.append('spark_plug_for_eg', this.state.sparkPlug);
+
+        formData.append('make', this.state.make);
+        formData.append('model', this.state.model);
+        formData.append('year', this.state.year);
+        formData.append('fuel_type', this.state.fuleType);
+        formData.append('is_hybrid', this.state.isHybridYes === true ? "0" : "1");
+        formData.append('status', this.state.isCarStatusActive === true ? "0" : "1");
         formData.append('rego_expire_date', this.state.regoExpireDate);
         formData.append('insurance_expire_date', this.state.insuranceExpireDate);
         if (this.state.imageName.trim().length > 0) {
@@ -441,8 +522,11 @@ export default class AddNewCar extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 {this.state.isLoading && <LoaderView />}
-                <CommonAppBar title="Edit Car" navigation={this.props.navigation} />
-
+                {this.state.item != null ?
+                    <CommonAppBar title="Edit Car" navigation={this.props.navigation} />
+                    :
+                    <CommonAppBar title="Add Car" navigation={this.props.navigation} />
+                }
                 <ScrollView >
                     <View style={styles.bottomViewContainer}>
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Car No. *</Text>

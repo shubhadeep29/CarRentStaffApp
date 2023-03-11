@@ -32,6 +32,7 @@ export default class HamburgerMenuScreen extends Component {
                 { title: "Dashboard", image: require("../images/ic_dashboard.png"), flag: "dashboard" },
                 { title: "My Profile", image: require("../images/ic_person.png"), flag: "profile" },
                 { title: "Car Maintaince", image: require("../images/ic_car_setting.png"), flag: "carMaintaince" },
+                { title: "Add Car", image: require("../images/ic_car_setting.png"), flag: "addCar" },
                 { title: "Validate/Approve Driver", image: require("../images/ic_driver.png"), flag: "approveDriver" },
                 { title: "Rent out Vehicle", image: require("../images/ic_car_key.png"), flag: "rentOutVehicle" },
                 { title: "Return in Vehicle", image: require("../images/ic_car_return.png"), flag: "returnInVehicle" },
@@ -52,6 +53,11 @@ export default class HamburgerMenuScreen extends Component {
             this.props.navigation.closeDrawer();
             if (screen == "logout") {
                 this.callLogout();
+            } else if (screen == "AddNewCar") {
+                this.props.navigation.navigate(screen,{
+                    item: null
+
+                });
             } else {
                 this.props.navigation.reset({
                     index: 0,
@@ -183,6 +189,9 @@ export default class HamburgerMenuScreen extends Component {
         }
         else if (item.flag === "carMaintaince") {
             screen = "CarMaintenanceScreen"
+        }
+        else if (item.flag === "addCar") {
+            screen = "AddNewCar"
         }
         else if (item.flag === "approveDriver") {
             screen = "ValidateOrApproveDriverScreen"

@@ -9,6 +9,7 @@ export default class Links {
     static LOGOUT = Links.API + "staff/logout";
     static CHANGE_PASSWORD = Links.API + "staff/changePassword";
     static EDIT_CAR = Links.API + "staff/editCar";
+    static addCar = Links.API + "staff/addCar";
     static MY_PROFILE = Links.API+"staff/myProfile"
     static CAR_LIST = Links.API + "staff/getCarList";
     static EDIT_PROFILE = Links.API+"staff/updateProfile";
