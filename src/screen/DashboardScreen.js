@@ -419,7 +419,7 @@ export default class DashboardScreen extends React.Component {
                 <View >
                     <Image
                         // source={require('../images/car_img.jpg')}
-                        source={{ uri: item.insurance_expire_pic }}
+                        source={{ uri: item.car_image }}
                         style={styles.carImage}
                     />
                     {/* <View style={styles.indicatorContainer}>
@@ -642,7 +642,7 @@ export default class DashboardScreen extends React.Component {
                     <View style={styles.bottomViewContainer}>
 
                         <ScrollView
-                            nestedScrollEnabled // add this
+                            nestedScrollEnabled ={true}// add this
                         >
                             <View style={styles.mainContainer}>
                                 {this.state.isNetworkAvailable ?

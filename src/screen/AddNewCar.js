@@ -166,7 +166,7 @@ export default class AddNewCar extends React.Component {
     }
     onClickDropdownItem(fuleType) {
         this.setState({
-            fuleType: fuleType,
+            fuleType: fuleType.value,
         })
     }
 
@@ -287,7 +287,7 @@ export default class AddNewCar extends React.Component {
         else if (this.state.vehicleId == null || this.state.vehicleId == "") {
             Toast.show("Please select vehicle type", Toast.SHORT);
         }
-        else if (this.state.company == "") {
+        else if (this.state.companyId == "") {
             Toast.show("Please select company name", Toast.SHORT);
         }
         else if (this.state.model == "") {
@@ -369,10 +369,10 @@ export default class AddNewCar extends React.Component {
             formData.append('car_image', {
                 uri: Platform.OS === 'ios' ? this.state.imageUri.replace('file://', '') : this.state.imageUri,
                 name: this.state.imageName,
-                type: this.state.imageType
+                type: "image/jpeg"
             });
         }
-        formData.append('car_id', this.state.carId);
+        // formData.append('car_id', this.state.carId);
 
 
 
@@ -651,6 +651,7 @@ export default class AddNewCar extends React.Component {
                                     autoCapitalize="none"
                                     multiline={false}
                                     placeholderTextColor={Colors.placeholderColor}
+                                    editable={false}
                                     placeholder="DD/MM/YYYY"
                                     value={this.state.year}
                                     onChangeText={(value) => this.setState({ year: value })}
@@ -668,12 +669,12 @@ export default class AddNewCar extends React.Component {
                         {this.state.isDisplayYear &&
                             <DateTimePicker
                                 testID="dateTimePicker"
-                            value={new Date()}
+                                value={new Date()}
                                 mode='date'
-                            display={Platform.OS == "android" ? "calendar" : "spinner"}
-                            maximumDate={new Date()}
-                            // minimumDate={new Date()}
-                            onChange={this.setYear}
+                                display={Platform.OS == "android" ? "calendar" : "spinner"}
+                                maximumDate={new Date()}
+                                // minimumDate={new Date()}
+                                onChange={this.setYear}
                             />
                         }
 
@@ -753,6 +754,7 @@ export default class AddNewCar extends React.Component {
                                     autoCapitalize="none"
                                     multiline={false}
                                     placeholderTextColor={Colors.placeholderColor}
+                                    editable={false}
                                     placeholder="DD/MM/YYYY"
                                     value={this.state.insuranceExpireDate}
                                     onChangeText={(value) => this.setState({ insuranceExpireDate: value })}
@@ -785,6 +787,7 @@ export default class AddNewCar extends React.Component {
                                     style={styles.emailIdEditTextStyle}
                                     autoCapitalize="none"
                                     multiline={false}
+                                    editable={false}
                                     placeholderTextColor={Colors.placeholderColor}
                                     placeholder="DD/MM/YYYY"
                                     value={this.state.regoExpireDate}
@@ -805,9 +808,9 @@ export default class AddNewCar extends React.Component {
                                 testID="dateTimePicker"
                                 value={new Date()}
                                 mode='date'
-                            display={Platform.OS == "android" ? "calendar" : "spinner"}
-                            // maximumDate={new Date()}
-                            minimumDate={new Date()}
+                                display={Platform.OS == "android" ? "calendar" : "spinner"}
+                                // maximumDate={new Date()}
+                                minimumDate={new Date()}
                                 onChange={this.setRegoExpireDate}
                             />
                         }
@@ -897,7 +900,7 @@ export default class AddNewCar extends React.Component {
                             <View style={styles.boxGap} />
 
                             <TouchableOpacity style={styles.cancelButtonContainer}
-                                onPress={() => this.onClickSubmitButton()}>
+                                onPress={() => this.props.navigation.goBack()}>
                                 <Text numberOfLines={1} style={styles.buttonText}>CANCLE</Text>
                             </TouchableOpacity>
                         </View>

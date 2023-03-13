@@ -58,6 +58,9 @@ export default class AddRentOutVehicle extends React.Component {
             expire: "",
             notes: "",
             rentOutId: "",
+            paymentReferenceNo: "",
+            bondReferenceNo: "",
+            bondPaymentMethod: "",
 
             coverNoteImageUri: null,
             coverNoteImageName: "",
@@ -146,7 +149,7 @@ export default class AddRentOutVehicle extends React.Component {
 
             if (this.state.item.driver_side_img != null && this.state.item.driver_side_img != "") {
                 this.setState({
-                driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img
+                    driverSideImageUri: Links.BASEURL + this.state.item.driver_side_img
                 })
             }
             if (this.state.item.fuel_guage_img != null && this.state.item.fuel_guage_img != "") {
@@ -174,7 +177,7 @@ export default class AddRentOutVehicle extends React.Component {
                     serviceStickerImageUri: Links.BASEURL + this.state.item.service_sticker_img
                 })
             }
-                
+
 
             this.setState({
                 carNo: this.state.item.car_no,
@@ -191,23 +194,25 @@ export default class AddRentOutVehicle extends React.Component {
                 driverId: this.state.item.driver_id,
                 odometerReading: this.state.item.odometer_reading,
 
-                
+
                 expire: this.state.item.expire,
                 weeklyRent: this.state.item.weekly_rent,
 
                 notes: this.state.item.notes,
                 rentOutId: this.state.item.rent_out_id,
-                
-
+                paymentReferenceNo: this.state.item.payment_reference_no,
+                bondReferenceNo: this.state.item.bond_reference_no,
+                bondPaymentMethod: this.state.item.bond_payment_method,
+                paymentMethod: this.state.item.payment_method,
 
             })
         } else {
-            this.setState({
-                driverId: this.state.driverListRentOut[0].driver_id,
-                companyId: this.state.companyList[0].company_id,
-                carId: this.state.carListRent[0].car_id,
-                paymentMethod: this.state.paymentMethod[0],
-            })
+            // this.setState({
+            //     driverId: this.state.driverListRentOut[0].driver_id,
+            //     companyId: this.state.companyList[0].company_id,
+            //     carId: this.state.carListRent[0].car_id,
+            //     paymentMethod: this.state.paymentMethod[0],
+            // })
 
         }
 
@@ -244,8 +249,9 @@ export default class AddRentOutVehicle extends React.Component {
 
     }
 
-    async onValueChangeCompany(value) {
+    async onValueChangeCompany(value, company_name) {
         this.setState({
+            company: company_name,
             companyId: value,
         });
         console.log("this.state.companyId", value)
@@ -257,6 +263,14 @@ export default class AddRentOutVehicle extends React.Component {
             paymentMethod: value
         });
         console.log("this.state.paymentMethod", value)
+
+    }
+
+    async onValueChangeBondPayment(value) {
+        this.setState({
+            bondPaymentMethod: value
+        });
+        console.log("this.state.bondPaymentMethod", value)
 
     }
 
@@ -278,12 +292,7 @@ export default class AddRentOutVehicle extends React.Component {
         })
     }
 
-    onClickPaymentMethodDropdownItem(paymentMethod) {
-        this.setState({
-            isPaymentMethodDropdownVisible: false,
-            paymentMethod: paymentMethod,
-        })
-    }
+
 
 
     openImageGallery(openImageGalleryFor) {
@@ -449,80 +458,86 @@ export default class AddRentOutVehicle extends React.Component {
         formData.append('age_excess', this.state.ageExcess);
         formData.append('overseas_dL_excess', this.state.overseasDLExcess);
         formData.append('weekly_rent', this.state.weeklyRent);
-        formData.append('bond_amount', this.state.bond);
         formData.append('company_id', this.state.companyId);
+        formData.append('insurance_company', this.state.company);
         formData.append('expire', this.state.expire);
         formData.append('notes', this.state.notes);
-        //formData.append('rent_out_id', this.state.rentOutId);
-        formData.append('rent_out_id', 2);
+        formData.append('payment_method', this.state.paymentMethod);
+        formData.append('payment_reference_no', this.state.paymentReferenceNo);
+        formData.append('bond_amount', this.state.bond);
+        formData.append('bond_payment_method', this.state.bondPaymentMethod);
+        formData.append('bond_reference_no', this.state.bondReferenceNo);
+        if (this.state.item != null) {
+        formData.append('rent_out_id', this.state.rentOutId);
+        }
         console.log("Call Add Return Out Vehicle API ========>  ", JSON.stringify(formData));
-            
-        if(this.state.coverNoteImageName!=""){
-        formData.append('cover_note_img', {
-            uri: Platform.OS === 'ios' ? this.state.coverNoteImageUri.replace('file://', '') : this.state.coverNoteImageUri,
-            name: this.state.coverNoteImageName,
-            type: this.state.coverNoteImageType
-        });
-    }
+
+        if (this.state.coverNoteImageName != "") {
+            formData.append('cover_note_img', {
+                uri: Platform.OS === 'ios' ? this.state.coverNoteImageUri.replace('file://', '') : this.state.coverNoteImageUri,
+                name: this.state.coverNoteImageName,
+                type: this.state.coverNoteImageType
+            });
+        }
         console.log("Call Add Return Out Vehicle API ========>  ", JSON.stringify(this.state.coverNoteImageName));
-        if(this.state.frontImageName!=""){       
-        formData.append('front_img', {
-            uri: Platform.OS === 'ios' ? this.state.frontImageUri.replace('file://', '') : this.state.frontImageUri,
-            name: this.state.frontImageName,
-            type: this.state.frontImageType
-        });
-    }
+        if (this.state.frontImageName != "") {
+            formData.append('front_img', {
+                uri: Platform.OS === 'ios' ? this.state.frontImageUri.replace('file://', '') : this.state.frontImageUri,
+                name: this.state.frontImageName,
+                type: this.state.frontImageType
+            });
+        }
 
-    if(this.state.rearImageName!=""){
-        formData.append('rear_img', {
-            uri: Platform.OS === 'ios' ? this.state.rearImageUri.replace('file://', '') : this.state.rearImageUri,
-            name: this.state.rearImageName,
-            type: this.state.rearImageType
-        });
-    }
+        if (this.state.rearImageName != "") {
+            formData.append('rear_img', {
+                uri: Platform.OS === 'ios' ? this.state.rearImageUri.replace('file://', '') : this.state.rearImageUri,
+                name: this.state.rearImageName,
+                type: this.state.rearImageType
+            });
+        }
         console.log("Call Add Return Out Vehicle API ========>  ", JSON.stringify(formData));
-     
-        if(this.state.driverSideImageName!=""){
-        formData.append('driver_side_img', {
-            uri: Platform.OS === 'ios' ? this.state.driverSideImageUri.replace('file://', '') : this.state.driverSideImageUri,
-            name: this.state.driverSideImageName,
-            type: this.state.driverSideImageType
-        });
-    }
 
-    if(this.state.passengerSideImageName!=""){
-        formData.append('passenger_side_img', {
-            uri: Platform.OS === 'ios' ? this.state.passengerSideImageUri.replace('file://', '') : this.state.passengerSideImageUri,
-            name: this.state.passengerSideImageName,
-            type: this.state.passengerSideImageType
-        });
-    }
-    if(this.state.serviceStickerImageName!=""){
-        formData.append('service_sticker_img', {
-            uri: Platform.OS === 'ios' ? this.state.serviceStickerImageUri.replace('file://', '') : this.state.serviceStickerImageUri,
-            name: this.state.serviceStickerImageName,
-            type: this.state.serviceStickerImageType
-        });
-    }if(this.state.odometerImageName!=""){
-        formData.append('odometer_img', {
-            uri: Platform.OS === 'ios' ? this.state.odometerImageUri.replace('file://', '') : this.state.odometerImageUri,
-            name: this.state.odometerImageName,
-            type: this.state.odometerImageType
-        });
-    }if(this.state.fuelGuageImageName!=""){
-        formData.append('fuel_guage_img', {
-            uri: Platform.OS === 'ios' ? this.state.fuelGuageImageUri.replace('file://', '') : this.state.fuelGuageImageUri,
-            name: this.state.fuelGuageImageName,
-            type: this.state.fuelGuageImageType
-        });
-    }
+        if (this.state.driverSideImageName != "") {
+            formData.append('driver_side_img', {
+                uri: Platform.OS === 'ios' ? this.state.driverSideImageUri.replace('file://', '') : this.state.driverSideImageUri,
+                name: this.state.driverSideImageName,
+                type: this.state.driverSideImageType
+            });
+        }
+
+        if (this.state.passengerSideImageName != "") {
+            formData.append('passenger_side_img', {
+                uri: Platform.OS === 'ios' ? this.state.passengerSideImageUri.replace('file://', '') : this.state.passengerSideImageUri,
+                name: this.state.passengerSideImageName,
+                type: this.state.passengerSideImageType
+            });
+        }
+        if (this.state.serviceStickerImageName != "") {
+            formData.append('service_sticker_img', {
+                uri: Platform.OS === 'ios' ? this.state.serviceStickerImageUri.replace('file://', '') : this.state.serviceStickerImageUri,
+                name: this.state.serviceStickerImageName,
+                type: this.state.serviceStickerImageType
+            });
+        } if (this.state.odometerImageName != "") {
+            formData.append('odometer_img', {
+                uri: Platform.OS === 'ios' ? this.state.odometerImageUri.replace('file://', '') : this.state.odometerImageUri,
+                name: this.state.odometerImageName,
+                type: this.state.odometerImageType
+            });
+        } if (this.state.fuelGuageImageName != "") {
+            formData.append('fuel_guage_img', {
+                uri: Platform.OS === 'ios' ? this.state.fuelGuageImageUri.replace('file://', '') : this.state.fuelGuageImageUri,
+                name: this.state.fuelGuageImageName,
+                type: this.state.fuelGuageImageType
+            });
+        }
 
 
 
         try {
             res = null
-            console.log("Call Add Return Out Vehicle API ========>  ", JSON.stringify(formData));
             if (this.state.item == null) {
+                console.log("Call Add Return Out Vehicle API ========>  ", JSON.stringify(formData));
                 res = await fetch(Links.ADD_NEW_RENT_OUT, {
                     method: 'POST',
                     body: formData,
@@ -533,6 +548,7 @@ export default class AddRentOutVehicle extends React.Component {
                     },
                 });
             } else {
+                console.log("Call Edit Return Out Vehicle API ========>  ", JSON.stringify(formData));
                 res = await fetch(Links.EDIT_RENT_OUT, {
                     method: 'POST',
                     body: formData,
@@ -736,7 +752,6 @@ export default class AddRentOutVehicle extends React.Component {
                             />
                         </View>
 
-
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Weekly Rent *</Text>
                         <View style={styles.editTextContainer}>
                             <TextInput
@@ -753,6 +768,41 @@ export default class AddRentOutVehicle extends React.Component {
                             />
                         </View>
 
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Payment Method *</Text>
+                        <View style={styles.editTextContainer}>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                selectedTextStyle={styles.selectedTextStyle}
+                                inputSearchStyle={styles.inputSearchStyle}
+                                iconStyle={styles.iconStyle}
+                                data={this.state.paymentMethodList}
+                                placeholder="Select Payment Method"
+                                maxHeight={300}
+                                labelField="value"
+                                valueField="value"
+                                value={this.state.paymentMethod}
+                                onChange={item => {
+                                    this.onValueChangePayment(item.value);
+                                }}
+                                renderItem={this.renderPayment}
+
+                            />
+                        </View>
+
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Payment Reference No</Text>
+                        <View style={styles.editTextContainer}>
+                            <TextInput
+                                style={styles.emailIdEditTextStyle}
+                                autoCapitalize="none"
+                                multiline={false}
+                                placeholderTextColor={Colors.placeholderColor}
+                                // placeholder="Email Id"
+                                value={this.state.paymentReferenceNo}
+                                onChangeText={(value) => this.setState({ paymentReferenceNo: value })}
+                                blurOnSubmit={false}
+                            />
+                        </View>
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Bond</Text>
                         <View style={styles.editTextContainer}>
@@ -771,7 +821,7 @@ export default class AddRentOutVehicle extends React.Component {
                         </View>
 
 
-                        <Text numberOfLines={1} style={styles.headingTextStyle} >Payment Method *</Text>
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Bond Payment Method</Text>
                         <View style={styles.editTextContainer}>
                             <Dropdown
                                 style={styles.dropdown}
@@ -780,20 +830,19 @@ export default class AddRentOutVehicle extends React.Component {
                                 inputSearchStyle={styles.inputSearchStyle}
                                 iconStyle={styles.iconStyle}
                                 data={this.state.paymentMethodList}
-                                placeholder="Select Payment Method"
+                                placeholder="Select Bond Payment Method"
                                 maxHeight={300}
                                 labelField="value"
                                 valueField="value"
-                                value={this.state.paymentMethod}
+                                value={this.state.bondPaymentMethod}
                                 onChange={item => {
-                                    this.onValueChangePayment(item);
+                                    this.onValueChangeBondPayment(item.value);
                                 }}
                                 renderItem={this.renderPayment}
-
                             />
                         </View>
 
-                        <Text numberOfLines={1} style={styles.headingTextStyle} >Reference Number</Text>
+                        <Text numberOfLines={1} style={styles.headingTextStyle} >Bond Reference Number</Text>
                         <View style={styles.editTextContainer}>
                             <TextInput
                                 style={styles.emailIdEditTextStyle}
@@ -801,10 +850,8 @@ export default class AddRentOutVehicle extends React.Component {
                                 multiline={false}
                                 placeholderTextColor={Colors.placeholderColor}
                                 // placeholder="Email Id"
-                                value={this.state.referenceNumber}
-                                onChangeText={(value) => this.setState({ referenceNumber: value })}
-                                onSubmitEditing={() => { this.yearTextInput.focus() }}
-                                ref={(input) => { this.referenceNumberTextInput = input; }}
+                                value={this.state.bondReferenceNo}
+                                onChangeText={(value) => this.setState({ bondReferenceNo: value })}
                                 blurOnSubmit={false}
                             />
                         </View>
@@ -830,7 +877,7 @@ export default class AddRentOutVehicle extends React.Component {
                                 valueField="company_id"
                                 value={this.state.companyId}
                                 onChange={item => {
-                                    this.onValueChangeCompany(item.company_id);
+                                    this.onValueChangeCompany(item.company_id, item.company_name);
                                 }}
                                 renderItem={this.renderCompany}
 
@@ -847,6 +894,7 @@ export default class AddRentOutVehicle extends React.Component {
                                     style={styles.emailIdEditTextStyle}
                                     autoCapitalize="none"
                                     multiline={false}
+                                    editable={false}
                                     placeholderTextColor={Colors.placeholderColor}
                                     placeholder="DD/MM/YYYY"
                                     value={this.state.expire}
@@ -868,14 +916,14 @@ export default class AddRentOutVehicle extends React.Component {
                                 testID="dateTimePicker"
                                 value={new Date()}
                                 mode='date'
-                            display={Platform.OS == "android" ? "calendar" : "spinner"}
-                            onChange={this.setExpireDate}
+                                display={Platform.OS == "android" ? "calendar" : "spinner"}
+                                onChange={this.setExpireDate}
                             />
                         }
 
                         <Text numberOfLines={1} style={styles.headingTextStyle} >Upload photo of cover note</Text>
                         <TouchableOpacity style={styles.addImageViewStyle} onPress={() => this.openImageGallery("coverNoteImageUri")}>
-                        
+
                             {this.state.coverNoteImageUri != null ?
                                 <Image
                                     source={{ uri: this.state.coverNoteImageUri }}
