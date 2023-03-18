@@ -29,68 +29,7 @@ export default class ValidateOrApproveDriverScreen extends React.Component {
             isNetworkAvailable: true,
             isLoading: false,
             data:[],
-            // data: [
-            //     {
-            //         id: 1,
-            //         status: "Active",
-            //         name: "Sudhir Biswas",
-            //         mobile: "9876543210",
-            //         email: "sbiswas68532@gmail.com",
-            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
-            //         license_no: "H98653",
-            //         driver_expire_date: "12/09/2023"
-            //     },
-            //     {
-            //         id: 2,
-            //         status: "Pending",
-            //         name: "Sudhir Biswas",
-            //         mobile: "9876543210",
-            //         email: "sbiswas68532@gmail.com",
-            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
-            //         license_no: "H98653",
-            //         driver_expire_date: "12/09/2023"
-            //     },
-            //     {
-            //         id: 3,
-            //         status: "Active",
-            //         name: "Sudhir Biswas",
-            //         mobile: "9876543210",
-            //         email: "sbiswas68532@gmail.com",
-            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
-            //         license_no: "H98653",
-            //         driver_expire_date: "12/09/2023"
-            //     },
-            //     {
-            //         id: 4,
-            //         status: "Pending",
-            //         name: "Sudhir Biswas",
-            //         mobile: "9876543210",
-            //         email: "sbiswas68532@gmail.com",
-            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
-            //         license_no: "H98653",
-            //         driver_expire_date: "12/09/2023"
-            //     },
-            //     {
-            //         id: 5,
-            //         status: "Active",
-            //         name: "Sudhir Biswas",
-            //         mobile: "9876543210",
-            //         email: "sbiswas68532@gmail.com",
-            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
-            //         license_no: "H98653",
-            //         driver_expire_date: "12/09/2023"
-            //     },
-            //     {
-            //         id: 6,
-            //         status: "Pending",
-            //         name: "Sudhir Biswas",
-            //         mobile: "9876543210",
-            //         email: "sbiswas68532@gmail.com",
-            //         address: "Baikunthapur, Tribeni, Hooghly, 712503",
-            //         license_no: "H98653",
-            //         driver_expire_date: "12/09/2023"
-            //     },
-            // ],
+          
         }
     }
 

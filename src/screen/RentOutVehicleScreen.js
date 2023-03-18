@@ -430,7 +430,7 @@ export default class RentOutVehicleScreen extends React.Component {
             >
                 <View style={styles.rowView}>
                     <View style={styles.mainContainer}>
-                        <Text style={styles.dateTextStyle}>{Moment(item.created_ts).format('d/MM/yyyy')}</Text>
+                        <Text style={styles.dateTextStyle}>{Moment(item.created_ts).format('DD/MM/yyyy')}</Text>
                     </View>
 
                     <TouchableOpacity
@@ -539,6 +539,10 @@ export default class RentOutVehicleScreen extends React.Component {
                             <Text style={styles.editTextStyle}> Add New Rent out Vehicle</Text>
                         </View>
                     </TouchableOpacity>
+
+
+
+                    
 
                     <View style={styles.mainContainer}>
                         {this.state.isNetworkAvailable ?

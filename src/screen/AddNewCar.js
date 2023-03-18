@@ -140,11 +140,11 @@ export default class AddNewCar extends React.Component {
             regoExpireDate: this.state.item.rego_expire_date,
             insuranceExpireDate: this.state.item.insurance_expire_date,
             imageUri: Links.BASEURL + this.state.item.car_image,
-            isHybridYes: this.state.item.is_hybrid === "0" ? true : false,
-            isHybridNo: this.state.item.is_hybrid === "1" ? true : false,
+            isHybridYes: this.state.item.is_hybrid === "1" ? true : false,
+            isHybridNo: this.state.item.is_hybrid === "0" ? true : false,
             //isHybridNo: this.state.item.is_hybrid === "" ? true : false,
-            isCarStatusActive: this.state.item.status === "0" ? true : false,
-            isCarStatusInactive: this.state.item.status === "1" ? true : false,
+            isCarStatusActive: this.state.item.status === "1" ? true : false,
+            isCarStatusInactive: this.state.item.status === "0" ? true : false,
             // com: item.company_id,
             // insuranceExpireDate: item.company_name,
             // insuranceExpireDate: item.company_code,
@@ -361,8 +361,8 @@ export default class AddNewCar extends React.Component {
         formData.append('model', this.state.model);
         formData.append('year', this.state.year);
         formData.append('fuel_type', this.state.fuleType);
-        formData.append('is_hybrid', this.state.isHybridYes === true ? "0" : "1");
-        formData.append('status', this.state.isCarStatusActive === true ? "0" : "1");
+        formData.append('is_hybrid', this.state.isHybridYes === true ? "1" : "0");
+        formData.append('status', this.state.isCarStatusActive === true ? "1" : "0");
         formData.append('rego_expire_date', this.state.regoExpireDate);
         formData.append('insurance_expire_date', this.state.insuranceExpireDate);
         if (this.state.imageName.trim().length > 0) {
@@ -436,8 +436,8 @@ export default class AddNewCar extends React.Component {
         formData.append('model', this.state.model);
         formData.append('year', this.state.year);
         formData.append('fuel_type', this.state.fuleType);
-        formData.append('is_hybrid', this.state.isHybridYes === true ? "0" : "1");
-        formData.append('status', this.state.isCarStatusActive === true ? "0" : "1");
+        formData.append('is_hybrid', this.state.isHybridYes === true ? "1" : "0");
+        formData.append('status', this.state.isCarStatusActive === true ? "1" : "0");
         formData.append('rego_expire_date', this.state.regoExpireDate);
         formData.append('insurance_expire_date', this.state.insuranceExpireDate);
         if (this.state.imageName.trim().length > 0) {
@@ -1147,7 +1147,7 @@ const styles = StyleSheet.create({
 
     },
     selectedTextStyle: {
-        fontSize: 16,
+        fontSize: 13,
         color: Colors.black,
     },
     iconStyle: {

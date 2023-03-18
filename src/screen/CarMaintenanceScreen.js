@@ -21,6 +21,7 @@ import Links from '../utils/Links';
 import Utils from '../utils/Utils';
 import LoaderView from '../component/LoaderView'
 import SearchBar from 'react-native-search-bar';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const imageUrl = "https://images.unsplash.com/photo-1526045612212-70caf35c14df";
 
@@ -289,6 +290,7 @@ export default class CarMaintenanceScreen extends React.Component {
                 <View style={styles.mainContainer}>
                     <AppBarWithMenu title="List of Cars" navigation={this.props.navigation} />
 
+
                     <View style={styles.bottomViewContainer}>
                         {/* <View style={styles.filterMainContainer}>
                             <TouchableOpacity style={styles.allEditTextContainer} onPress={() => this.setState({ isDropdownVisible: true })}>
@@ -314,82 +316,101 @@ export default class CarMaintenanceScreen extends React.Component {
 
                         </View> */}
 
-                        <View style={styles.filterMainContainer}>
-                            <View style={styles.searchEditTextContainer}>
-                                <Image
-                                    source={require('../images/ic_search.png')}
-                                    style={styles.searchIcon}
-                                />
-                                <TextInput
-                                    numberOfLines={1}
-                                    style={styles.searchEditTextStyle}
-                                    autoCapitalize="none"
-                                    multiline={false}
-                                    placeholderTextColor={Colors.placeholderColor}
-                                    placeholder="Search by Model,Car No, Fuel type"
-                                    value={this.state.searchText}
-                                    onChangeText={this.updateSearch}
-                                    blurOnSubmit={false}
-                                />
-
-
-                            </View>
-                        </View>
-
-                        <View style={styles.mainContainer}>
-                            {this.state.isNetworkAvailable ?
-                                <View style={styles.mainContainer}>
-                                    {this.state.isLoading && <Loader />}
-                                    {this.state.data.length > 0 ?
-                                        <FlatList
-                                            data={this.state.data}
-                                            renderItem={(item, index) => this.setRenderItemView(item, index)}
-                                            listKey={(item, index) => 'LC' + item.id}
-                                            keyExtractor={(item, index) => item.id}
-                                            style={styles.flatListStyle}
-                                            columnWrapperStyle={{ justifyContent: 'space-between', }}
-                                            showsVerticalScrollIndicator={false}
-                                            numColumns={2}
+                        <ScrollView
+                            nestedScrollEnabled={true}
+                        >
+                            <View>
+                                <View style={styles.filterMainContainer}>
+                                    <View style={styles.searchEditTextContainer}>
+                                        <Image
+                                            source={require('../images/ic_search.png')}
+                                            style={styles.searchIcon}
                                         />
-                                        :
-                                        this.emptyPlaceHolderView()
-                                    }
+                                        <TextInput
+                                            numberOfLines={1}
+                                            style={styles.searchEditTextStyle}
+                                            autoCapitalize="none"
+                                            multiline={false}
+                                            placeholderTextColor={Colors.placeholderColor}
+                                            placeholder="Search by Model,Car No, Fuel type"
+                                            value={this.state.searchText}
+                                            onChangeText={this.updateSearch}
+                                            blurOnSubmit={false}
+                                        />
+
+
+                                    </View>
                                 </View>
-                                :
-                                null
-                            }
 
-                        </View>
 
-                        {this.state.isDropdownVisible ?
-                            <View style={styles.dropdownContainer}>
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 1")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 1</Text>
+                                <TouchableOpacity
+                                    onPress={() => this.props.navigation.navigate("AddNewCar", {
+                                        item: null
+                                    })}
+                                >
+                                    <View style={styles.addNewRentContainer}>
+                                        <Text style={styles.editTextStyle}> Add Car</Text>
+                                    </View>
                                 </TouchableOpacity>
 
-                                <View style={styles.divider} />
+                                <View style={styles.mainContainer}>
+                                    {this.state.isNetworkAvailable ?
+                                        <View style={styles.mainContainer}>
+                                            {this.state.isLoading && <Loader />}
+                                            {this.state.data.length > 0 ?
+                                                <FlatList
+                                                    data={this.state.data}
+                                                    renderItem={(item, index) => this.setRenderItemView(item, index)}
+                                                    listKey={(item, index) => 'LC' + item.id}
+                                                    keyExtractor={(item, index) => item.id}
+                                                    style={styles.flatListStyle}
+                                                    columnWrapperStyle={{ justifyContent: 'space-between', }}
+                                                    showsVerticalScrollIndicator={false}
+                                                    numColumns={2}
+                                                />
+                                                :
+                                                this.emptyPlaceHolderView()
+                                            }
+                                        </View>
+                                        :
+                                        null
+                                    }
 
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 2")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 2</Text>
-                                </TouchableOpacity>
+                                </View>
 
-                                <View style={styles.divider} />
+                                {this.state.isDropdownVisible ?
+                                    <View style={styles.dropdownContainer}>
+                                        <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 1")} >
+                                            <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 1</Text>
+                                        </TouchableOpacity>
 
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 3")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 3</Text>
-                                </TouchableOpacity>
+                                        <View style={styles.divider} />
 
-                                <View style={styles.divider} />
+                                        <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 2")} >
+                                            <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 2</Text>
+                                        </TouchableOpacity>
 
-                                <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 4")} >
-                                    <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 4</Text>
-                                </TouchableOpacity>
+                                        <View style={styles.divider} />
+
+                                        <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 3")} >
+                                            <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 3</Text>
+                                        </TouchableOpacity>
+
+                                        <View style={styles.divider} />
+
+                                        <TouchableOpacity style={styles.dropdownItemTextContainer} onPress={() => this.onClickDropdownItem("Type 4")} >
+                                            <Text numberOfLines={1} style={styles.dropdownItemTextStyle} >Type 4</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    : null}
+
+
+
                             </View>
-                            : null}
 
-
-
+                        </ScrollView>
                     </View>
+
                 </View>
 
                 {this.state.isCarDetailsViewModalVisible ?
@@ -433,8 +454,7 @@ const styles = StyleSheet.create({
     filterMainContainer: {
         // flex: 1,
         flexDirection: 'row',
-        paddingTop: 25,
-        paddingBottom: 12
+        paddingVertical: 20,
     },
     allEditTextContainer: {
         backgroundColor: Colors.editTextBgColor,
@@ -448,9 +468,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.editTextBgColor,
         borderRadius: 30,
-        paddingHorizontal: 1,
-        marginStart: 20,
-        marginEnd: 20,
+        marginHorizontal: 20,
         flexDirection: 'row',
     },
     filterText: {
@@ -473,7 +491,7 @@ const styles = StyleSheet.create({
         height: 15,
         resizeMode: 'contain',
         alignSelf: 'center',
-        marginStart: 10
+        marginStart: 20
     },
     searchEditTextStyle: {
         fontSize: 13,
@@ -643,5 +661,23 @@ const styles = StyleSheet.create({
     divider: {
         backgroundColor: Colors.borderColor,
         height: 0.5
-    }
+    },
+    addNewRentContainer: {
+        backgroundColor: Colors.dark_shade_pink_red,
+        borderRadius: 30,
+        paddingHorizontal: 18,
+        marginHorizontal: 20,
+        marginBottom: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        height: 40,
+    },
+    editTextStyle: {
+        fontSize: 12,
+        // fontFamily: fontSelector("bold"),
+        color: Colors.white,
+        paddingHorizontal: 20,
+        paddingVertical: 3
+    },
 });

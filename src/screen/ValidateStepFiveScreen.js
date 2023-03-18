@@ -762,7 +762,7 @@ export default class ValidateStepFiveScreen extends React.Component {
                                 <TouchableOpacity style={styles.cancelButtonContainer}
                                     onPress={() => {
                                         this.state.item.status == 0 ?
-                                            this.callValidateDriverValidation(2)
+                                            this.callValidateDriverValidation(4)
                                             :
                                             this.onClickSubmitButton()
                                     }
