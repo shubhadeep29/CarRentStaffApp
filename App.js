@@ -102,5 +102,4 @@ const MainStackNavigator = () => {
     </NavigationContainer>
   );
 };
-
 export default MainStackNavigator;
