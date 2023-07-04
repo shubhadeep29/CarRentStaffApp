@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-  Image, ImageBackground,Keyboard,
+  Image,
+  ImageBackground,
+  Keyboard,
   Text,
   View,
   StyleSheet,
@@ -11,15 +13,14 @@ import {
 } from 'react-native';
 import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
-import NetInfo from "@react-native-community/netinfo";
+import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 import Constants from '../utils/Constants';
 import Links from '../utils/Links';
 import Utils from '../utils/Utils';
-import LoaderView from '../component/LoaderView'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import LoaderView from '../component/LoaderView';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 export default class LoginScreen extends React.Component {
   constructor(props) {
@@ -27,99 +28,112 @@ export default class LoginScreen extends React.Component {
     this.state = {
       isNetworkAvailable: false,
       isLoading: false,
-      email: "",
-      password: "",
-    }
+      email: '',
+      password: '',
+    };
   }
 
-  componentDidMount = async () => {
-
-  }
+  componentDidMount = async () => {};
 
   callLoginValidation() {
     Keyboard.dismiss();
     if (!Utils.emailValidate(this.state.email)) {
-      Toast.show("Please enter email", Toast.SHORT);
-      
-    }
-    else if (this.state.password == "") {
-      Toast.show("Please enter password", Toast.SHORT);
-    }
-    else {
+      Toast.show('Please enter email', Toast.SHORT);
+    } else if (this.state.password == '') {
+      Toast.show('Please enter password', Toast.SHORT);
+    } else {
       try {
         NetInfo.fetch().then(state => {
           if (state.isConnected) {
             this.callLoginApi();
-          }
-          else {
-            Utils.showMessageAlert("No internet connection")
+          } else {
+            Utils.showMessageAlert('No internet connection');
           }
         });
-      }
-      catch (error) {
-        console.log("Error in webservice call : " + error);
+      } catch (error) {
+        console.log('Error in webservice call : ' + error);
       }
     }
   }
 
   callLoginApi = async () => {
-    this.setState({ isLoading: true });
+    this.setState({isLoading: true});
 
     // var formData = new FormData();
     // formData.append('user_name', this.state.email);
     // formData.append('password', this.state.password);
 
     var inputBody = JSON.stringify({
-      device_type: "1",
+      device_type: '1',
       email: this.state.email,
       password: this.state.password,
     });
 
-
     try {
-      console.log("Call car list API Link ========>  ", Links.LOGIN);
-      console.log("Call Login API ========>  ", JSON.stringify(inputBody));
+      console.log('Call car list API Link ========>  ', Links.LOGIN);
+      console.log('Call Login API ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.LOGIN, {
         method: 'POST',
         body: inputBody,
         headers: {
-          Accept: "application/json",
+          Accept: 'application/json',
           'Content-Type': 'application/json',
           // "Content-Type": "multipart/form-data",
         },
       });
       const responseJSON = await res.json();
-      console.log("Login Response ===========>  ", JSON.stringify(responseJSON));
+      console.log(
+        'Login Response ===========>  ',
+        JSON.stringify(responseJSON),
+      );
       if (responseJSON) {
-        this.setState({ isLoading: false });
-        if (responseJSON.hasOwnProperty("status") && responseJSON.status == 1) {
-          var userId = "";
-          var apiKey = "";
-          var name = "";
-          var email = "";
-          var mobile = "";
+        this.setState({isLoading: false});
+        if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
+          var userId = '';
+          var apiKey = '';
+          var name = '';
+          var email = '';
+          var mobile = '';
 
-          if (responseJSON.hasOwnProperty("staff_details") && responseJSON.staff_details) {
+          if (
+            responseJSON.hasOwnProperty('staff_details') &&
+            responseJSON.staff_details
+          ) {
             const staffDetails = responseJSON.staff_details;
 
-            if (staffDetails.hasOwnProperty("user_id") && staffDetails.user_id) {
+            if (
+              staffDetails.hasOwnProperty('user_id') &&
+              staffDetails.user_id
+            ) {
               userId = staffDetails.user_id;
             }
 
-            if (staffDetails.hasOwnProperty("email") && staffDetails.email) {
+            if (staffDetails.hasOwnProperty('email') && staffDetails.email) {
               email = staffDetails.email;
             }
-            if (staffDetails.hasOwnProperty("full_name") && staffDetails.full_name) {
+            if (
+              staffDetails.hasOwnProperty('full_name') &&
+              staffDetails.full_name
+            ) {
               name = staffDetails.full_name;
             }
-            if (staffDetails.hasOwnProperty("mobile_no") && staffDetails.mobile_no) {
+            if (
+              staffDetails.hasOwnProperty('mobile_no') &&
+              staffDetails.mobile_no
+            ) {
               mobile = staffDetails.mobile_no;
             }
           }
 
-          if (responseJSON.hasOwnProperty("api_token_details") && responseJSON.api_token_details) {
+          if (
+            responseJSON.hasOwnProperty('api_token_details') &&
+            responseJSON.api_token_details
+          ) {
             const apiTokenDetails = responseJSON.api_token_details;
-            if (apiTokenDetails.hasOwnProperty("token_key") && apiTokenDetails.token_key) {
+            if (
+              apiTokenDetails.hasOwnProperty('token_key') &&
+              apiTokenDetails.token_key
+            ) {
               apiKey = apiTokenDetails.token_key;
             }
           }
@@ -130,29 +144,28 @@ export default class LoginScreen extends React.Component {
           await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, email);
           await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, mobile);
           this.goToMainScreen();
-
-        }
-        else if (responseJSON.hasOwnProperty("status") && responseJSON.status == 0) {
-          if (responseJSON.hasOwnProperty("message") && responseJSON.message) {
+        } else if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 0
+        ) {
+          if (responseJSON.hasOwnProperty('message') && responseJSON.message) {
             Toast.show(responseJSON.message, Toast.SHORT);
           } else {
-            Toast.show("something went wrong", Toast.SHORT);
+            Toast.show('something went wrong', Toast.SHORT);
           }
         }
       }
+    } catch (error) {
+      this.setState({isLoading: false});
+      Toast.show('something went wrong', Toast.SHORT);
+      console.log('Exception in API call: ' + error);
     }
-    catch (error) {
-      this.setState({ isLoading: false });
-      Toast.show("something went wrong", Toast.SHORT);
-      console.log("Exception in API call: " + error);
-    }
-
-  }
+  };
 
   goToMainScreen() {
     this.props.navigation.reset({
       index: 0,
-      routes: [{ name: 'MainDrawerScreen' }],
+      routes: [{name: 'MainDrawerScreen'}],
     });
   }
 
@@ -162,11 +175,8 @@ export default class LoginScreen extends React.Component {
 
   render() {
     return (
-
       <SafeAreaView style={styles.container}>
         {this.state.isLoading && <LoaderView />}
-
-
 
         <View style={styles.mainContainer}>
           <AdaptiveStatusBar />
@@ -178,13 +188,15 @@ export default class LoginScreen extends React.Component {
                 style={styles.logoIcon}
               />
             </View>
-            <Text numberOfLines={1} style={styles.subTitleTextTwo} >STAFF APP</Text>
+            <Text numberOfLines={1} style={styles.subTitleTextTwo}>
+              STAFF APP
+            </Text>
           </View>
 
-
           <View style={styles.bottomViewContainer}>
-            <Text numberOfLines={1} style={styles.loginYourAccountText}>Login to your account</Text>
-
+            <Text numberOfLines={1} style={styles.loginYourAccountText}>
+              Login to your account
+            </Text>
 
             {/* <Image
               source={require('../images/ic_login_bottom.png')}
@@ -202,12 +214,13 @@ export default class LoginScreen extends React.Component {
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}
                 placeholder="Email Id"
                 value={this.state.email}
-                onChangeText={(value) => this.setState({ email: value })}
-                onSubmitEditing={()=>{this.passTextInput.focus()}}
+                onChangeText={value => this.setState({email: value})}
+                onSubmitEditing={() => {
+                  this.passTextInput.focus();
+                }}
                 blurOnSubmit={false}
               />
             </View>
-
 
             <View style={styles.editTextContainer}>
               <TextInput
@@ -219,32 +232,32 @@ export default class LoginScreen extends React.Component {
                 // placeholder={strings.pleaseSelectTheTypeOfInquiry}
                 placeholder="Password"
                 value={this.state.password}
-                ref={(input) => { this.passTextInput = input; }}
-                onChangeText={(value) => this.setState({ password: value })}
-                onSubmitEditing={() => { this.callLoginValidation() }}
+                ref={input => {
+                  this.passTextInput = input;
+                }}
+                onChangeText={value => this.setState({password: value})}
+                onSubmitEditing={() => {
+                  this.callLoginValidation();
+                }}
                 blurOnSubmit={false}
               />
             </View>
 
-
-
-            <TouchableOpacity style={styles.loginButtonContainer}
+            <TouchableOpacity
+              style={styles.loginButtonContainer}
               onPress={() => this.callLoginValidation()}>
-              <Text numberOfLines={1} style={styles.loginButtonText}>Login</Text>
+              <Text numberOfLines={1} style={styles.loginButtonText}>
+                Login
+              </Text>
             </TouchableOpacity>
-
 
             <TouchableOpacity onPress={() => this.goToForgotPassword()}>
-              <Text numberOfLines={1} style={styles.forgotPasswordText}>Forgot Password</Text>
+              <Text numberOfLines={1} style={styles.forgotPasswordText}>
+                Forgot Password
+              </Text>
             </TouchableOpacity>
-
-
-
           </View>
         </View>
-
-
-
       </SafeAreaView>
     );
   }
@@ -259,36 +272,35 @@ const styles = StyleSheet.create({
   },
   centerView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   logoContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: 40,
   },
   logoIcon: {
     width: 150,
     resizeMode: 'contain',
     height: 150,
-
   },
   titleText: {
     fontSize: 22,
     // fontFamily: fontSelector("regular"),
     color: Colors.textColor1,
-    alignItems: "center",
+    alignItems: 'center',
     textAlign: 'center',
     textAlignVertical: 'center',
   },
   subTitleContainer: {
     marginTop: 3,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   subTitleText: {
     fontSize: 10,
     // fontFamily: fontSelector("regular"),
     color: Colors.textColor1,
-    alignItems: "center",
+    alignItems: 'center',
     textAlign: 'center',
     textAlignVertical: 'center',
     borderWidth: 1,
@@ -302,7 +314,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     // fontFamily: fontSelector("regular"),
     color: Colors.textColor1,
-    alignItems: "center",
+    alignItems: 'center',
     textAlign: 'center',
     textAlignVertical: 'center',
   },
@@ -311,37 +323,37 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     marginTop: 30,
     borderTopEndRadius: 40,
-    borderTopStartRadius: 40
+    borderTopStartRadius: 40,
   },
   loginYourAccountText: {
     fontSize: 19,
     // fontFamily: fontSelector("regular"),
     color: Colors.textColor1,
-    alignItems: "center",
+    alignItems: 'center',
     textAlign: 'center',
     textAlignVertical: 'center',
     marginTop: 25,
-    marginBottom: 20
+    marginBottom: 20,
   },
   emailIdEditTextStyle: {
     fontSize: 15,
     // fontFamily: fontSelector("regular"),
     color: Colors.black,
-    paddingVertical: Platform.OS == "ios" ? 16 : 12
+    paddingVertical: Platform.OS == 'ios' ? 16 : 12,
   },
   editTextContainer: {
     backgroundColor: Colors.editTextBgColor,
     borderRadius: 30,
     paddingHorizontal: 25,
     marginHorizontal: 30,
-    marginBottom: 10
+    marginBottom: 10,
   },
   loginButtonContainer: {
     backgroundColor: Colors.textColor1,
     borderRadius: 30,
     paddingVertical: 15,
     marginHorizontal: 30,
-    marginTop: 25
+    marginTop: 25,
   },
   loginButtonText: {
     fontSize: 15,
@@ -354,13 +366,13 @@ const styles = StyleSheet.create({
     // fontFamily: fontSelector("regular"),
     color: Colors.textColor2,
     textAlign: 'center',
-    marginTop: 20
+    marginTop: 20,
   },
   bottomImage: {
     flex: 1,
     position: 'absolute',
     bottom: 0,
     left: 0,
-    right: 0
-  }
+    right: 0,
+  },
 });
