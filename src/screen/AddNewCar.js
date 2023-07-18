@@ -269,7 +269,7 @@ export default class AddNewCar extends React.Component {
     this.setState({isLoading: true});
 
     var inputBody = JSON.stringify({
-      device_type: '1',
+      device_type: Platform.OS === 'android' ? 1 : 2,
       user_id: this.userId,
       token_key: this.apiKey,
     });
@@ -567,7 +567,6 @@ export default class AddNewCar extends React.Component {
   };
 
   render() {
-    console.log('this.state.status------', this.state.carStatus);
     return (
       <SafeAreaView style={styles.container}>
         {this.state.isLoading && <LoaderView />}

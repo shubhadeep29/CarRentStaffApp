@@ -64,7 +64,7 @@ export default class LoginScreen extends React.Component {
     // formData.append('password', this.state.password);
 
     var inputBody = JSON.stringify({
-      device_type: '1',
+      device_type: Platform.OS === 'android' ? 1 : 2,
       email: this.state.email,
       password: this.state.password,
     });

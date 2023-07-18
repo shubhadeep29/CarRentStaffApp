@@ -63,7 +63,7 @@ export default class HamburgerMenuScreen extends Component {
           flag: 'returnInVehicle',
         },
         {
-          title: 'Bond Return Entry',
+          title: 'Bond Refund',
           image: require('../images/ic_bond_return_entry.png'),
           flag: 'bondReturnEntry',
         },
@@ -138,7 +138,7 @@ export default class HamburgerMenuScreen extends Component {
     this.setState({isLoading: true});
 
     var inputBody = JSON.stringify({
-      device_type: '1',
+      device_type: Platform.OS === 'android' ? 1 : 2,
       user_id: this.userId,
       token_key: this.apiKey,
     });

@@ -542,7 +542,7 @@ export default class ValidateStepFiveScreen extends React.Component {
     this.setState({isLoading: true});
 
     var inputBody = JSON.stringify({
-      device_type: '1',
+      device_type: Platform.OS === 'android' ? 1 : 2,
       user_id: this.userId,
       token_key: this.apiKey,
     });

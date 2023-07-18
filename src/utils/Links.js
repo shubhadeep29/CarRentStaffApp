@@ -30,6 +30,9 @@ export default class Links {
   static editDriver = Links.API + 'staff/editDriver';
   static getVehicle = Links.API + 'staff/getVehicle';
   static getOnGoingVehicle = Links.API + 'staff/getOnGoingVehicle';
+  static getBondRefundList = Links.API + 'staff/getBondRefundList';
+  static getDriverListWithBond = Links.API + 'staff/getDriverListWithBond';
+  static addBondRefund = Links.API + 'staff/addBondRefund';
   static getPendingDriverValidate =
     Links.API + 'staff/getPendingDriverValidate';
   static getAvailableVehicleList =
