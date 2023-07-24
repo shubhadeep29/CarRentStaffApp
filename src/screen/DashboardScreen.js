@@ -452,11 +452,14 @@ export default class DashboardScreen extends React.Component {
         // onPress={() => this.props.navigation.navigate('CourseLearningSelectionDetails', { pageTitle: item.book_name })}
       >
         <View>
-          <Image
-            // source={require('../images/car_img.jpg')}
-            source={{uri: item.car_image}}
-            style={styles.carImage}
-          />
+          {item.car_image ? (
+            <Image
+              // source={require('../images/car_img.jpg')}
+              source={{uri: item.car_image}}
+              style={styles.carImage}
+            />
+          ) : null}
+
           {/* <View style={styles.indicatorContainer}>
                         {item.status == "0" ?
                             <View style={styles.activeIndicator} />

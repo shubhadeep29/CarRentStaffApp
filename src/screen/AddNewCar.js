@@ -54,7 +54,7 @@ export default class AddNewCar extends React.Component {
       carId: '',
       vehicleId: '',
       isHybridYes: false,
-      isHybridNo: true,
+      // isHybridNo: true,
       isCarStatusActive: true,
       isCarStatusInactive: false,
       carStatus: '0',
@@ -149,8 +149,8 @@ export default class AddNewCar extends React.Component {
         insuranceExpireDate: this.state.item.insurance_expire_date,
         imageUri: Links.BASEURL + this.state.item.car_pic,
         imageInsuranceUri: Links.BASEURL + this.state.item.insurance_expire_pic,
-        isHybridYes: this.state.item.is_hybrid === '1' ? true : false,
-        isHybridNo: this.state.item.is_hybrid === '0' ? true : false,
+        isHybridYes: this.state.item.is_hybrid === '0' ? true : false,
+        // isHybridNo: this.state.item.is_hybrid === '0' ? true : false,
         //isHybridNo: this.state.item.is_hybrid === "" ? true : false,
         // isCarStatusActive: this.state.item.status === '1' ? true : false,
         // isCarStatusInactive: this.state.item.status === '0' ? true : false,
@@ -291,6 +291,10 @@ export default class AddNewCar extends React.Component {
             responseJSON.hasOwnProperty('company_list') &&
             responseJSON.company_list != null
           ) {
+            console.log(
+              'responseJSON.company_list ----',
+              responseJSON.company_list,
+            );
             this.setState({companyList: responseJSON.company_list});
           }
         } else if (
@@ -386,7 +390,7 @@ export default class AddNewCar extends React.Component {
     formData.append('model', this.state.model);
     formData.append('year', this.state.year);
     formData.append('fuel_type', this.state.fuleType);
-    formData.append('is_hybrid', this.state.isHybridYes === true ? '1' : '0');
+    formData.append('is_hybrid', this.state.isHybridYes === true ? '0' : '1');
     formData.append('status', this.state.carStatus);
     formData.append('rego_expire_date', this.state.regoExpireDate);
     formData.append('insurance_expire_date', this.state.insuranceExpireDate);
@@ -474,7 +478,7 @@ export default class AddNewCar extends React.Component {
     formData.append('model', this.state.model);
     formData.append('year', this.state.year);
     formData.append('fuel_type', this.state.fuleType);
-    formData.append('is_hybrid', this.state.isHybridYes === true ? '1' : '0');
+    formData.append('is_hybrid', this.state.isHybridYes === true ? '0' : '1');
     formData.append('status', this.state.carStatus);
     formData.append('rego_expire_date', this.state.regoExpireDate);
     formData.append('insurance_expire_date', this.state.insuranceExpireDate);
@@ -942,7 +946,7 @@ export default class AddNewCar extends React.Component {
                 onPress={() =>
                   this.setState({
                     isHybridYes: true,
-                    isHybridNo: false,
+                    // isHybridNo: false,
                   })
                 }>
                 <Image
@@ -962,12 +966,12 @@ export default class AddNewCar extends React.Component {
                 onPress={() =>
                   this.setState({
                     isHybridYes: false,
-                    isHybridNo: true,
+                    // isHybridNo: true,
                   })
                 }>
                 <Image
                   source={
-                    this.state.isHybridNo
+                    !this.state.isHybridYes
                       ? require('../images/ic_radio_check.png')
                       : require('../images/ic_radio_uncheck.png')
                   }
@@ -1001,7 +1005,7 @@ export default class AddNewCar extends React.Component {
                   />
 
                   <Text numberOfLines={1} style={styles.optionTextStyle}>
-                    ACTIVE
+                    Active
                   </Text>
                 </TouchableOpacity>
 
@@ -1022,7 +1026,7 @@ export default class AddNewCar extends React.Component {
                   />
 
                   <Text numberOfLines={1} style={styles.optionTextStyle}>
-                    INACTIVE
+                    Inactive
                   </Text>
                 </TouchableOpacity>
 
@@ -1064,7 +1068,7 @@ export default class AddNewCar extends React.Component {
                   />
 
                   <Text numberOfLines={1} style={styles.optionTextStyle}>
-                    Broken
+                    Breakdown
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -1075,7 +1079,7 @@ export default class AddNewCar extends React.Component {
                 style={styles.approveButtonContainer}
                 onPress={() => this.callAddNewCarValidation()}>
                 <Text numberOfLines={1} style={styles.buttonText}>
-                  SUBMIT
+                  Submit
                 </Text>
               </TouchableOpacity>
               <View style={styles.boxGap} />
@@ -1084,7 +1088,7 @@ export default class AddNewCar extends React.Component {
                 style={styles.cancelButtonContainer}
                 onPress={() => this.props.navigation.goBack()}>
                 <Text numberOfLines={1} style={styles.buttonText}>
-                  CANCLE
+                  Cancel
                 </Text>
               </TouchableOpacity>
             </View>

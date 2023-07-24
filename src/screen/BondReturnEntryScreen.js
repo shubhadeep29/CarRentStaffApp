@@ -237,21 +237,26 @@ export default class BondReturnEntryScreen extends React.Component {
     this._unsubscribe();
   }
 
+  updateSearch = text => {
+    this.setState({searchText: text});
+    this.bondRefundList();
+  };
+
   bondRefundList() {
     try {
       NetInfo.fetch().then(state => {
         if (state.isConnected) {
-          this.callLoadingCarListApi();
+          this.callLoadingBondListApi();
         } else {
           Utils.showMessageAlert('No internet connection');
         }
       });
     } catch (error) {
-      console.log('Error in webservice call : ' + error);
+      console.log('Error in api call : ' + error);
     }
   }
 
-  callLoadingCarListApi = async () => {
+  callLoadingBondListApi = async () => {
     this.setState({isLoading: true});
 
     var inputBody = JSON.stringify({
@@ -284,6 +289,10 @@ export default class BondReturnEntryScreen extends React.Component {
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
+          console.log(
+            'responseJSON.bond_refund_list ---',
+            responseJSON.bond_refund_list,
+          );
           if (
             responseJSON.hasOwnProperty('bond_refund_list') &&
             responseJSON.bond_refund_list != null
@@ -340,10 +349,10 @@ export default class BondReturnEntryScreen extends React.Component {
               onPress={this.goToBondReturnEntryEditScreen}
               mode="contained"
               color={Colors.textColor1}
+              uppercase={false}
               style={{
-                alignSelf: 'flex-end',
                 borderRadius: 20,
-                marginRight: 18,
+                marginHorizontal: 20,
                 marginBottom: 16,
               }}>
               Add new refund
@@ -355,13 +364,9 @@ export default class BondReturnEntryScreen extends React.Component {
                 autoCapitalize="none"
                 multiline={false}
                 placeholderTextColor={Colors.placeholderColor}
-                placeholder="Search by DC,Driver Name, Date 7 Refund Type"
+                placeholder="Search by Driver Name, Refund Type"
                 value={this.state.searchText}
-                onChangeText={value => this.setState({searchText: value})}
-                onSubmitEditing={() => {
-                  this.passwordTextInput.focus();
-                }}
-                blurOnSubmit={false}
+                onChangeText={this.updateSearch}
               />
 
               <Image
@@ -376,7 +381,7 @@ export default class BondReturnEntryScreen extends React.Component {
               <View style={styles.mainContainer}>
                 {this.state.isLoading && <Loader />}
                 <FlatList
-                  data={this.state.data}
+                  data={this.state.data.length > 0 ? this.state.data : []}
                   renderItem={(item, index) =>
                     this.setRenderItemView(item, index)
                   }

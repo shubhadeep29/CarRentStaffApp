@@ -170,8 +170,14 @@ export default class CarMaintenanceScreen extends React.Component {
             style={styles.carImage}
           />
           <View style={styles.indicatorContainer}>
-            {item.status == '1' ? (
+            {item.status == '0' ? (
               <View style={styles.activeIndicator} />
+            ) : item.status == '1' ? (
+              <View style={styles.inactiveIndicator} />
+            ) : item.status == '2' ? (
+              <View style={styles.accidentIndicator} />
+            ) : item.status == '3' ? (
+              <View style={styles.breakdownIndicator} />
             ) : (
               <View style={styles.inactiveIndicator} />
             )}
@@ -576,14 +582,28 @@ const styles = StyleSheet.create({
   activeIndicator: {
     width: 10,
     height: 10,
-    backgroundColor: Colors.blue,
+    backgroundColor: Colors.green,
     borderRadius: 20,
     alignSelf: 'center',
   },
   inactiveIndicator: {
     width: 10,
     height: 10,
-    backgroundColor: Colors.yellow,
+    backgroundColor: Colors.lightYellow,
+    borderRadius: 20,
+    alignSelf: 'center',
+  },
+  accidentIndicator: {
+    width: 10,
+    height: 10,
+    backgroundColor: 'orange',
+    borderRadius: 20,
+    alignSelf: 'center',
+  },
+  breakdownIndicator: {
+    width: 10,
+    height: 10,
+    backgroundColor: Colors.red,
     borderRadius: 20,
     alignSelf: 'center',
   },

@@ -624,17 +624,17 @@ export default class BondReturnEntryEditScreen extends React.Component {
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={styles.cancleStyle}
-                onPress={() => navigation.goBack()}>
-                <Text numberOfLines={1} style={styles.buttonText}>
-                  CANCEL
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
                 style={styles.submitStyle}
                 onPress={() => this.onClickSubmitButton()}>
                 <Text numberOfLines={1} style={styles.buttonText}>
                   Submit
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancleStyle}
+                onPress={() => navigation.goBack()}>
+                <Text numberOfLines={1} style={styles.buttonText}>
+                  Cancel
                 </Text>
               </TouchableOpacity>
             </View>
@@ -763,13 +763,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.textColor1,
     borderRadius: 30,
     paddingVertical: 10,
-    marginStart: 10,
     flex: 1,
   },
   cancleStyle: {
     backgroundColor: Colors.pink,
     borderRadius: 30,
     paddingVertical: 10,
+    marginStart: 10,
     flex: 1,
   },
   buttonText: {

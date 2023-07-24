@@ -73,12 +73,36 @@ export default class CarDetailsViewModal extends Component {
 
               <View style={styles.infoContainer}>
                 <Text style={styles.infoHeadingTextStyle}>Car Status :</Text>
-                {this.props.item.status == '1' ? (
+                {this.props.item.status == '0' ? (
                   <View style={styles.activeCarNumberContainer}>
                     <Text
                       numberOfLines={1}
                       style={styles.activeCarNumberTextStyle}>
                       Active
+                    </Text>
+                  </View>
+                ) : this.props.item.status == '1' ? (
+                  <View style={styles.inActiveCarNumberContainer}>
+                    <Text
+                      numberOfLines={1}
+                      style={styles.activeCarNumberTextStyle}>
+                      Inactive
+                    </Text>
+                  </View>
+                ) : this.props.item.status == '2' ? (
+                  <View style={styles.activeCarNumberContainer}>
+                    <Text
+                      numberOfLines={1}
+                      style={styles.activeCarNumberTextStyle}>
+                      Accident
+                    </Text>
+                  </View>
+                ) : this.props.item.status == '3' ? (
+                  <View style={styles.breakdownContainer}>
+                    <Text
+                      numberOfLines={1}
+                      style={styles.activeCarNumberTextStyle}>
+                      Breakdown
                     </Text>
                   </View>
                 ) : (
@@ -111,7 +135,7 @@ export default class CarDetailsViewModal extends Component {
 
               <View style={styles.infoContainer}>
                 <Text style={styles.infoHeadingTextStyle}>Hybrid :</Text>
-                {this.props.item.is_hybrid == '1' ? (
+                {this.props.item.is_hybrid == '0' ? (
                   <Text style={styles.infoTextStyle}>YES</Text>
                 ) : (
                   <Text style={styles.infoTextStyle}>NO</Text>
@@ -223,12 +247,11 @@ const styles = StyleSheet.create({
   activeCarNumberContainer: {
     alignSelf: 'center',
     borderRadius: 20,
-    backgroundColor: '#D6EAF8',
+    backgroundColor: Colors.green,
   },
   activeCarNumberTextStyle: {
     fontSize: 12,
-    // fontFamily: fontSelector("bold"),
-    color: 'blue',
+    color: 'black',
     fontWeight: 'bold',
     paddingHorizontal: 11,
     paddingVertical: 3,
@@ -236,7 +259,7 @@ const styles = StyleSheet.create({
   inActiveCarNumberContainer: {
     alignSelf: 'center',
     borderRadius: 20,
-    backgroundColor: Colors.yellowBackground,
+    backgroundColor: Colors.lightYellow,
   },
   inActiveCarNumberTextStyle: {
     fontSize: 12,
@@ -245,5 +268,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingHorizontal: 11,
     paddingVertical: 3,
+  },
+  breakdownContainer: {
+    alignSelf: 'center',
+    borderRadius: 20,
+    backgroundColor: Colors.red,
   },
 });
