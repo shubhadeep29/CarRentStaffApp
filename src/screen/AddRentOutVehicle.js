@@ -26,11 +26,15 @@ import LoaderView from '../component/LoaderView';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-element-dropdown';
+import {Button} from 'react-native-paper';
 
 export default class AddRentOutVehicle extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isLoading: false,
+      onProceed: false,
+      showExtraData: false,
       item: props.route.params.item,
       paymentMethodList: props.route.params.paymentMethodList,
       companyList: props.route.params.companyList,
@@ -47,8 +51,8 @@ export default class AddRentOutVehicle extends React.Component {
       basicExcess: '',
       ageExcess: '',
       overseasDLExcess: '',
-      weeklyRent: '$',
-      bond: '$',
+      weeklyRent: '',
+      bond: '',
       paymentMethod: '',
       isPaymentMethodDropdownVisible: false,
       referenceNumber: '',
@@ -100,6 +104,63 @@ export default class AddRentOutVehicle extends React.Component {
       fuelGuageImageName: '',
       fuelGuageImageSize: '',
       fuelGuageImageType: '',
+
+      advantagePayCustomerId: '',
+      countryData: [],
+      driverDetailsData: {},
+      driverFirstName: '',
+      driverLastName: '',
+      driverCustomerReference: '',
+      driverEmail: '',
+      driverCountryCode: '',
+      driverMobile: '',
+      totalBondHeld: '',
+
+      sendPaymentReceiptEmails: true,
+      sendDirectDebitErrorEmails: true,
+      driverOutstandingNotification: true,
+
+      directDebitDescription: '',
+      directDebitUpfrontAmount: '',
+      directDebitUpfrontDate: '',
+      isDisplayDirectDebitUpfrontDate: false,
+      directDebitRecurringAmount: '',
+      directDebitFrequencyData: [
+        {
+          key: 'Weekly',
+          value: 'weekly',
+        },
+        {
+          key: 'Fortnightly',
+          value: 'fortnightly',
+        },
+        {
+          key: 'Monthly',
+          value: 'monthly',
+        },
+        {
+          key: 'Quarterly',
+          value: 'quarterly',
+        },
+      ],
+      directDebitFrequency: 'weekly',
+      directDebitRecurringStartDate: '',
+      isDisplayDirectDebitRecurringStartDate: false,
+      directDebitPaymentFailOptionsData: [
+        {
+          key: 'Pause',
+          value: 'pause',
+        },
+        {
+          key: 'Add to next instalment',
+          value: 'next',
+        },
+        {
+          key: 'Debit in 3 days',
+          value: '3days',
+        },
+      ],
+      directDebitPaymentFailOptions: 'pause',
     };
   }
 
@@ -116,7 +177,6 @@ export default class AddRentOutVehicle extends React.Component {
     });
   };
   setExpireDate = (event, selectedDate) => {
-    console.log('selectedDate' + selectedDate);
     this.setState({
       isDisplayExpireDate: false,
       expire:
@@ -252,14 +312,12 @@ export default class AddRentOutVehicle extends React.Component {
       carNo: value.car_no,
       carId: value.car_id,
     });
-    console.log('this.state.carId', value);
   }
 
   async onValueChangeDriver(value) {
     this.setState({
       driverId: value,
     });
-    console.log('this.state.driverId', value);
   }
 
   async onValueChangeCompany(value, company_name) {
@@ -271,6 +329,11 @@ export default class AddRentOutVehicle extends React.Component {
   }
 
   async onValueChangePayment(value) {
+    if (value === 'Direct Debit') {
+      this.setState({
+        showExtraData: true,
+      });
+    }
     this.setState({
       paymentMethod: value,
     });
@@ -443,6 +506,37 @@ export default class AddRentOutVehicle extends React.Component {
     formData.append('expire', this.state.expire);
     formData.append('notes', this.state.notes);
     formData.append('payment_method', this.state.paymentMethod);
+
+    if (this.state.paymentMethod === 'Direct Debit') {
+      formData.append('FirstName', this.state.driverFirstName);
+      formData.append('LastName', this.state.driverLastName);
+      formData.append('CustomRef', this.state.driverCustomerReference);
+      formData.append('Email', this.state.driverEmail);
+      formData.append('CountryISO', this.state.driverCountryCode);
+      formData.append('Number', this.state.driverMobile);
+      formData.append(
+        'SendDirectDebitErrorEmails',
+        this.state.sendDirectDebitErrorEmails ? 1 : 0,
+      );
+      formData.append(
+        'SendPaymentReceiptEmails',
+        this.state.SendPaymentReceiptEmails ? 1 : 0,
+      );
+      formData.append('Description', this.state.directDebitDescription);
+      formData.append('UpfrontAmount', this.state.directDebitUpfrontAmount);
+      formData.append('UpfrontDate', this.state.directDebitUpfrontDate);
+      formData.append(
+        'RecurringDateStart',
+        this.state.directDebitRecurringStartDate,
+      );
+      formData.append('Frequency', this.state.directDebitFrequency);
+      formData.append(
+        'FailureOption',
+        this.state.directDebitPaymentFailOptions,
+      );
+      formData.append('Description', this.state.directDebitDescription);
+    }
+
     formData.append('payment_reference_no', this.state.paymentReferenceNo);
     formData.append('bond_amount', this.state.bond);
     formData.append('bond_payment_method', this.state.bondPaymentMethod);
@@ -635,9 +729,254 @@ export default class AddRentOutVehicle extends React.Component {
   renderCompany = item => {
     return (
       <View>
-        <Text style={styles.selectionListTextStyle}>{item.company_name}</Text>
+        <Text style={styles.selectionListTextStyle}>{item.key}</Text>
       </View>
     );
+  };
+  renderCountry = item => {
+    return (
+      <View>
+        <Text
+          style={
+            styles.selectionListTextStyle
+          }>{`${item.nicename} +(${item.phonecode})`}</Text>
+      </View>
+    );
+  };
+  onProceed = () => {
+    // if (!this.state.driverId && !this.state.carId) {
+    //   Utils.showMessageAlert('Please select Driver and Car first!');
+    //   return;
+    // }
+    this.setState({isLoading: true});
+    this.getDriverDetails();
+  };
+
+  getDriverDetails() {
+    try {
+      NetInfo.fetch().then(state => {
+        if (state.isConnected) {
+          this.callGetDriverDetailsApi();
+          this.callGetCountryCodeApi();
+        } else {
+          Utils.showMessageAlert('No internet connection');
+        }
+      });
+    } catch (error) {
+      console.log('Error in api call : ' + error);
+    }
+  }
+
+  callGetDriverDetailsApi = async () => {
+    // this.setState({isLoading: true});
+
+    var inputBody = JSON.stringify({
+      device_type: Platform.OS === 'android' ? 1 : 2,
+      user_id: this.userId,
+      token_key: this.apiKey,
+      driver_id: this.state.driverId,
+      car_id: this.state.carId,
+    });
+
+    try {
+      // console.log(
+      //   'Call car list API Link ========>  ',
+      //   Links.getBondRefundList,
+      // );
+      // console.log(
+      //   'GetDriverDetails Input ========>  ',
+      //   JSON.stringify(inputBody),
+      // );
+      const res = await fetch(Links.getDriverDetailsRentOut, {
+        method: 'POST',
+        body: inputBody,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseJSON = await res.json();
+      this.state.data = [];
+      console.log(
+        'GetDriverDetails Response 123 ===========>  ',
+        // JSON.stringify(responseJSON),
+      );
+      if (responseJSON) {
+        // this.setState({isLoading: false});
+        if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
+          this.setState({driverDetailsData: responseJSON});
+          if (responseJSON.driver_details.advantage_pay_customer_id) {
+            const advantage_pay_customer_response = JSON.parse(
+              responseJSON.driver_details.advantage_pay_customer_response,
+            );
+            this.setState({
+              advantagePayCustomerId:
+                response.driver_details.advantage_pay_customer_id,
+              driverFirstName: advantage_pay_customer_response.FirstName,
+              driverLastName: advantage_pay_customer_response.LastName,
+              driverCustomerReference:
+                advantage_pay_customer_response.CustomRef,
+              driverEmail: advantage_pay_customer_response.Email,
+            });
+          } else {
+            this.setState({
+              advantagePayCustomerId: '',
+              driverFirstName: responseJSON.driver_details.first_name,
+              driverLastName: responseJSON.driver_details.last_name,
+              driverCustomerReference: responseJSON.car_details.car_no,
+              driverEmail: responseJSON.driver_details.email,
+            });
+          }
+          this.setState({
+            driverCountryCode: responseJSON.driver_details.country_code,
+            driverMobile: responseJSON.driver_details.mobile,
+            totalBondHeld: responseJSON.driver_details.actual_bond_amount,
+          });
+          this.setState({onProceed: true});
+        } else if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 0
+        ) {
+          if (responseJSON.hasOwnProperty('message') && responseJSON.message) {
+            Toast.show(responseJSON.message, Toast.SHORT);
+          } else {
+            Toast.show('something went wrong', Toast.SHORT);
+          }
+        } else if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 2
+        ) {
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, '');
+
+          if (responseJSON.hasOwnProperty('message') && responseJSON.message) {
+            Toast.show(responseJSON.message, Toast.SHORT);
+          }
+
+          this.props.navigation.reset({
+            index: 0,
+            routes: [{name: 'LoginScreen'}],
+          });
+        }
+      }
+    } catch (error) {
+      this.setState({isLoading: false});
+      Toast.show('something went wrong', Toast.SHORT);
+      console.log('Exception in API call: ' + error);
+    }
+  };
+
+  callGetCountryCodeApi = async () => {
+    // this.setState({isLoading: true});
+
+    var inputBody = JSON.stringify({
+      device_type: Platform.OS === 'android' ? 1 : 2,
+      user_id: this.userId,
+      token_key: this.apiKey,
+    });
+
+    try {
+      // console.log(
+      //   'Call car list API Link ========>  ',
+      //   Links.getBondRefundList,
+      // );
+      // console.log(
+      //   'GetDriverDetails Input ========>  ',
+      //   JSON.stringify(inputBody),
+      // );
+      const res = await fetch(Links.getCountryList, {
+        method: 'POST',
+        body: inputBody,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseJSON = await res.json();
+      this.state.data = [];
+      console.log(
+        'getCountryList Response 123 ===========>  ',
+        // JSON.stringify(responseJSON),
+      );
+      if (responseJSON) {
+        this.setState({isLoading: false});
+        if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
+          if (
+            responseJSON.hasOwnProperty('country_list') &&
+            responseJSON.country_list != null
+          ) {
+            this.setState({countryData: responseJSON.country_list});
+          }
+        } else if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 0
+        ) {
+          if (responseJSON.hasOwnProperty('message') && responseJSON.message) {
+            Toast.show(responseJSON.message, Toast.SHORT);
+          } else {
+            Toast.show('something went wrong', Toast.SHORT);
+          }
+        } else if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 2
+        ) {
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, '');
+
+          if (responseJSON.hasOwnProperty('message') && responseJSON.message) {
+            Toast.show(responseJSON.message, Toast.SHORT);
+          }
+
+          this.props.navigation.reset({
+            index: 0,
+            routes: [{name: 'LoginScreen'}],
+          });
+        }
+      }
+    } catch (error) {
+      this.setState({isLoading: false});
+      Toast.show('something went wrong', Toast.SHORT);
+      console.log('Exception in API call: ' + error);
+    }
+  };
+
+  setDirectDebitRecurringStartDate = (event, selectedDate) => {
+    this.setState({
+      isDisplayDirectDebitRecurringStartDate: false,
+      directDebitRecurringStartDate:
+        selectedDate.getDate() +
+        '/' +
+        (selectedDate.getMonth() + 1) +
+        '/' +
+        selectedDate.getFullYear(),
+    });
+  };
+  showDirectDebitRecurringStartDate = () => {
+    this.setState({
+      isDisplayDirectDebitRecurringStartDate: true,
+    });
+  };
+  setDirectDebitUpfrontDate = (event, selectedDate) => {
+    this.setState({
+      isDisplayDirectDebitUpfrontDate: false,
+      directDebitUpfrontDate:
+        selectedDate.getDate() +
+        '/' +
+        (selectedDate.getMonth() + 1) +
+        '/' +
+        selectedDate.getFullYear(),
+    });
+  };
+  showDirectDebitUpfrontDate = () => {
+    this.setState({
+      isDisplayDirectDebitUpfrontDate: true,
+    });
   };
 
   render() {
@@ -646,12 +985,12 @@ export default class AddRentOutVehicle extends React.Component {
         {this.state.isLoading && <LoaderView />}
         {this.state.item != null ? (
           <CommonAppBar
-            title="Edit Return Out Vehicle"
+            title="Edit Rent Out Vehicle"
             navigation={this.props.navigation}
           />
         ) : (
           <CommonAppBar
-            title="Add Return Out Vehicle"
+            title="Add Rent Out Vehicle"
             navigation={this.props.navigation}
           />
         )}
@@ -703,578 +1042,1159 @@ export default class AddRentOutVehicle extends React.Component {
                 renderItem={this.renderCar}
               />
             </View>
-
-            <View>
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Odometer Reading *
-              </Text>
-              <View style={styles.editTextContainer}>
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
-                  autoCapitalize="none"
-                  multiline={false}
-                  placeholderTextColor={Colors.placeholderColor}
-                  // placeholder="Email Id"
-                  value={this.state.odometerReading}
-                  onChangeText={value =>
-                    this.setState({odometerReading: value})
-                  }
-                  onSubmitEditing={() => {
-                    this.damageAmountTextInput.focus();
+            {this.state.onProceed ? (
+              <View>
+                <View
+                  style={{
+                    marginTop: 20,
+                    borderBottomColor: 'black',
+                    borderBottomWidth: StyleSheet.hairlineWidth,
                   }}
-                  ref={input => {
-                    this.odometerReadingTextInput = input;
-                  }}
-                  blurOnSubmit={false}
                 />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Basic Excess
-              </Text>
-              <View style={styles.editTextContainer}>
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
-                  autoCapitalize="none"
-                  multiline={false}
-                  placeholderTextColor={Colors.placeholderColor}
-                  // placeholder="Email Id"
-                  value={this.state.basicExcess}
-                  onChangeText={value => this.setState({basicExcess: value})}
-                  onSubmitEditing={() => {
-                    this.yearTextInput.focus();
-                  }}
-                  ref={input => {
-                    this.basicExcessTextInput = input;
-                  }}
-                  blurOnSubmit={false}
-                />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Age Excess
-              </Text>
-              <View style={styles.editTextContainer}>
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
-                  autoCapitalize="none"
-                  multiline={false}
-                  placeholderTextColor={Colors.placeholderColor}
-                  // placeholder="Email Id"
-                  value={this.state.ageExcess}
-                  onChangeText={value => this.setState({ageExcess: value})}
-                  onSubmitEditing={() => {
-                    this.yearTextInput.focus();
-                  }}
-                  ref={input => {
-                    this.ageExcessTextInput = input;
-                  }}
-                  blurOnSubmit={false}
-                />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Overseas DL Excess
-              </Text>
-              <View style={styles.editTextContainer}>
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
-                  autoCapitalize="none"
-                  multiline={false}
-                  placeholderTextColor={Colors.placeholderColor}
-                  // placeholder="Email Id"
-                  value={this.state.overseasDLExcess}
-                  onChangeText={value =>
-                    this.setState({overseasDLExcess: value})
-                  }
-                  onSubmitEditing={() => {
-                    this.yearTextInput.focus();
-                  }}
-                  ref={input => {
-                    this.overseasDLExcessTextInput = input;
-                  }}
-                  blurOnSubmit={false}
-                />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Weekly Rent *
-              </Text>
-              <View style={styles.editTextContainer}>
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
-                  autoCapitalize="none"
-                  multiline={false}
-                  placeholderTextColor={Colors.placeholderColor}
-                  // placeholder="Email Id"
-                  value={this.state.weeklyRent}
-                  onChangeText={value => this.setState({weeklyRent: value})}
-                  onSubmitEditing={() => {
-                    this.yearTextInput.focus();
-                  }}
-                  ref={input => {
-                    this.weeklyRentTextInput = input;
-                  }}
-                  blurOnSubmit={false}
-                />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Payment Method *
-              </Text>
-              <View style={styles.editTextContainer}>
-                <Dropdown
-                  style={styles.dropdown}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={this.state.paymentMethodList}
-                  placeholder="Select Payment Method"
-                  maxHeight={300}
-                  labelField="value"
-                  valueField="value"
-                  value={this.state.paymentMethod}
-                  onChange={item => {
-                    this.onValueChangePayment(item.value);
-                  }}
-                  renderItem={this.renderPayment}
-                />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Payment Reference No
-              </Text>
-              <View style={styles.editTextContainer}>
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
-                  autoCapitalize="none"
-                  multiline={false}
-                  placeholderTextColor={Colors.placeholderColor}
-                  // placeholder="Email Id"
-                  value={this.state.paymentReferenceNo}
-                  onChangeText={value =>
-                    this.setState({paymentReferenceNo: value})
-                  }
-                  blurOnSubmit={false}
-                />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Bond
-              </Text>
-              <View style={styles.editTextContainer}>
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
-                  autoCapitalize="none"
-                  multiline={false}
-                  placeholderTextColor={Colors.placeholderColor}
-                  // placeholder="Email Id"
-                  value={this.state.bond}
-                  onChangeText={value => this.setState({bond: value})}
-                  onSubmitEditing={() => {
-                    this.yearTextInput.focus();
-                  }}
-                  ref={input => {
-                    this.bondTextInput = input;
-                  }}
-                  blurOnSubmit={false}
-                />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Bond Payment Method
-              </Text>
-              <View style={styles.editTextContainer}>
-                <Dropdown
-                  style={styles.dropdown}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={this.state.paymentMethodList}
-                  placeholder="Select Bond Payment Method"
-                  maxHeight={300}
-                  labelField="value"
-                  valueField="value"
-                  value={this.state.bondPaymentMethod}
-                  onChange={item => {
-                    this.onValueChangeBondPayment(item.value);
-                  }}
-                  renderItem={this.renderPayment}
-                />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Bond Reference Number
-              </Text>
-              <View style={styles.editTextContainer}>
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
-                  autoCapitalize="none"
-                  multiline={false}
-                  placeholderTextColor={Colors.placeholderColor}
-                  // placeholder="Email Id"
-                  value={this.state.bondReferenceNo}
-                  onChangeText={value =>
-                    this.setState({bondReferenceNo: value})
-                  }
-                  blurOnSubmit={false}
-                />
-              </View>
-
-              <Text
-                numberOfLines={1}
-                style={[
-                  styles.rowViewOptionStyle,
-                  styles.headingTextStyleThree,
-                ]}>
-                Insurance Details
-              </Text>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Company *
-              </Text>
-
-              <View style={styles.editTextContainer}>
-                <Dropdown
-                  style={styles.dropdown}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={this.state.companyList}
-                  placeholder="Select Company"
-                  maxHeight={300}
-                  labelField="company_name"
-                  valueField="company_id"
-                  value={this.state.companyId}
-                  onChange={item => {
-                    this.onValueChangeCompany(
-                      item.company_id,
-                      item.company_name,
-                    );
-                  }}
-                  renderItem={this.renderCompany}
-                />
-              </View>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Expire *
-              </Text>
-              <TouchableOpacity onPress={this.showExpireDate}>
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Odometer Reading *
+                </Text>
                 <View style={styles.editTextContainer}>
                   <TextInput
                     style={styles.emailIdEditTextStyle}
                     autoCapitalize="none"
                     multiline={false}
-                    editable={false}
                     placeholderTextColor={Colors.placeholderColor}
-                    placeholder="DD/MM/YYYY"
-                    value={this.state.expire}
-                    onChangeText={value => this.setState({expire: value})}
+                    // placeholder="Email Id"
+                    value={this.state.odometerReading}
+                    onChangeText={value =>
+                      this.setState({odometerReading: value})
+                    }
                     onSubmitEditing={() => {
-                      this.rentOutNoTextInput.focus();
+                      this.damageAmountTextInput.focus();
                     }}
                     ref={input => {
-                      this.expireTextInput = input;
+                      this.odometerReadingTextInput = input;
                     }}
                     blurOnSubmit={false}
                   />
+                </View>
 
-                  <Image
-                    source={require('../images/calendar.png')}
-                    style={styles.calenderIcon}
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Basic Excess
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.emailIdEditTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Email Id"
+                    value={this.state.basicExcess}
+                    onChangeText={value => this.setState({basicExcess: value})}
+                    onSubmitEditing={() => {
+                      this.yearTextInput.focus();
+                    }}
+                    ref={input => {
+                      this.basicExcessTextInput = input;
+                    }}
+                    blurOnSubmit={false}
                   />
                 </View>
-              </TouchableOpacity>
 
-              {this.state.isDisplayExpireDate && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={new Date()}
-                  mode="date"
-                  display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
-                  onChange={this.setExpireDate}
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Age Excess
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.emailIdEditTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Email Id"
+                    value={this.state.ageExcess}
+                    onChangeText={value => this.setState({ageExcess: value})}
+                    onSubmitEditing={() => {
+                      this.yearTextInput.focus();
+                    }}
+                    ref={input => {
+                      this.ageExcessTextInput = input;
+                    }}
+                    blurOnSubmit={false}
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Overseas DL Excess
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.emailIdEditTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Email Id"
+                    value={this.state.overseasDLExcess}
+                    onChangeText={value =>
+                      this.setState({overseasDLExcess: value})
+                    }
+                    onSubmitEditing={() => {
+                      this.yearTextInput.focus();
+                    }}
+                    ref={input => {
+                      this.overseasDLExcessTextInput = input;
+                    }}
+                    blurOnSubmit={false}
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Weekly Rent *
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.emailIdEditTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Email Id"
+                    value={this.state.weeklyRent}
+                    onChangeText={value => this.setState({weeklyRent: value})}
+                    onSubmitEditing={() => {
+                      this.yearTextInput.focus();
+                    }}
+                    ref={input => {
+                      this.weeklyRentTextInput = input;
+                    }}
+                    blurOnSubmit={false}
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Payment Method *
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={this.state.paymentMethodList}
+                    placeholder="Select Payment Method"
+                    maxHeight={300}
+                    labelField="value"
+                    valueField="value"
+                    value={this.state.paymentMethod}
+                    onChange={item => {
+                      this.onValueChangePayment(item.value);
+                    }}
+                    renderItem={this.renderPayment}
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Payment Reference No
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.emailIdEditTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Email Id"
+                    value={this.state.paymentReferenceNo}
+                    onChangeText={value =>
+                      this.setState({paymentReferenceNo: value})
+                    }
+                    blurOnSubmit={false}
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Bond
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.emailIdEditTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Email Id"
+                    value={this.state.bond}
+                    onChangeText={value => this.setState({bond: value})}
+                    onSubmitEditing={() => {
+                      this.yearTextInput.focus();
+                    }}
+                    ref={input => {
+                      this.bondTextInput = input;
+                    }}
+                    blurOnSubmit={false}
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Bond Payment Method
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={this.state.paymentMethodList}
+                    placeholder="Select Bond Payment Method"
+                    maxHeight={300}
+                    labelField="value"
+                    valueField="value"
+                    value={this.state.bondPaymentMethod}
+                    onChange={item => {
+                      this.onValueChangeBondPayment(item.value);
+                    }}
+                    renderItem={this.renderPayment}
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Bond Reference Number
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.emailIdEditTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Email Id"
+                    value={this.state.bondReferenceNo}
+                    onChangeText={value =>
+                      this.setState({bondReferenceNo: value})
+                    }
+                    blurOnSubmit={false}
+                  />
+                </View>
+
+                {this.state.showExtraData ? (
+                  <View>
+                    <>
+                      <View
+                        style={{
+                          marginTop: 20,
+                          borderBottomColor: 'black',
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                      />
+                      <Text
+                        numberOfLines={1}
+                        style={[
+                          styles.headingTextStyleThree,
+                          {padding: 10, color: Colors.textColor1},
+                        ]}>
+                        Direct Debit Customer Details
+                      </Text>
+                      <View
+                        style={{
+                          borderBottomColor: 'black',
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                      />
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        First Name
+                      </Text>
+                      <View style={styles.editTextContainer}>
+                        <TextInput
+                          style={styles.emailIdEditTextStyle}
+                          autoCapitalize="none"
+                          multiline={false}
+                          placeholderTextColor={Colors.placeholderColor}
+                          // placeholder="Email Id"
+                          value={this.state.driverFirstName}
+                          onChangeText={value =>
+                            this.setState({driverFirstName: value})
+                          }
+                          blurOnSubmit={false}
+                        />
+                      </View>
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Last Name
+                      </Text>
+                      <View style={styles.editTextContainer}>
+                        <TextInput
+                          style={styles.emailIdEditTextStyle}
+                          autoCapitalize="none"
+                          multiline={false}
+                          placeholderTextColor={Colors.placeholderColor}
+                          // placeholder="Email Id"
+                          value={this.state.driverLastName}
+                          onChangeText={value =>
+                            this.setState({driverLastName: value})
+                          }
+                          blurOnSubmit={false}
+                        />
+                      </View>
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Customer Reference
+                      </Text>
+                      <View style={styles.editTextContainer}>
+                        <TextInput
+                          style={styles.emailIdEditTextStyle}
+                          autoCapitalize="none"
+                          multiline={false}
+                          placeholderTextColor={Colors.placeholderColor}
+                          // placeholder="Email Id"
+                          value={this.state.driverCustomerReference}
+                          onChangeText={value =>
+                            this.setState({driverCustomerReference: value})
+                          }
+                          blurOnSubmit={false}
+                        />
+                      </View>
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Email
+                      </Text>
+                      <View style={styles.editTextContainer}>
+                        <TextInput
+                          style={styles.emailIdEditTextStyle}
+                          autoCapitalize="none"
+                          multiline={false}
+                          placeholderTextColor={Colors.placeholderColor}
+                          // placeholder="Email Id"
+                          value={this.state.driverEmail}
+                          onChangeText={value =>
+                            this.setState({driverEmail: value})
+                          }
+                          blurOnSubmit={false}
+                        />
+                      </View>
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Country Code
+                      </Text>
+                      <View style={styles.editTextContainer}>
+                        <Dropdown
+                          style={styles.dropdown}
+                          placeholderStyle={styles.placeholderStyle}
+                          selectedTextStyle={styles.selectedTextStyle}
+                          inputSearchStyle={styles.inputSearchStyle}
+                          iconStyle={styles.iconStyle}
+                          data={this.state.countryData}
+                          placeholder="Select Country Code"
+                          maxHeight={300}
+                          labelField="nicename"
+                          valueField="iso"
+                          value={this.state.driverCountryCode}
+                          onChange={item => {
+                            this.setState({
+                              driverCountryCode: item.iso,
+                            });
+                          }}
+                          renderItem={this.renderCountry}
+                        />
+                      </View>
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Mobile
+                      </Text>
+                      <View style={styles.editTextContainer}>
+                        <TextInput
+                          style={styles.emailIdEditTextStyle}
+                          autoCapitalize="none"
+                          multiline={false}
+                          placeholderTextColor={Colors.placeholderColor}
+                          // placeholder="Email Id"
+                          value={this.state.driverMobile}
+                          onChangeText={value =>
+                            this.setState({driverMobile: value})
+                          }
+                          blurOnSubmit={false}
+                        />
+                      </View>
+                    </>
+
+                    <>
+                      <View
+                        style={{
+                          marginTop: 20,
+                          borderBottomColor: 'black',
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                      />
+                      <Text
+                        numberOfLines={1}
+                        style={[
+                          styles.headingTextStyleThree,
+                          {padding: 10, color: Colors.textColor1},
+                        ]}>
+                        Email Notifications
+                      </Text>
+                      <View
+                        style={{
+                          borderBottomColor: 'black',
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                      />
+                      <Text
+                        style={[
+                          styles.headingTextStyleTwo,
+                          {marginTop: 10, paddingHorizontal: 50},
+                        ]}>
+                        Send when a payment has been processed
+                      </Text>
+                      <View style={styles.rowViewOptionStyle}>
+                        <TouchableOpacity
+                          onPress={() =>
+                            this.setState({
+                              sendPaymentReceiptEmails: true,
+                              // isHybridNo: false,
+                            })
+                          }>
+                          <Image
+                            source={
+                              this.state.sendPaymentReceiptEmails
+                                ? require('../images/ic_radio_check.png')
+                                : require('../images/ic_radio_uncheck.png')
+                            }
+                            style={styles.checkUncheckIcon}
+                          />
+                        </TouchableOpacity>
+                        <Text numberOfLines={1} style={styles.optionTextStyle}>
+                          On
+                        </Text>
+
+                        <TouchableOpacity
+                          disabled
+                          onPress={() =>
+                            this.setState({
+                              sendPaymentReceiptEmails: false,
+                              // isHybridNo: true,
+                            })
+                          }>
+                          <Image
+                            source={
+                              this.state.sendPaymentReceiptEmails
+                                ? require('../images/ic_radio_check.png')
+                                : require('../images/ic_radio_uncheck.png')
+                            }
+                            style={styles.checkUncheckIcon}
+                          />
+                        </TouchableOpacity>
+                        <Text numberOfLines={1} style={styles.optionTextStyle}>
+                          Off
+                        </Text>
+                      </View>
+
+                      <Text
+                        style={[
+                          styles.headingTextStyleTwo,
+                          {marginTop: 25, paddingHorizontal: 50},
+                        ]}>
+                        Send when a direct debit payment fails
+                      </Text>
+                      <View style={styles.rowViewOptionStyle}>
+                        <TouchableOpacity
+                          onPress={() =>
+                            this.setState({
+                              sendDirectDebitErrorEmails: true,
+                              // isHybridNo: false,
+                            })
+                          }>
+                          <Image
+                            source={
+                              this.state.sendDirectDebitErrorEmails
+                                ? require('../images/ic_radio_check.png')
+                                : require('../images/ic_radio_uncheck.png')
+                            }
+                            style={styles.checkUncheckIcon}
+                          />
+                        </TouchableOpacity>
+                        <Text numberOfLines={1} style={styles.optionTextStyle}>
+                          On
+                        </Text>
+
+                        <TouchableOpacity
+                          disabled
+                          onPress={() =>
+                            this.setState({
+                              sendDirectDebitErrorEmails: false,
+                              // isHybridNo: true,
+                            })
+                          }>
+                          <Image
+                            source={
+                              !this.state.sendDirectDebitErrorEmails
+                                ? require('../images/ic_radio_check.png')
+                                : require('../images/ic_radio_uncheck.png')
+                            }
+                            style={styles.checkUncheckIcon}
+                          />
+                        </TouchableOpacity>
+                        <Text numberOfLines={1} style={styles.optionTextStyle}>
+                          Off
+                        </Text>
+                      </View>
+
+                      <Text
+                        style={[
+                          styles.headingTextStyleTwo,
+                          {marginTop: 25, paddingHorizontal: 50},
+                        ]}>
+                        Send reminders for outstanding debit authorizations or
+                        payment requests
+                      </Text>
+                      <View style={styles.rowViewOptionStyle}>
+                        <TouchableOpacity
+                          onPress={() =>
+                            this.setState({
+                              isHybridYes: true,
+                              // isHybridNo: false,
+                            })
+                          }>
+                          <Image
+                            source={
+                              true
+                                ? require('../images/ic_radio_check.png')
+                                : require('../images/ic_radio_uncheck.png')
+                            }
+                            style={styles.checkUncheckIcon}
+                          />
+                        </TouchableOpacity>
+                        <Text numberOfLines={1} style={styles.optionTextStyle}>
+                          On
+                        </Text>
+
+                        <TouchableOpacity
+                          disabled
+                          onPress={() =>
+                            this.setState({
+                              isHybridYes: false,
+                              // isHybridNo: true,
+                            })
+                          }>
+                          <Image
+                            source={
+                              false
+                                ? require('../images/ic_radio_check.png')
+                                : require('../images/ic_radio_uncheck.png')
+                            }
+                            style={styles.checkUncheckIcon}
+                          />
+                        </TouchableOpacity>
+                        <Text numberOfLines={1} style={styles.optionTextStyle}>
+                          Off
+                        </Text>
+                      </View>
+                    </>
+
+                    <>
+                      <View
+                        style={{
+                          marginTop: 20,
+                          borderBottomColor: 'black',
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                      />
+                      <Text
+                        numberOfLines={1}
+                        style={[
+                          styles.headingTextStyleThree,
+                          {padding: 10, color: Colors.textColor1},
+                        ]}>
+                        Create a Direct Debit
+                      </Text>
+                      <View
+                        style={{
+                          borderBottomColor: 'black',
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                      />
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Description
+                      </Text>
+                      <View style={styles.editTextContainer}>
+                        <TextInput
+                          style={styles.emailIdEditTextStyle}
+                          autoCapitalize="none"
+                          multiline={false}
+                          placeholderTextColor={Colors.placeholderColor}
+                          // placeholder="Email Id"
+                          value={this.state.directDebitDescription}
+                          onChangeText={value =>
+                            this.setState({directDebitDescription: value})
+                          }
+                          blurOnSubmit={false}
+                        />
+                      </View>
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Upfront Amount
+                      </Text>
+                      <View style={styles.editTextContainer}>
+                        <TextInput
+                          style={styles.emailIdEditTextStyle}
+                          autoCapitalize="none"
+                          multiline={false}
+                          placeholderTextColor={Colors.placeholderColor}
+                          // placeholder="Email Id"
+                          value={this.state.directDebitUpfrontAmount}
+                          onChangeText={value =>
+                            this.setState({directDebitUpfrontAmount: value})
+                          }
+                          blurOnSubmit={false}
+                        />
+                      </View>
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Upfront Date
+                      </Text>
+                      <TouchableOpacity
+                        onPress={this.showDirectDebitUpfrontDate}>
+                        <View style={styles.editTextContainer}>
+                          <TextInput
+                            style={styles.emailIdEditTextStyle}
+                            autoCapitalize="none"
+                            multiline={false}
+                            editable={false}
+                            placeholderTextColor={Colors.placeholderColor}
+                            placeholder="DD/MM/YYYY"
+                            value={this.state.directDebitUpfrontDate}
+                            onChangeText={value =>
+                              this.setState({directDebitUpfrontDate: value})
+                            }
+                            onSubmitEditing={() => {
+                              this.rentOutNoTextInput.focus();
+                            }}
+                            ref={input => {
+                              this.expireTextInput = input;
+                            }}
+                            blurOnSubmit={false}
+                          />
+
+                          <Image
+                            source={require('../images/calendar.png')}
+                            style={styles.calenderIcon}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      {this.state.isDisplayDirectDebitUpfrontDate && (
+                        <DateTimePicker
+                          testID="dateTimePicker"
+                          value={new Date()}
+                          mode="date"
+                          minimumDate={new Date()}
+                          display={
+                            Platform.OS == 'android' ? 'calendar' : 'spinner'
+                          }
+                          onChange={this.setDirectDebitUpfrontDate}
+                        />
+                      )}
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Recurring Amount
+                      </Text>
+                      <View style={styles.editTextContainer}>
+                        <TextInput
+                          style={styles.emailIdEditTextStyle}
+                          autoCapitalize="none"
+                          multiline={false}
+                          placeholderTextColor={Colors.placeholderColor}
+                          // placeholder="Email Id"
+                          value={this.state.directDebitRecurringAmount}
+                          onChangeText={value =>
+                            this.setState({directDebitRecurringAmount: value})
+                          }
+                          blurOnSubmit={false}
+                        />
+                      </View>
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Frequency
+                      </Text>
+
+                      <View style={styles.editTextContainer}>
+                        <Dropdown
+                          style={styles.dropdown}
+                          placeholderStyle={styles.placeholderStyle}
+                          selectedTextStyle={styles.selectedTextStyle}
+                          inputSearchStyle={styles.inputSearchStyle}
+                          iconStyle={styles.iconStyle}
+                          data={this.state.directDebitFrequencyData}
+                          placeholder="Select Company"
+                          maxHeight={300}
+                          labelField="key"
+                          valueField="value"
+                          value={this.state.directDebitFrequency}
+                          onChange={item => {
+                            this.setState({
+                              directDebitFrequency: item.value,
+                            });
+                          }}
+                          renderItem={this.renderCompany}
+                        />
+                      </View>
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        Recurring Start Date
+                      </Text>
+                      <TouchableOpacity
+                        onPress={this.showDirectDebitRecurringStartDate}>
+                        <View style={styles.editTextContainer}>
+                          <TextInput
+                            style={styles.emailIdEditTextStyle}
+                            autoCapitalize="none"
+                            multiline={false}
+                            editable={false}
+                            placeholderTextColor={Colors.placeholderColor}
+                            placeholder="DD/MM/YYYY"
+                            value={this.state.directDebitRecurringStartDate}
+                            onChangeText={value =>
+                              this.setState({
+                                directDebitRecurringStartDate: value,
+                              })
+                            }
+                            onSubmitEditing={() => {
+                              this.rentOutNoTextInput.focus();
+                            }}
+                            ref={input => {
+                              this.expireTextInput = input;
+                            }}
+                            blurOnSubmit={false}
+                          />
+
+                          <Image
+                            source={require('../images/calendar.png')}
+                            style={styles.calenderIcon}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      {this.state.isDisplayDirectDebitRecurringStartDate && (
+                        <DateTimePicker
+                          testID="dateTimePicker"
+                          value={new Date()}
+                          mode="date"
+                          minimumDate={new Date()}
+                          display={
+                            Platform.OS == 'android' ? 'calendar' : 'spinner'
+                          }
+                          onChange={this.setDirectDebitRecurringStartDate}
+                        />
+                      )}
+
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        When a Payment Fails...
+                      </Text>
+
+                      <View style={styles.editTextContainer}>
+                        <Dropdown
+                          style={styles.dropdown}
+                          placeholderStyle={styles.placeholderStyle}
+                          selectedTextStyle={styles.selectedTextStyle}
+                          inputSearchStyle={styles.inputSearchStyle}
+                          iconStyle={styles.iconStyle}
+                          data={this.state.directDebitPaymentFailOptionsData}
+                          placeholder="Select"
+                          maxHeight={300}
+                          labelField="key"
+                          valueField="value"
+                          value={this.state.directDebitPaymentFailOptions}
+                          onChange={item => {
+                            this.setState({
+                              directDebitPaymentFailOptions: item.value,
+                            });
+                          }}
+                          renderItem={this.renderCompany}
+                        />
+                      </View>
+                    </>
+                  </View>
+                ) : null}
+
+                <View
+                  style={{
+                    marginTop: 20,
+                    borderBottomColor: 'black',
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                  }}
                 />
-              )}
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Upload photo of cover note
-              </Text>
-              <TouchableOpacity
-                style={styles.addImageViewStyle}
-                onPress={() => this.openImageGallery('coverNoteImageUri')}>
-                {this.state.coverNoteImageUri != null ? (
-                  <Image
-                    source={{uri: this.state.coverNoteImageUri}}
-                    style={styles.logoIcon}
-                  />
-                ) : (
-                  <Image
-                    source={require('../images/ic_add_camera.png')}
-                    style={styles.logoIcon}
-                  />
-                )}
-
-                {this.state.fileName != '' ? (
-                  <Text numberOfLines={2} style={styles.uploadImageNameText}>
-                    {this.state.coverNoteImageName}
-                  </Text>
-                ) : (
-                  <Text numberOfLines={1} style={styles.uploadPhotoText}>
-                    Upload Photo of cover note
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <Text
-                numberOfLines={1}
-                style={[
-                  styles.rowViewOptionStyle,
-                  styles.headingTextStyleThree,
-                ]}>
-                Upload 7 pictures of car being issued
-              </Text>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Upload Photo of Front
-              </Text>
-              <TouchableOpacity
-                style={styles.addImageViewStyle}
-                onPress={() => this.openImageGallery('frontImageUri')}>
-                {this.state.frontImageUri != null ? (
-                  <Image
-                    source={{uri: this.state.frontImageUri}}
-                    style={styles.logoIcon}
-                  />
-                ) : (
-                  <Image
-                    source={require('../images/ic_add_camera.png')}
-                    style={styles.logoIcon}
-                  />
-                )}
-
-                {this.state.fileName != '' ? (
-                  <Text numberOfLines={2} style={styles.uploadImageNameText}>
-                    {this.state.frontImageName}
-                  </Text>
-                ) : (
-                  <Text numberOfLines={1} style={styles.uploadPhotoText}>
-                    Upload Photo of Front
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Upload Photo of Rear
-              </Text>
-              <TouchableOpacity
-                style={styles.addImageViewStyle}
-                onPress={() => this.openImageGallery('rearImageUri')}>
-                {this.state.rearImageUri != null ? (
-                  <Image
-                    source={{uri: this.state.rearImageUri}}
-                    style={styles.logoIcon}
-                  />
-                ) : (
-                  <Image
-                    source={require('../images/ic_add_camera.png')}
-                    style={styles.logoIcon}
-                  />
-                )}
-
-                {this.state.fileName != '' ? (
-                  <Text numberOfLines={2} style={styles.uploadImageNameText}>
-                    {this.state.rearImageName}
-                  </Text>
-                ) : (
-                  <Text numberOfLines={1} style={styles.uploadPhotoText}>
-                    Upload Photo of Rear
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Upload Photo of Driver Side
-              </Text>
-              <TouchableOpacity
-                style={styles.addImageViewStyle}
-                onPress={() => this.openImageGallery('driverSideImageUri')}>
-                {this.state.driverSideImageUri != null ? (
-                  <Image
-                    source={{uri: this.state.driverSideImageUri}}
-                    style={styles.logoIcon}
-                  />
-                ) : (
-                  <Image
-                    source={require('../images/ic_add_camera.png')}
-                    style={styles.logoIcon}
-                  />
-                )}
-
-                {this.state.fileName != '' ? (
-                  <Text numberOfLines={2} style={styles.uploadImageNameText}>
-                    {this.state.driverSideImageName}
-                  </Text>
-                ) : (
-                  <Text numberOfLines={1} style={styles.uploadPhotoText}>
-                    Upload Photo of Driver Side
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Upload Photo of Passenger Side
-              </Text>
-              <TouchableOpacity
-                style={styles.addImageViewStyle}
-                onPress={() => this.openImageGallery('passengerSideImageUri')}>
-                {this.state.passengerSideImageUri != null ? (
-                  <Image
-                    source={{uri: this.state.passengerSideImageUri}}
-                    style={styles.logoIcon}
-                  />
-                ) : (
-                  <Image
-                    source={require('../images/ic_add_camera.png')}
-                    style={styles.logoIcon}
-                  />
-                )}
-
-                {this.state.fileName != '' ? (
-                  <Text numberOfLines={2} style={styles.uploadImageNameText}>
-                    {this.state.passengerSideImageName}
-                  </Text>
-                ) : (
-                  <Text numberOfLines={1} style={styles.uploadPhotoText}>
-                    Upload Photo of Passenger Side
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Upload Photo of Odometer
-              </Text>
-              <TouchableOpacity
-                style={styles.addImageViewStyle}
-                onPress={() => this.openImageGallery('odometerImageUri')}>
-                {this.state.odometerImageUri != null ? (
-                  <Image
-                    source={{uri: this.state.odometerImageUri}}
-                    style={styles.logoIcon}
-                  />
-                ) : (
-                  <Image
-                    source={require('../images/ic_add_camera.png')}
-                    style={styles.logoIcon}
-                  />
-                )}
-
-                {this.state.fileName != '' ? (
-                  <Text numberOfLines={2} style={styles.uploadImageNameText}>
-                    {this.state.odometerImageName}
-                  </Text>
-                ) : (
-                  <Text numberOfLines={1} style={styles.uploadPhotoText}>
-                    Upload Photo of Odometer
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Upload Photo of Service Sticker
-              </Text>
-              <TouchableOpacity
-                style={styles.addImageViewStyle}
-                onPress={() => this.openImageGallery('serviceStickerImageUri')}>
-                {this.state.serviceStickerImageUri != null ? (
-                  <Image
-                    source={{uri: this.state.serviceStickerImageUri}}
-                    style={styles.logoIcon}
-                  />
-                ) : (
-                  <Image
-                    source={require('../images/ic_add_camera.png')}
-                    style={styles.logoIcon}
-                  />
-                )}
-
-                {this.state.fileName != '' ? (
-                  <Text numberOfLines={2} style={styles.uploadImageNameText}>
-                    {this.state.serviceStickerImageName}
-                  </Text>
-                ) : (
-                  <Text numberOfLines={1} style={styles.uploadPhotoText}>
-                    Upload Photo of Service Sticker
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Upload Photo of Fuel Guage
-              </Text>
-              <TouchableOpacity
-                style={styles.addImageViewStyle}
-                onPress={() => this.openImageGallery('fuelGuageImageUri')}>
-                {this.state.fuelGuageImageUri != null ? (
-                  <Image
-                    source={{uri: this.state.fuelGuageImageUri}}
-                    style={styles.logoIcon}
-                  />
-                ) : (
-                  <Image
-                    source={require('../images/ic_add_camera.png')}
-                    style={styles.logoIcon}
-                  />
-                )}
-
-                {this.state.fileName != '' ? (
-                  <Text numberOfLines={2} style={styles.uploadImageNameText}>
-                    {this.state.fuelGuageImageName}
-                  </Text>
-                ) : (
-                  <Text numberOfLines={1} style={styles.uploadPhotoText}>
-                    Upload Photo of Fuel Guage
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <Text numberOfLines={1} style={styles.headingTextStyle}>
-                Notes
-              </Text>
-              <View style={styles.remarksStyle}>
-                <TextInput
-                  style={styles.remarksTextStyle}
-                  autoCapitalize="none"
-                  multiline={true}
-                  placeholderTextColor={Colors.placeholderColor}
-                  // placeholder="Enter your remarks"
-                  value={this.state.notes}
-                  onChangeText={value => this.setState({notes: value})}
-                  blurOnSubmit={false}
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.headingTextStyleThree,
+                    {padding: 10, color: Colors.textColor1},
+                  ]}>
+                  Insurance Details
+                </Text>
+                <View
+                  style={{
+                    borderBottomColor: 'black',
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                  }}
                 />
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Company *
+                </Text>
+
+                <View style={styles.editTextContainer}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={this.state.companyList}
+                    placeholder="Select Company"
+                    maxHeight={300}
+                    labelField="company_name"
+                    valueField="company_id"
+                    value={this.state.companyId}
+                    onChange={item => {
+                      this.onValueChangeCompany(
+                        item.company_id,
+                        item.company_name,
+                      );
+                    }}
+                    renderItem={this.renderCompany}
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Expire *
+                </Text>
+                <TouchableOpacity onPress={this.showExpireDate}>
+                  <View style={styles.editTextContainer}>
+                    <TextInput
+                      style={styles.emailIdEditTextStyle}
+                      autoCapitalize="none"
+                      multiline={false}
+                      editable={false}
+                      placeholderTextColor={Colors.placeholderColor}
+                      placeholder="DD/MM/YYYY"
+                      value={this.state.expire}
+                      onChangeText={value => this.setState({expire: value})}
+                      onSubmitEditing={() => {
+                        this.rentOutNoTextInput.focus();
+                      }}
+                      ref={input => {
+                        this.expireTextInput = input;
+                      }}
+                      blurOnSubmit={false}
+                    />
+
+                    <Image
+                      source={require('../images/calendar.png')}
+                      style={styles.calenderIcon}
+                    />
+                  </View>
+                </TouchableOpacity>
+
+                {this.state.isDisplayExpireDate && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    value={new Date()}
+                    mode="date"
+                    display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
+                    onChange={this.setExpireDate}
+                  />
+                )}
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Upload photo of cover note
+                </Text>
+                <TouchableOpacity
+                  style={styles.addImageViewStyle}
+                  onPress={() => this.openImageGallery('coverNoteImageUri')}>
+                  {this.state.coverNoteImageUri != null ? (
+                    <Image
+                      source={{uri: this.state.coverNoteImageUri}}
+                      style={styles.logoIcon}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../images/ic_add_camera.png')}
+                      style={styles.logoIcon}
+                    />
+                  )}
+
+                  {this.state.fileName != '' ? (
+                    <Text numberOfLines={2} style={styles.uploadImageNameText}>
+                      {this.state.coverNoteImageName}
+                    </Text>
+                  ) : (
+                    <Text numberOfLines={1} style={styles.uploadPhotoText}>
+                      Upload Photo of cover note
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                <View
+                  style={{
+                    marginTop: 20,
+                    borderBottomColor: 'black',
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                  }}
+                />
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.headingTextStyleThree,
+                    {padding: 10, color: Colors.textColor1},
+                  ]}>
+                  Upload 7 pictures of car being issued
+                </Text>
+                <View
+                  style={{
+                    borderBottomColor: 'black',
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                  }}
+                />
+
+                <Text
+                  numberOfLines={1}
+                  style={[styles.headingTextStyle, {marginTop: 20}]}>
+                  Upload Photo of Front
+                </Text>
+                <TouchableOpacity
+                  style={styles.addImageViewStyle}
+                  onPress={() => this.openImageGallery('frontImageUri')}>
+                  {this.state.frontImageUri != null ? (
+                    <Image
+                      source={{uri: this.state.frontImageUri}}
+                      style={styles.logoIcon}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../images/ic_add_camera.png')}
+                      style={styles.logoIcon}
+                    />
+                  )}
+
+                  {this.state.fileName != '' ? (
+                    <Text numberOfLines={2} style={styles.uploadImageNameText}>
+                      {this.state.frontImageName}
+                    </Text>
+                  ) : (
+                    <Text numberOfLines={1} style={styles.uploadPhotoText}>
+                      Upload Photo of Front
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Upload Photo of Rear
+                </Text>
+                <TouchableOpacity
+                  style={styles.addImageViewStyle}
+                  onPress={() => this.openImageGallery('rearImageUri')}>
+                  {this.state.rearImageUri != null ? (
+                    <Image
+                      source={{uri: this.state.rearImageUri}}
+                      style={styles.logoIcon}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../images/ic_add_camera.png')}
+                      style={styles.logoIcon}
+                    />
+                  )}
+
+                  {this.state.fileName != '' ? (
+                    <Text numberOfLines={2} style={styles.uploadImageNameText}>
+                      {this.state.rearImageName}
+                    </Text>
+                  ) : (
+                    <Text numberOfLines={1} style={styles.uploadPhotoText}>
+                      Upload Photo of Rear
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Upload Photo of Driver Side
+                </Text>
+                <TouchableOpacity
+                  style={styles.addImageViewStyle}
+                  onPress={() => this.openImageGallery('driverSideImageUri')}>
+                  {this.state.driverSideImageUri != null ? (
+                    <Image
+                      source={{uri: this.state.driverSideImageUri}}
+                      style={styles.logoIcon}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../images/ic_add_camera.png')}
+                      style={styles.logoIcon}
+                    />
+                  )}
+
+                  {this.state.fileName != '' ? (
+                    <Text numberOfLines={2} style={styles.uploadImageNameText}>
+                      {this.state.driverSideImageName}
+                    </Text>
+                  ) : (
+                    <Text numberOfLines={1} style={styles.uploadPhotoText}>
+                      Upload Photo of Driver Side
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Upload Photo of Passenger Side
+                </Text>
+                <TouchableOpacity
+                  style={styles.addImageViewStyle}
+                  onPress={() =>
+                    this.openImageGallery('passengerSideImageUri')
+                  }>
+                  {this.state.passengerSideImageUri != null ? (
+                    <Image
+                      source={{uri: this.state.passengerSideImageUri}}
+                      style={styles.logoIcon}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../images/ic_add_camera.png')}
+                      style={styles.logoIcon}
+                    />
+                  )}
+
+                  {this.state.fileName != '' ? (
+                    <Text numberOfLines={2} style={styles.uploadImageNameText}>
+                      {this.state.passengerSideImageName}
+                    </Text>
+                  ) : (
+                    <Text numberOfLines={1} style={styles.uploadPhotoText}>
+                      Upload Photo of Passenger Side
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Upload Photo of Odometer
+                </Text>
+                <TouchableOpacity
+                  style={styles.addImageViewStyle}
+                  onPress={() => this.openImageGallery('odometerImageUri')}>
+                  {this.state.odometerImageUri != null ? (
+                    <Image
+                      source={{uri: this.state.odometerImageUri}}
+                      style={styles.logoIcon}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../images/ic_add_camera.png')}
+                      style={styles.logoIcon}
+                    />
+                  )}
+
+                  {this.state.fileName != '' ? (
+                    <Text numberOfLines={2} style={styles.uploadImageNameText}>
+                      {this.state.odometerImageName}
+                    </Text>
+                  ) : (
+                    <Text numberOfLines={1} style={styles.uploadPhotoText}>
+                      Upload Photo of Odometer
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Upload Photo of Service Sticker
+                </Text>
+                <TouchableOpacity
+                  style={styles.addImageViewStyle}
+                  onPress={() =>
+                    this.openImageGallery('serviceStickerImageUri')
+                  }>
+                  {this.state.serviceStickerImageUri != null ? (
+                    <Image
+                      source={{uri: this.state.serviceStickerImageUri}}
+                      style={styles.logoIcon}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../images/ic_add_camera.png')}
+                      style={styles.logoIcon}
+                    />
+                  )}
+
+                  {this.state.fileName != '' ? (
+                    <Text numberOfLines={2} style={styles.uploadImageNameText}>
+                      {this.state.serviceStickerImageName}
+                    </Text>
+                  ) : (
+                    <Text numberOfLines={1} style={styles.uploadPhotoText}>
+                      Upload Photo of Service Sticker
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Upload Photo of Fuel Guage
+                </Text>
+                <TouchableOpacity
+                  style={styles.addImageViewStyle}
+                  onPress={() => this.openImageGallery('fuelGuageImageUri')}>
+                  {this.state.fuelGuageImageUri != null ? (
+                    <Image
+                      source={{uri: this.state.fuelGuageImageUri}}
+                      style={styles.logoIcon}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../images/ic_add_camera.png')}
+                      style={styles.logoIcon}
+                    />
+                  )}
+
+                  {this.state.fileName != '' ? (
+                    <Text numberOfLines={2} style={styles.uploadImageNameText}>
+                      {this.state.fuelGuageImageName}
+                    </Text>
+                  ) : (
+                    <Text numberOfLines={1} style={styles.uploadPhotoText}>
+                      Upload Photo of Fuel Guage
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Notes
+                </Text>
+                <View style={styles.remarksStyle}>
+                  <TextInput
+                    style={styles.remarksTextStyle}
+                    autoCapitalize="none"
+                    multiline={true}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Enter your remarks"
+                    value={this.state.notes}
+                    onChangeText={value => this.setState({notes: value})}
+                    blurOnSubmit={false}
+                  />
+                </View>
+
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={styles.approveButtonContainer}
+                    onPress={() => this.callAddReturnInVehicleApi()}>
+                    <Text numberOfLines={1} style={styles.buttonText}>
+                      Submit
+                    </Text>
+                  </TouchableOpacity>
+                  <View style={styles.boxGap} />
+
+                  <TouchableOpacity
+                    style={styles.cancelButtonContainer}
+                    onPress={() => this.onClickSubmitButton()}>
+                    <Text numberOfLines={1} style={styles.buttonText}>
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.approveButtonContainer}
-                onPress={() => this.callAddReturnInVehicleApi()}>
-                <Text numberOfLines={1} style={styles.buttonText}>
-                  SUBMIT
-                </Text>
-              </TouchableOpacity>
-              <View style={styles.boxGap} />
-
-              <TouchableOpacity
-                style={styles.cancelButtonContainer}
-                onPress={() => this.onClickSubmitButton()}>
-                <Text numberOfLines={1} style={styles.buttonText}>
-                  CANCLE
-                </Text>
-              </TouchableOpacity>
-            </View>
+            ) : (
+              <Button
+                mode="contained"
+                uppercase={false}
+                onPress={() => {
+                  this.onProceed();
+                }}
+                color={Colors.textColor1}
+                style={{
+                  marginHorizontal: 30,
+                  marginVertical: 20,
+                  borderRadius: 20,
+                }}>
+                Proceed
+              </Button>
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>

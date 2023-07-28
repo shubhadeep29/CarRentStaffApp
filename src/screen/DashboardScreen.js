@@ -79,8 +79,6 @@ export default class DashboardScreen extends React.Component {
     });
 
     try {
-      console.log('Call driver list API Link ========>  ', Links.getVehicle);
-      console.log('Driver list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.getVehicle, {
         method: 'POST',
         body: inputBody,
@@ -90,10 +88,7 @@ export default class DashboardScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log(
-        'Driver list Response ===========>  ',
-        JSON.stringify(responseJSON),
-      );
+
       this.getOnGoingVehicle();
       if (responseJSON) {
         // this.setState({ isLoading: false });
@@ -153,11 +148,6 @@ export default class DashboardScreen extends React.Component {
     });
 
     try {
-      console.log(
-        'Call driver list API Link ========>  ',
-        Links.getOnGoingVehicle,
-      );
-      console.log('Driver list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.getOnGoingVehicle, {
         method: 'POST',
         body: inputBody,
@@ -167,10 +157,7 @@ export default class DashboardScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log(
-        'Driver list Response ===========>  ',
-        JSON.stringify(responseJSON),
-      );
+
       this.getPendingDriverValidate();
       if (responseJSON) {
         // this.setState({ isLoading: false });
@@ -228,11 +215,6 @@ export default class DashboardScreen extends React.Component {
     });
 
     try {
-      console.log(
-        'Call driver list API Link ========>  ',
-        Links.getPendingDriverValidate,
-      );
-      console.log('Driver list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.getPendingDriverValidate, {
         method: 'POST',
         body: inputBody,
@@ -242,10 +224,6 @@ export default class DashboardScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log(
-        'Driver list Response ===========>  ',
-        JSON.stringify(responseJSON),
-      );
       this.getAvailableVehicleList();
       if (responseJSON) {
         // this.setState({ isLoading: false });
@@ -300,11 +278,6 @@ export default class DashboardScreen extends React.Component {
     });
 
     try {
-      console.log(
-        'Call driver list API Link ========>  ',
-        Links.getAvailableVehicleList,
-      );
-      console.log('Driver list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.getAvailableVehicleList, {
         method: 'POST',
         body: inputBody,
@@ -314,10 +287,6 @@ export default class DashboardScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log(
-        'Driver list Response ===========>  ',
-        JSON.stringify(responseJSON),
-      );
       if (responseJSON) {
         // this.getPendingDriverValidate()
         this.setState({isLoading: false});
@@ -699,7 +668,6 @@ export default class DashboardScreen extends React.Component {
   }
 
   render() {
-    console.log('availableVehicleList ----', this.state.availableVehicleList);
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.mainContainer}>
