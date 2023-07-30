@@ -105,6 +105,18 @@ export default class RentOutVehicleScreen extends React.Component {
     this.getCompanyListRentOut();
     this.getPaymentMethod();
     this.getCarListRent();
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.willFocus();
+    });
+  };
+
+  willFocus = () => {
+    console.log('log to console');
+    this.getRentOutList();
+    this.getDriverListRentOut();
+    this.getCompanyListRentOut();
+    this.getPaymentMethod();
+    this.getCarListRent();
   };
 
   getRentOutList() {

@@ -413,7 +413,7 @@ export default class MyProfile extends React.Component {
                 style={styles.cancelButtonContainer}
                 onPress={() => this.onClickCancelButton()}>
                 <Text numberOfLines={1} style={styles.buttonText}>
-                  CANCLE
+                  Cancel
                 </Text>
               </TouchableOpacity>
               <View style={styles.boxGap} />
@@ -422,7 +422,7 @@ export default class MyProfile extends React.Component {
                 style={styles.approveButtonContainer}
                 onPress={() => this.callMyProfileApi()}>
                 <Text numberOfLines={1} style={styles.buttonText}>
-                  SAVE
+                  Save
                 </Text>
               </TouchableOpacity>
             </View>

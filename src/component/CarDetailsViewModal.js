@@ -90,7 +90,7 @@ export default class CarDetailsViewModal extends Component {
                     </Text>
                   </View>
                 ) : this.props.item.status == '2' ? (
-                  <View style={styles.activeCarNumberContainer}>
+                  <View style={styles.accidentCarNumberContainer}>
                     <Text
                       numberOfLines={1}
                       style={styles.activeCarNumberTextStyle}>
@@ -98,7 +98,7 @@ export default class CarDetailsViewModal extends Component {
                     </Text>
                   </View>
                 ) : this.props.item.status == '3' ? (
-                  <View style={styles.breakdownContainer}>
+                  <View style={styles.accidentCarNumberContainer}>
                     <Text
                       numberOfLines={1}
                       style={styles.activeCarNumberTextStyle}>
@@ -260,6 +260,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 20,
     backgroundColor: Colors.lightYellow,
+  },
+  accidentCarNumberContainer: {
+    alignSelf: 'center',
+    borderRadius: 20,
+    backgroundColor: Colors.red,
   },
   inActiveCarNumberTextStyle: {
     fontSize: 12,

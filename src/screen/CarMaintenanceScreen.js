@@ -596,7 +596,7 @@ const styles = StyleSheet.create({
   accidentIndicator: {
     width: 10,
     height: 10,
-    backgroundColor: 'orange',
+    backgroundColor: Colors.red,
     borderRadius: 20,
     alignSelf: 'center',
   },

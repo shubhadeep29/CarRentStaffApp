@@ -26,13 +26,13 @@ import LoaderView from '../component/LoaderView';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-element-dropdown';
-import {Button} from 'react-native-paper';
+import {Button, Checkbox} from 'react-native-paper';
 
 export default class AddRentOutVehicle extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
+      isLoading: true,
       onProceed: false,
       showExtraData: false,
       item: props.route.params.item,
@@ -41,10 +41,11 @@ export default class AddRentOutVehicle extends React.Component {
       driverListRentOut: props.route.params.driverListRentOut,
       carListRent: props.route.params.carListRent,
       isNetworkAvailable: true,
-      isLoading: false,
       deviceType: '1',
       driverId: '',
+      driverName: '',
       carId: '',
+      displayCarName: '',
       driver: '',
       car: '',
       odometerReading: '',
@@ -58,6 +59,7 @@ export default class AddRentOutVehicle extends React.Component {
       referenceNumber: '',
       company: '',
       companyId: '',
+      insurance_company: '',
       expire: '',
       notes: '',
       rentOutId: '',
@@ -161,6 +163,9 @@ export default class AddRentOutVehicle extends React.Component {
         },
       ],
       directDebitPaymentFailOptions: 'pause',
+      dishonor: true,
+      perDebit: false,
+      onChargedFees: [],
     };
   }
 
@@ -203,9 +208,11 @@ export default class AddRentOutVehicle extends React.Component {
     this.userId = await AsyncStorage.getItem(Constants.STORAGE_KEY_USER_ID);
     this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
 
-    if (this.state.item != null) {
-      console.log(this.state.item);
+    this.callGetCountryCodeApi();
 
+    if (this.state.item != null) {
+      console.log('item ---- 123', this.state.item);
+      this.setState({onProceed: true});
       if (
         this.state.item.front_img != null &&
         this.state.item.front_img != ''
@@ -264,6 +271,19 @@ export default class AddRentOutVehicle extends React.Component {
       }
 
       this.setState({
+        driver_id: this.state.item.driver_id,
+        driverName:
+          this.state.item.first_name +
+          ' ' +
+          this.state.item.middle_name +
+          ' ' +
+          this.state.item.last_name,
+        displayCarName:
+          this.state.item.car_no +
+          ' | ' +
+          this.state.item.make +
+          ' | ' +
+          this.state.item.model,
         carNo: this.state.item.car_no,
         carId: this.state.item.car_id,
         ageExcess: this.state.item.age_excess,
@@ -272,6 +292,7 @@ export default class AddRentOutVehicle extends React.Component {
         bond: this.state.item.bond_amount,
         company: this.state.item.company_name,
         companyId: this.state.item.company_id,
+        insurance_company: this.state.item.insurance_company,
 
         coverNoteImageUri: Links.BASEURL + this.state.item.cover_note_img,
 
@@ -287,7 +308,51 @@ export default class AddRentOutVehicle extends React.Component {
         bondReferenceNo: this.state.item.bond_reference_no,
         bondPaymentMethod: this.state.item.bond_payment_method,
         paymentMethod: this.state.item.payment_method,
+
+        showExtraData:
+          this.state.item.payment_method === 'Direct Debit' ? true : false,
       });
+      if (this.state.item.payment_method === 'Direct Debit') {
+        const advantage_pay_customer_response = JSON.parse(
+          this.state.item.advantage_pay_customer_response,
+        );
+        const direct_debit_status_response = JSON.parse(
+          this.state.item.direct_debit_status_response,
+        );
+        const dishonorIndex =
+          direct_debit_status_response.OnchargedFees.findIndex(
+            element => element === 'dishonour',
+          );
+        const perDebitIndex =
+          direct_debit_status_response.OnchargedFees.findIndex(
+            element => element === 'perdebit',
+          );
+        this.setState({
+          advantagePayCustomerId: advantage_pay_customer_response.code,
+          driverFirstName: advantage_pay_customer_response.FirstName,
+          driverLastName: advantage_pay_customer_response.LastName,
+          driverCustomerReference: advantage_pay_customer_response.CustomRef,
+          driverEmail: advantage_pay_customer_response.Email,
+          driverCountryCode: this.state.item.country_code,
+          driverMobile: this.state.item.mobile,
+
+          directDebitDescription: direct_debit_status_response.Description,
+          directDebitUpfrontAmount:
+            direct_debit_status_response.UpfrontAmount.toString(),
+          directDebitUpfrontDate: direct_debit_status_response.UpfrontDate,
+          directDebitRecurringAmount:
+            direct_debit_status_response.RecurringAmount.toString(),
+          directDebitRecurringStartDate:
+            direct_debit_status_response.RecurringDateStart,
+          directDebitFrequency: direct_debit_status_response.Frequency,
+          directDebitPaymentFailOptions:
+            direct_debit_status_response.FailureOption,
+
+          onChargedFees: direct_debit_status_response.OnchargedFees,
+          dishonor: dishonorIndex >= 0 ? true : false,
+          perDebit: perDebitIndex >= 0 ? true : false,
+        });
+      }
     } else {
       // this.setState({
       //     driverId: this.state.driverListRentOut[0].driver_id,
@@ -337,7 +402,6 @@ export default class AddRentOutVehicle extends React.Component {
     this.setState({
       paymentMethod: value,
     });
-    console.log('this.state.paymentMethod', value);
   }
 
   async onValueChangeBondPayment(value) {
@@ -502,12 +566,15 @@ export default class AddRentOutVehicle extends React.Component {
     formData.append('overseas_dL_excess', this.state.overseasDLExcess);
     formData.append('weekly_rent', this.state.weeklyRent);
     formData.append('company_id', this.state.companyId);
-    formData.append('insurance_company', this.state.company);
+    formData.append('insurance_company', this.state.insurance_company);
     formData.append('expire', this.state.expire);
     formData.append('notes', this.state.notes);
     formData.append('payment_method', this.state.paymentMethod);
 
-    if (this.state.paymentMethod === 'Direct Debit') {
+    if (
+      this.state.paymentMethod === 'Direct Debit' &&
+      this.state.item === null
+    ) {
       formData.append('FirstName', this.state.driverFirstName);
       formData.append('LastName', this.state.driverLastName);
       formData.append('CustomRef', this.state.driverCustomerReference);
@@ -534,7 +601,14 @@ export default class AddRentOutVehicle extends React.Component {
         'FailureOption',
         this.state.directDebitPaymentFailOptions,
       );
-      formData.append('Description', this.state.directDebitDescription);
+      let onChargedFees = [];
+      if (this.state.dishonor) {
+        onChargedFees.push('dishonour');
+      }
+      if (this.state.perDebit) {
+        onChargedFees.push('perdebit');
+      }
+      formData.append('OnchargedFees', onChargedFees);
     }
 
     formData.append('payment_reference_no', this.state.paymentReferenceNo);
@@ -544,10 +618,6 @@ export default class AddRentOutVehicle extends React.Component {
     if (this.state.item != null) {
       formData.append('rent_out_id', this.state.rentOutId);
     }
-    console.log(
-      'Call Add Return Out Vehicle API ========>  ',
-      JSON.stringify(formData),
-    );
 
     if (this.state.coverNoteImageName != '') {
       formData.append('cover_note_img', {
@@ -559,10 +629,6 @@ export default class AddRentOutVehicle extends React.Component {
         type: this.state.coverNoteImageType,
       });
     }
-    console.log(
-      'Call Add Return Out Vehicle API ========>  ',
-      JSON.stringify(this.state.coverNoteImageName),
-    );
     if (this.state.frontImageName != '') {
       formData.append('front_img', {
         uri:
@@ -584,10 +650,6 @@ export default class AddRentOutVehicle extends React.Component {
         type: this.state.rearImageType,
       });
     }
-    console.log(
-      'Call Add Return Out Vehicle API ========>  ',
-      JSON.stringify(formData),
-    );
 
     if (this.state.driverSideImageName != '') {
       formData.append('driver_side_img', {
@@ -729,6 +791,13 @@ export default class AddRentOutVehicle extends React.Component {
   renderCompany = item => {
     return (
       <View>
+        <Text style={styles.selectionListTextStyle}>{item.company_name}</Text>
+      </View>
+    );
+  };
+  renderList = item => {
+    return (
+      <View>
         <Text style={styles.selectionListTextStyle}>{item.key}</Text>
       </View>
     );
@@ -744,10 +813,10 @@ export default class AddRentOutVehicle extends React.Component {
     );
   };
   onProceed = () => {
-    // if (!this.state.driverId && !this.state.carId) {
-    //   Utils.showMessageAlert('Please select Driver and Car first!');
-    //   return;
-    // }
+    if (!this.state.driverId && !this.state.carId) {
+      Utils.showMessageAlert('Please select Driver and Car first!');
+      return;
+    }
     this.setState({isLoading: true});
     this.getDriverDetails();
   };
@@ -768,7 +837,7 @@ export default class AddRentOutVehicle extends React.Component {
   }
 
   callGetDriverDetailsApi = async () => {
-    // this.setState({isLoading: true});
+    this.setState({isLoading: true});
 
     var inputBody = JSON.stringify({
       device_type: Platform.OS === 'android' ? 1 : 2,
@@ -799,10 +868,10 @@ export default class AddRentOutVehicle extends React.Component {
       this.state.data = [];
       console.log(
         'GetDriverDetails Response 123 ===========>  ',
-        // JSON.stringify(responseJSON),
+        JSON.stringify(responseJSON),
       );
       if (responseJSON) {
-        // this.setState({isLoading: false});
+        this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
           this.setState({driverDetailsData: responseJSON});
           if (responseJSON.driver_details.advantage_pay_customer_id) {
@@ -870,7 +939,7 @@ export default class AddRentOutVehicle extends React.Component {
   };
 
   callGetCountryCodeApi = async () => {
-    // this.setState({isLoading: true});
+    this.setState({isLoading: true});
 
     var inputBody = JSON.stringify({
       device_type: Platform.OS === 'android' ? 1 : 2,
@@ -897,10 +966,10 @@ export default class AddRentOutVehicle extends React.Component {
       });
       const responseJSON = await res.json();
       this.state.data = [];
-      console.log(
-        'getCountryList Response 123 ===========>  ',
-        // JSON.stringify(responseJSON),
-      );
+      // console.log(
+      //   'getCountryList Response 123 ===========>  ',
+      //   // JSON.stringify(responseJSON),
+      // );
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
@@ -1001,46 +1070,70 @@ export default class AddRentOutVehicle extends React.Component {
               Driver *
             </Text>
             <View style={styles.editTextContainer}>
-              <Dropdown
-                style={styles.dropdown}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={this.state.driverListRentOut}
-                placeholder="Select Driver"
-                maxHeight={300}
-                labelField="first_name"
-                valueField="driver_id"
-                value={this.state.driverId}
-                onChange={item => {
-                  this.onValueChangeDriver(item.driver_id);
-                }}
-                renderItem={this.renderDriver}
-              />
+              {this.state.item === null ? (
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={this.state.driverListRentOut}
+                  placeholder="Select Driver"
+                  maxHeight={300}
+                  labelField="first_name"
+                  valueField="driver_id"
+                  value={this.state.driverId}
+                  onChange={item => {
+                    this.onValueChangeDriver(item.driver_id);
+                  }}
+                  renderItem={this.renderDriver}
+                />
+              ) : (
+                <TextInput
+                  style={styles.emailIdEditTextStyle}
+                  autoCapitalize="none"
+                  multiline={false}
+                  editable={false}
+                  placeholderTextColor={Colors.placeholderColor}
+                  // placeholder="Email Id"
+                  value={this.state.driverName}
+                />
+              )}
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Car *
             </Text>
             <View style={styles.editTextContainer}>
-              <Dropdown
-                style={styles.dropdown}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={this.state.carListRent}
-                placeholder="Select Car"
-                maxHeight={300}
-                labelField="car_no"
-                valueField="car_id"
-                value={this.state.carId}
-                onChange={item => {
-                  this.onValueChangeCar(item);
-                }}
-                renderItem={this.renderCar}
-              />
+              {this.state.item === null ? (
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={this.state.carListRent}
+                  placeholder="Select Car"
+                  maxHeight={300}
+                  labelField="car_no"
+                  valueField="car_id"
+                  value={this.state.carId}
+                  onChange={item => {
+                    this.onValueChangeCar(item);
+                  }}
+                  renderItem={this.renderCar}
+                />
+              ) : (
+                <TextInput
+                  style={styles.emailIdEditTextStyle}
+                  autoCapitalize="none"
+                  multiline={false}
+                  editable={false}
+                  placeholderTextColor={Colors.placeholderColor}
+                  // placeholder="Email Id"
+                  value={this.state.displayCarName}
+                />
+              )}
             </View>
             {this.state.onProceed ? (
               <View>
@@ -1185,6 +1278,7 @@ export default class AddRentOutVehicle extends React.Component {
                       this.onValueChangePayment(item.value);
                     }}
                     renderItem={this.renderPayment}
+                    disable={this.state.item !== null}
                   />
                 </View>
 
@@ -1203,6 +1297,7 @@ export default class AddRentOutVehicle extends React.Component {
                       this.setState({paymentReferenceNo: value})
                     }
                     blurOnSubmit={false}
+                    editable={this.state.item === null}
                   />
                 </View>
 
@@ -1225,11 +1320,12 @@ export default class AddRentOutVehicle extends React.Component {
                       this.bondTextInput = input;
                     }}
                     blurOnSubmit={false}
+                    editable={this.state.item === null}
                   />
                 </View>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Bond Payment Method
+                  Bond Payment Method *
                 </Text>
                 <View style={styles.editTextContainer}>
                   <Dropdown
@@ -1248,6 +1344,7 @@ export default class AddRentOutVehicle extends React.Component {
                       this.onValueChangeBondPayment(item.value);
                     }}
                     renderItem={this.renderPayment}
+                    disable={this.state.item !== null}
                   />
                 </View>
 
@@ -1266,6 +1363,7 @@ export default class AddRentOutVehicle extends React.Component {
                       this.setState({bondReferenceNo: value})
                     }
                     blurOnSubmit={false}
+                    editable={this.state.item === null}
                   />
                 </View>
 
@@ -1308,6 +1406,7 @@ export default class AddRentOutVehicle extends React.Component {
                             this.setState({driverFirstName: value})
                           }
                           blurOnSubmit={false}
+                          editable={this.state.item === null}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
@@ -1325,6 +1424,7 @@ export default class AddRentOutVehicle extends React.Component {
                             this.setState({driverLastName: value})
                           }
                           blurOnSubmit={false}
+                          editable={this.state.item === null}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
@@ -1342,6 +1442,7 @@ export default class AddRentOutVehicle extends React.Component {
                             this.setState({driverCustomerReference: value})
                           }
                           blurOnSubmit={false}
+                          editable={this.state.item === null}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
@@ -1359,6 +1460,7 @@ export default class AddRentOutVehicle extends React.Component {
                             this.setState({driverEmail: value})
                           }
                           blurOnSubmit={false}
+                          editable={this.state.item === null}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
@@ -1383,6 +1485,7 @@ export default class AddRentOutVehicle extends React.Component {
                             });
                           }}
                           renderItem={this.renderCountry}
+                          disable={this.state.item !== null}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
@@ -1400,6 +1503,7 @@ export default class AddRentOutVehicle extends React.Component {
                             this.setState({driverMobile: value})
                           }
                           blurOnSubmit={false}
+                          editable={this.state.item === null}
                         />
                       </View>
                     </>
@@ -1464,7 +1568,7 @@ export default class AddRentOutVehicle extends React.Component {
                           }>
                           <Image
                             source={
-                              this.state.sendPaymentReceiptEmails
+                              !this.state.sendPaymentReceiptEmails
                                 ? require('../images/ic_radio_check.png')
                                 : require('../images/ic_radio_uncheck.png')
                             }
@@ -1615,6 +1719,7 @@ export default class AddRentOutVehicle extends React.Component {
                             this.setState({directDebitDescription: value})
                           }
                           blurOnSubmit={false}
+                          editable={this.state.item === null}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
@@ -1632,12 +1737,14 @@ export default class AddRentOutVehicle extends React.Component {
                             this.setState({directDebitUpfrontAmount: value})
                           }
                           blurOnSubmit={false}
+                          editable={this.state.item === null}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
                         Upfront Date
                       </Text>
                       <TouchableOpacity
+                        disabled={this.state.item !== null}
                         onPress={this.showDirectDebitUpfrontDate}>
                         <View style={styles.editTextContainer}>
                           <TextInput
@@ -1693,6 +1800,7 @@ export default class AddRentOutVehicle extends React.Component {
                             this.setState({directDebitRecurringAmount: value})
                           }
                           blurOnSubmit={false}
+                          editable={this.state.item === null}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
@@ -1717,13 +1825,15 @@ export default class AddRentOutVehicle extends React.Component {
                               directDebitFrequency: item.value,
                             });
                           }}
-                          renderItem={this.renderCompany}
+                          renderItem={this.renderList}
+                          disable={this.state.item !== null}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
                         Recurring Start Date
                       </Text>
                       <TouchableOpacity
+                        disabled={this.state.item !== null}
                         onPress={this.showDirectDebitRecurringStartDate}>
                         <View style={styles.editTextContainer}>
                           <TextInput
@@ -1768,6 +1878,61 @@ export default class AddRentOutVehicle extends React.Component {
                       )}
 
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
+                        On-charged Fees
+                      </Text>
+                      <View
+                        style={[
+                          styles.rowViewOptionStyle,
+                          {marginTop: 8, justifyContent: 'space-between'},
+                        ]}>
+                        <View style={{flexDirection: 'row'}}>
+                          <Text numberOfLines={1} style={{color: 'black'}}>
+                            Dishonor
+                          </Text>
+                          <TouchableOpacity
+                            disabled={this.state.item !== null}
+                            onPress={() =>
+                              this.setState({
+                                dishonor: !this.state.dishonor,
+                                // isHybridNo: false,
+                              })
+                            }>
+                            <Image
+                              source={
+                                this.state.dishonor
+                                  ? require('../images/ic_radio_check.png')
+                                  : require('../images/ic_radio_uncheck.png')
+                              }
+                              style={styles.checkUncheckIcon}
+                            />
+                          </TouchableOpacity>
+                        </View>
+
+                        <View style={{flexDirection: 'row'}}>
+                          <Text numberOfLines={1} style={{color: 'black'}}>
+                            Per Debit
+                          </Text>
+                          <TouchableOpacity
+                            disabled={this.state.item !== null}
+                            onPress={() =>
+                              this.setState({
+                                perDebit: !this.state.perDebit,
+                                // isHybridNo: true,
+                              })
+                            }>
+                            <Image
+                              source={
+                                this.state.perDebit
+                                  ? require('../images/ic_radio_check.png')
+                                  : require('../images/ic_radio_uncheck.png')
+                              }
+                              style={styles.checkUncheckIcon}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+
+                      <Text numberOfLines={1} style={styles.headingTextStyle}>
                         When a Payment Fails...
                       </Text>
 
@@ -1789,7 +1954,8 @@ export default class AddRentOutVehicle extends React.Component {
                               directDebitPaymentFailOptions: item.value,
                             });
                           }}
-                          renderItem={this.renderCompany}
+                          disable={this.state.item !== null}
+                          renderItem={this.renderList}
                         />
                       </View>
                     </>
@@ -1822,25 +1988,17 @@ export default class AddRentOutVehicle extends React.Component {
                 </Text>
 
                 <View style={styles.editTextContainer}>
-                  <Dropdown
-                    style={styles.dropdown}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={this.state.companyList}
-                    placeholder="Select Company"
-                    maxHeight={300}
-                    labelField="company_name"
-                    valueField="company_id"
-                    value={this.state.companyId}
-                    onChange={item => {
-                      this.onValueChangeCompany(
-                        item.company_id,
-                        item.company_name,
-                      );
-                    }}
-                    renderItem={this.renderCompany}
+                  <TextInput
+                    style={styles.remarksTextStyle}
+                    autoCapitalize="none"
+                    multiline={true}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Enter your remarks"
+                    value={this.state.insurance_company}
+                    onChangeText={value =>
+                      this.setState({insurance_company: value})
+                    }
+                    blurOnSubmit={false}
                   />
                 </View>
 
