@@ -12,6 +12,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
+import {TextInput as TextInputPaper} from 'react-native-paper';
 import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
@@ -26,14 +27,14 @@ import LoaderView from '../component/LoaderView';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-element-dropdown';
-import {Button, Checkbox} from 'react-native-paper';
+import {Button, Checkbox, HelperText} from 'react-native-paper';
 
 export default class AddRentOutVehicle extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: true,
-      onProceed: false,
+      onProceed: true,
       showExtraData: false,
       item: props.route.params.item,
       paymentMethodList: props.route.params.paymentMethodList,
@@ -60,6 +61,9 @@ export default class AddRentOutVehicle extends React.Component {
       company: '',
       companyId: '',
       insurance_company: '',
+      insurance_username: '',
+      insurance_password: '',
+      actual_bond_amount: '',
       expire: '',
       notes: '',
       rentOutId: '',
@@ -145,7 +149,7 @@ export default class AddRentOutVehicle extends React.Component {
           value: 'quarterly',
         },
       ],
-      directDebitFrequency: 'weekly',
+      directDebitFrequency: '',
       directDebitRecurringStartDate: '',
       isDisplayDirectDebitRecurringStartDate: false,
       directDebitPaymentFailOptionsData: [
@@ -293,6 +297,9 @@ export default class AddRentOutVehicle extends React.Component {
         company: this.state.item.company_name,
         companyId: this.state.item.company_id,
         insurance_company: this.state.item.insurance_company,
+        insurance_username: this.state.item.insurance_username,
+        insurance_password: this.state.item.insurance_password,
+        actual_bond_amount: this.state.item.actual_bond_amount,
 
         coverNoteImageUri: Links.BASEURL + this.state.item.cover_note_img,
 
@@ -328,7 +335,7 @@ export default class AddRentOutVehicle extends React.Component {
             element => element === 'perdebit',
           );
         this.setState({
-          advantagePayCustomerId: advantage_pay_customer_response.code,
+          advantagePayCustomerId: advantage_pay_customer_response.Code,
           driverFirstName: advantage_pay_customer_response.FirstName,
           driverLastName: advantage_pay_customer_response.LastName,
           driverCustomerReference: advantage_pay_customer_response.CustomRef,
@@ -337,11 +344,14 @@ export default class AddRentOutVehicle extends React.Component {
           driverMobile: this.state.item.mobile,
 
           directDebitDescription: direct_debit_status_response.Description,
-          directDebitUpfrontAmount:
-            direct_debit_status_response.UpfrontAmount.toString(),
+          directDebitUpfrontAmount: direct_debit_status_response.UpfrontAmount
+            ? direct_debit_status_response.UpfrontAmount.toString()
+            : '0.00',
           directDebitUpfrontDate: direct_debit_status_response.UpfrontDate,
           directDebitRecurringAmount:
-            direct_debit_status_response.RecurringAmount.toString(),
+            direct_debit_status_response.RecurringAmount
+              ? direct_debit_status_response.RecurringAmount.toString()
+              : '0.00',
           directDebitRecurringStartDate:
             direct_debit_status_response.RecurringDateStart,
           directDebitFrequency: direct_debit_status_response.Frequency,
@@ -397,6 +407,10 @@ export default class AddRentOutVehicle extends React.Component {
     if (value === 'Direct Debit') {
       this.setState({
         showExtraData: true,
+      });
+    } else {
+      this.setState({
+        showExtraData: false,
       });
     }
     this.setState({
@@ -532,10 +546,19 @@ export default class AddRentOutVehicle extends React.Component {
       Toast.show('Please enter Weekly Rent', Toast.SHORT);
     } else if (this.state.paymentMethod == '') {
       Toast.show('Please enter Payment Method', Toast.SHORT);
-    } else if (this.state.company == '') {
+    } else if (this.state.insurance_company === '') {
       Toast.show('Please enter Company Name', Toast.SHORT);
+    } else if (this.state.insurance_username === '') {
+      Toast.show('Please enter insurance username', Toast.SHORT);
+    } else if (this.state.insurance_password === '') {
+      Toast.show('Please enter insurance password', Toast.SHORT);
     } else if (this.state.expire == '') {
       Toast.show('Please enter expire', Toast.SHORT);
+    } else if (
+      this.state.fuelGuageImageName === '' &&
+      this.state.item === null
+    ) {
+      Toast.show('Select fuel guage image', Toast.SHORT);
     } else {
       try {
         NetInfo.fetch().then(state => {
@@ -567,6 +590,8 @@ export default class AddRentOutVehicle extends React.Component {
     formData.append('weekly_rent', this.state.weeklyRent);
     formData.append('company_id', this.state.companyId);
     formData.append('insurance_company', this.state.insurance_company);
+    formData.append('insurance_username', this.state.insurance_username);
+    formData.append('insurance_password', this.state.insurance_password);
     formData.append('expire', this.state.expire);
     formData.append('notes', this.state.notes);
     formData.append('payment_method', this.state.paymentMethod);
@@ -768,7 +793,9 @@ export default class AddRentOutVehicle extends React.Component {
   renderDriver = item => {
     return (
       <View>
-        <Text style={styles.selectionListTextStyle}>{item.first_name}</Text>
+        <Text style={styles.selectionListTextStyle}>
+          {item.concat_driver_name}
+        </Text>
       </View>
     );
   };
@@ -776,7 +803,7 @@ export default class AddRentOutVehicle extends React.Component {
   renderCar = item => {
     return (
       <View>
-        <Text style={styles.selectionListTextStyle}>{item.car_no}</Text>
+        <Text style={styles.selectionListTextStyle}>{item.concat_car_no}</Text>
       </View>
     );
   };
@@ -803,25 +830,26 @@ export default class AddRentOutVehicle extends React.Component {
     );
   };
   renderCountry = item => {
+    console.log('country', item);
     return (
       <View>
-        <Text
-          style={
-            styles.selectionListTextStyle
-          }>{`${item.nicename} +(${item.phonecode})`}</Text>
+        <Text style={styles.selectionListTextStyle}>
+          {item.concat_contry_code}
+        </Text>
       </View>
     );
   };
   onProceed = () => {
-    if (!this.state.driverId && !this.state.carId) {
+    if (!this.state.driverId || !this.state.carId) {
       Utils.showMessageAlert('Please select Driver and Car first!');
       return;
     }
-    this.setState({isLoading: true});
+
     this.getDriverDetails();
   };
 
   getDriverDetails() {
+    this.setState({isLoading: true});
     try {
       NetInfo.fetch().then(state => {
         if (state.isConnected) {
@@ -866,6 +894,7 @@ export default class AddRentOutVehicle extends React.Component {
       });
       const responseJSON = await res.json();
       this.state.data = [];
+
       console.log(
         'GetDriverDetails Response 123 ===========>  ',
         JSON.stringify(responseJSON),
@@ -900,7 +929,11 @@ export default class AddRentOutVehicle extends React.Component {
             driverCountryCode: responseJSON.driver_details.country_code,
             driverMobile: responseJSON.driver_details.mobile,
             totalBondHeld: responseJSON.driver_details.actual_bond_amount,
+            actual_bond_amount: responseJSON.actual_bond_amount
+              ? responseJSON.actual_bond_amount.toString()
+              : '0.00',
           });
+          this.onValueChangePayment('Direct Debit');
           this.setState({onProceed: true});
         } else if (
           responseJSON.hasOwnProperty('status') &&
@@ -1067,7 +1100,7 @@ export default class AddRentOutVehicle extends React.Component {
         <ScrollView>
           <View style={styles.bottomViewContainer}>
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Driver *
+              Driver <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               {this.state.item === null ? (
@@ -1080,11 +1113,12 @@ export default class AddRentOutVehicle extends React.Component {
                   data={this.state.driverListRentOut}
                   placeholder="Select Driver"
                   maxHeight={300}
-                  labelField="first_name"
+                  labelField="concat_driver_name"
                   valueField="driver_id"
                   value={this.state.driverId}
                   onChange={item => {
                     this.onValueChangeDriver(item.driver_id);
+                    this.setState({onProceed: false});
                   }}
                   renderItem={this.renderDriver}
                 />
@@ -1102,7 +1136,7 @@ export default class AddRentOutVehicle extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Car *
+              Car <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               {this.state.item === null ? (
@@ -1115,11 +1149,12 @@ export default class AddRentOutVehicle extends React.Component {
                   data={this.state.carListRent}
                   placeholder="Select Car"
                   maxHeight={300}
-                  labelField="car_no"
+                  labelField="concat_car_no"
                   valueField="car_id"
                   value={this.state.carId}
                   onChange={item => {
                     this.onValueChangeCar(item);
+                    this.setState({onProceed: false});
                   }}
                   renderItem={this.renderCar}
                 />
@@ -1145,7 +1180,7 @@ export default class AddRentOutVehicle extends React.Component {
                   }}
                 />
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Odometer Reading *
+                  Odometer Reading <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <View style={styles.editTextContainer}>
                   <TextInput
@@ -1167,6 +1202,21 @@ export default class AddRentOutVehicle extends React.Component {
                     blurOnSubmit={false}
                   />
                 </View>
+                {this.state.driverDetailsData?.car_details
+                  ?.total_odometer_reading ? (
+                  <HelperText
+                    type="info"
+                    visible={true}
+                    style={{paddingHorizontal: 50}}>
+                    {this.state.driverDetailsData?.car_details
+                      ?.total_odometer_reading
+                      ? '(Last Odometer :: ' +
+                        this.state.driverDetailsData?.car_details
+                          ?.total_odometer_reading +
+                        ')'
+                      : ''}
+                  </HelperText>
+                ) : null}
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
                   Basic Excess
@@ -1212,8 +1262,8 @@ export default class AddRentOutVehicle extends React.Component {
                   />
                 </View>
 
-                <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Overseas DL Excess
+                <Text style={styles.headingTextStyle}>
+                  Overseas DL / Less Than 2yrs Local DL Excess
                 </Text>
                 <View style={styles.editTextContainer}>
                   <TextInput
@@ -1237,9 +1287,14 @@ export default class AddRentOutVehicle extends React.Component {
                 </View>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Weekly Rent *
+                  Weekly Rent <Text style={{color: Colors.red}}>*</Text>
                 </Text>
-                <View style={styles.editTextContainer}>
+                <View
+                  style={[
+                    styles.editTextContainer,
+                    {flexDirection: 'row', alignItems: 'center'},
+                  ]}>
+                  <Text style={{marginRight: 4}}>$</Text>
                   <TextInput
                     style={styles.emailIdEditTextStyle}
                     autoCapitalize="none"
@@ -1255,11 +1310,12 @@ export default class AddRentOutVehicle extends React.Component {
                       this.weeklyRentTextInput = input;
                     }}
                     blurOnSubmit={false}
+                    keyboardType="decimal-pad"
                   />
                 </View>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Payment Method *
+                  Payment Method <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <View style={styles.editTextContainer}>
                   <Dropdown
@@ -1302,9 +1358,45 @@ export default class AddRentOutVehicle extends React.Component {
                 </View>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Total Bond Held
+                </Text>
+                <View
+                  style={[
+                    styles.editTextContainer,
+                    {flexDirection: 'row', alignItems: 'center'},
+                  ]}>
+                  <Text style={{marginRight: 4}}>$</Text>
+                  <TextInput
+                    style={styles.emailIdEditTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Email Id"
+                    value={this.state.actual_bond_amount}
+                    onChangeText={value =>
+                      this.setState({actual_bond_amount: value})
+                    }
+                    onSubmitEditing={() => {
+                      this.yearTextInput.focus();
+                    }}
+                    ref={input => {
+                      this.bondTextInput = input;
+                    }}
+                    blurOnSubmit={false}
+                    editable={false}
+                    keyboardType="decimal-pad"
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
                   Bond
                 </Text>
-                <View style={styles.editTextContainer}>
+                <View
+                  style={[
+                    styles.editTextContainer,
+                    {flexDirection: 'row', alignItems: 'center'},
+                  ]}>
+                  <Text style={{marginRight: 4}}>$</Text>
                   <TextInput
                     style={styles.emailIdEditTextStyle}
                     autoCapitalize="none"
@@ -1321,11 +1413,12 @@ export default class AddRentOutVehicle extends React.Component {
                     }}
                     blurOnSubmit={false}
                     editable={this.state.item === null}
+                    keyboardType="decimal-pad"
                   />
                 </View>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Bond Payment Method *
+                  Bond Payment Method <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <View style={styles.editTextContainer}>
                   <Dropdown
@@ -1334,7 +1427,9 @@ export default class AddRentOutVehicle extends React.Component {
                     selectedTextStyle={styles.selectedTextStyle}
                     inputSearchStyle={styles.inputSearchStyle}
                     iconStyle={styles.iconStyle}
-                    data={this.state.paymentMethodList}
+                    data={this.state.paymentMethodList.filter(
+                      elm => elm.value !== 'Direct Debit',
+                    )}
                     placeholder="Select Bond Payment Method"
                     maxHeight={300}
                     labelField="value"
@@ -1385,6 +1480,21 @@ export default class AddRentOutVehicle extends React.Component {
                         ]}>
                         Direct Debit Customer Details
                       </Text>
+                      {this.state.advantagePayCustomerId ? (
+                        <Text
+                          style={[
+                            styles.headingTextStyleThree,
+                            {
+                              padding: 10,
+                              color: Colors.textColor1,
+                              marginTop: -20,
+                            },
+                          ]}>
+                          (Advantage Pay Customer ID :{' '}
+                          {this.state.advantagePayCustomerId} )
+                        </Text>
+                      ) : null}
+
                       <View
                         style={{
                           borderBottomColor: 'black',
@@ -1392,7 +1502,7 @@ export default class AddRentOutVehicle extends React.Component {
                         }}
                       />
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        First Name
+                        First Name <Text style={{color: Colors.red}}>*</Text>
                       </Text>
                       <View style={styles.editTextContainer}>
                         <TextInput
@@ -1410,7 +1520,7 @@ export default class AddRentOutVehicle extends React.Component {
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        Last Name
+                        Last Name <Text style={{color: Colors.red}}>*</Text>
                       </Text>
                       <View style={styles.editTextContainer}>
                         <TextInput
@@ -1428,7 +1538,8 @@ export default class AddRentOutVehicle extends React.Component {
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        Customer Reference
+                        Customer Reference{' '}
+                        <Text style={{color: Colors.red}}>*</Text>
                       </Text>
                       <View style={styles.editTextContainer}>
                         <TextInput
@@ -1446,7 +1557,7 @@ export default class AddRentOutVehicle extends React.Component {
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        Email
+                        Email <Text style={{color: Colors.red}}>*</Text>
                       </Text>
                       <View style={styles.editTextContainer}>
                         <TextInput
@@ -1464,7 +1575,7 @@ export default class AddRentOutVehicle extends React.Component {
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        Country Code
+                        Country Code <Text style={{color: Colors.red}}>*</Text>
                       </Text>
                       <View style={styles.editTextContainer}>
                         <Dropdown
@@ -1476,7 +1587,7 @@ export default class AddRentOutVehicle extends React.Component {
                           data={this.state.countryData}
                           placeholder="Select Country Code"
                           maxHeight={300}
-                          labelField="nicename"
+                          labelField="concat_contry_code"
                           valueField="iso"
                           value={this.state.driverCountryCode}
                           onChange={item => {
@@ -1489,7 +1600,7 @@ export default class AddRentOutVehicle extends React.Component {
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        Mobile
+                        Mobile <Text style={{color: Colors.red}}>*</Text>
                       </Text>
                       <View style={styles.editTextContainer}>
                         <TextInput
@@ -1705,7 +1816,7 @@ export default class AddRentOutVehicle extends React.Component {
                         }}
                       />
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        Description
+                        Description <Text style={{color: Colors.red}}>*</Text>
                       </Text>
                       <View style={styles.editTextContainer}>
                         <TextInput
@@ -1773,9 +1884,16 @@ export default class AddRentOutVehicle extends React.Component {
                           />
                         </View>
                       </TouchableOpacity>
+                      <HelperText
+                        type="error"
+                        visible={true}
+                        style={{paddingHorizontal: 50}}>
+                        (For hassle free operation please select 7 days future
+                        date)
+                      </HelperText>
                       {this.state.isDisplayDirectDebitUpfrontDate && (
                         <DateTimePicker
-                          testID="dateTimePicker"
+                          testID="dateTimePicker1"
                           value={new Date()}
                           mode="date"
                           minimumDate={new Date()}
@@ -1786,7 +1904,8 @@ export default class AddRentOutVehicle extends React.Component {
                         />
                       )}
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        Recurring Amount
+                        Recurring Amount{' '}
+                        <Text style={{color: Colors.red}}>*</Text>
                       </Text>
                       <View style={styles.editTextContainer}>
                         <TextInput
@@ -1804,7 +1923,7 @@ export default class AddRentOutVehicle extends React.Component {
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        Frequency
+                        Frequency <Text style={{color: Colors.red}}>*</Text>
                       </Text>
 
                       <View style={styles.editTextContainer}>
@@ -1815,7 +1934,7 @@ export default class AddRentOutVehicle extends React.Component {
                           inputSearchStyle={styles.inputSearchStyle}
                           iconStyle={styles.iconStyle}
                           data={this.state.directDebitFrequencyData}
-                          placeholder="Select Company"
+                          placeholder="Select Frequency"
                           maxHeight={300}
                           labelField="key"
                           valueField="value"
@@ -1830,7 +1949,8 @@ export default class AddRentOutVehicle extends React.Component {
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        Recurring Start Date
+                        Recurring Start Date{' '}
+                        <Text style={{color: Colors.red}}>*</Text>
                       </Text>
                       <TouchableOpacity
                         disabled={this.state.item !== null}
@@ -1864,9 +1984,16 @@ export default class AddRentOutVehicle extends React.Component {
                           />
                         </View>
                       </TouchableOpacity>
+                      <HelperText
+                        type="error"
+                        visible={true}
+                        style={{paddingHorizontal: 50}}>
+                        (For hassle free operation please select 7 days future
+                        date)
+                      </HelperText>
                       {this.state.isDisplayDirectDebitRecurringStartDate && (
                         <DateTimePicker
-                          testID="dateTimePicker"
+                          testID="dateTimePicker2"
                           value={new Date()}
                           mode="date"
                           minimumDate={new Date()}
@@ -1933,7 +2060,8 @@ export default class AddRentOutVehicle extends React.Component {
                       </View>
 
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
-                        When a Payment Fails...
+                        When a Payment Fails...{' '}
+                        <Text style={{color: Colors.red}}>*</Text>
                       </Text>
 
                       <View style={styles.editTextContainer}>
@@ -1984,7 +2112,7 @@ export default class AddRentOutVehicle extends React.Component {
                   }}
                 />
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Company *
+                  Insurance Company <Text style={{color: Colors.red}}>*</Text>
                 </Text>
 
                 <View style={styles.editTextContainer}>
@@ -2003,7 +2131,7 @@ export default class AddRentOutVehicle extends React.Component {
                 </View>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Expire *
+                  Expire <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <TouchableOpacity onPress={this.showExpireDate}>
                   <View style={styles.editTextContainer}>
@@ -2031,19 +2159,56 @@ export default class AddRentOutVehicle extends React.Component {
                     />
                   </View>
                 </TouchableOpacity>
-
                 {this.state.isDisplayExpireDate && (
                   <DateTimePicker
-                    testID="dateTimePicker"
+                    testID="dateTimePicker3"
                     value={new Date()}
                     mode="date"
+                    minimumDate={new Date()}
                     display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
                     onChange={this.setExpireDate}
                   />
                 )}
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Insurance Username <Text style={{color: Colors.red}}>*</Text>
+                </Text>
+
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.remarksTextStyle}
+                    autoCapitalize="none"
+                    multiline={true}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Enter your remarks"
+                    value={this.state.insurance_username}
+                    onChangeText={value =>
+                      this.setState({insurance_username: value})
+                    }
+                    blurOnSubmit={false}
+                  />
+                </View>
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Insurance Password <Text style={{color: Colors.red}}>*</Text>
+                </Text>
+
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.remarksTextStyle}
+                    autoCapitalize="none"
+                    multiline={true}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Enter your remarks"
+                    value={this.state.insurance_password}
+                    onChangeText={value =>
+                      this.setState({insurance_password: value})
+                    }
+                    blurOnSubmit={false}
+                  />
+                </View>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Upload photo of cover note
+                  Upload photo of cover note{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <TouchableOpacity
                   style={styles.addImageViewStyle}
@@ -2084,7 +2249,8 @@ export default class AddRentOutVehicle extends React.Component {
                     styles.headingTextStyleThree,
                     {padding: 10, color: Colors.textColor1},
                   ]}>
-                  Upload 7 pictures of car being issued
+                  Upload 7 pictures of car being issued{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <View
                   style={{
@@ -2096,7 +2262,8 @@ export default class AddRentOutVehicle extends React.Component {
                 <Text
                   numberOfLines={1}
                   style={[styles.headingTextStyle, {marginTop: 20}]}>
-                  Upload Photo of Front
+                  Upload Photo of Front{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <TouchableOpacity
                   style={styles.addImageViewStyle}
@@ -2125,7 +2292,8 @@ export default class AddRentOutVehicle extends React.Component {
                 </TouchableOpacity>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Upload Photo of Rear
+                  Upload Photo of Rear{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <TouchableOpacity
                   style={styles.addImageViewStyle}
@@ -2154,7 +2322,8 @@ export default class AddRentOutVehicle extends React.Component {
                 </TouchableOpacity>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Upload Photo of Driver Side
+                  Upload Photo of Driver Side{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <TouchableOpacity
                   style={styles.addImageViewStyle}
@@ -2183,7 +2352,8 @@ export default class AddRentOutVehicle extends React.Component {
                 </TouchableOpacity>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Upload Photo of Passenger Side
+                  Upload Photo of Passenger Side{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <TouchableOpacity
                   style={styles.addImageViewStyle}
@@ -2214,7 +2384,8 @@ export default class AddRentOutVehicle extends React.Component {
                 </TouchableOpacity>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Upload Photo of Odometer
+                  Upload Photo of Odometer{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <TouchableOpacity
                   style={styles.addImageViewStyle}
@@ -2243,7 +2414,8 @@ export default class AddRentOutVehicle extends React.Component {
                 </TouchableOpacity>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Upload Photo of Service Sticker
+                  Upload Photo of Service Sticker{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <TouchableOpacity
                   style={styles.addImageViewStyle}
@@ -2274,7 +2446,8 @@ export default class AddRentOutVehicle extends React.Component {
                 </TouchableOpacity>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Upload Photo of Fuel Guage
+                  Upload Photo of Fuel Guage{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
                 </Text>
                 <TouchableOpacity
                   style={styles.addImageViewStyle}
@@ -2321,7 +2494,7 @@ export default class AddRentOutVehicle extends React.Component {
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
                     style={styles.approveButtonContainer}
-                    onPress={() => this.callAddReturnInVehicleApi()}>
+                    onPress={() => this.callAddReturnInVehicleValidation()}>
                     <Text numberOfLines={1} style={styles.buttonText}>
                       Submit
                     </Text>
