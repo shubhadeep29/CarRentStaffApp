@@ -281,7 +281,7 @@ export default class MyProfile extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Name *
+              Name <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.searchEditTextContainer}>
               <TextInput
@@ -297,7 +297,7 @@ export default class MyProfile extends React.Component {
               />
             </View>
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Phone *
+              Phone <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.searchEditTextContainer}>
               <TextInput
@@ -315,7 +315,7 @@ export default class MyProfile extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Role *
+              Role <Text style={{color: Colors.red}}>*</Text>
             </Text>
 
             <View style={styles.searchEditTextContainer}>
@@ -328,7 +328,7 @@ export default class MyProfile extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Your Email *
+              Your Email <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.searchEditTextContainer}>
               <Text numberOfLines={1} style={styles.filterGrayText}>
@@ -352,7 +352,7 @@ export default class MyProfile extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Gender *
+              Gender <Text style={{color: Colors.red}}>*</Text>
             </Text>
 
             <View style={styles.searchEditTextContainer}>

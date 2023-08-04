@@ -251,11 +251,11 @@ export default class LoginScreen extends React.Component {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => this.goToForgotPassword()}>
+            {/* <TouchableOpacity onPress={() => this.goToForgotPassword()}>
               <Text numberOfLines={1} style={styles.forgotPasswordText}>
                 Forgot Password
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </SafeAreaView>

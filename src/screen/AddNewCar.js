@@ -582,7 +582,7 @@ export default class AddNewCar extends React.Component {
         <ScrollView>
           <View style={styles.bottomViewContainer}>
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Car No. *
+              Car No. <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <TextInput
@@ -598,7 +598,7 @@ export default class AddNewCar extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Vehicle Type *
+              Vehicle Type <Text style={{color: Colors.red}}>*</Text>
             </Text>
 
             <View style={styles.editTextContainer}>
@@ -622,7 +622,7 @@ export default class AddNewCar extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Upload Car Photo *
+              Upload Car Photo <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity
               style={styles.addImageViewStyle}
@@ -651,7 +651,7 @@ export default class AddNewCar extends React.Component {
             </TouchableOpacity>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Company *
+              Company <Text style={{color: Colors.red}}>*</Text>
             </Text>
 
             <View style={styles.editTextContainer}>
@@ -675,7 +675,7 @@ export default class AddNewCar extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Make *
+              Make <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <TextInput
@@ -691,7 +691,7 @@ export default class AddNewCar extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Model *
+              Model <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <TextInput
@@ -707,7 +707,7 @@ export default class AddNewCar extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Odometer *
+              Odometer <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <TextInput
@@ -723,7 +723,7 @@ export default class AddNewCar extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Year *
+              Year <Text style={{color: Colors.red}}>*</Text>
             </Text>
 
             <TouchableOpacity onPress={this.showYear}>
@@ -754,13 +754,13 @@ export default class AddNewCar extends React.Component {
                 mode="date"
                 display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
                 maximumDate={new Date()}
-                // minimumDate={new Date()}
+                minimumDate={new Date(2000, 0, 1)}
                 onChange={this.setYear}
               />
             )}
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Fuel Type *
+              Fuel Type <Text style={{color: Colors.red}}>*</Text>
             </Text>
 
             <View style={styles.editTextContainer}>
@@ -784,7 +784,7 @@ export default class AddNewCar extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Engine Service *
+              Engine Service <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <TextInput
@@ -834,7 +834,7 @@ export default class AddNewCar extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Insurance Expire Date *
+              Insurance Expire Date <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity onPress={this.showInsuranceExpireDate}>
               <View style={styles.editTextContainer}>
@@ -872,7 +872,7 @@ export default class AddNewCar extends React.Component {
             )}
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Rego Expire Date *
+              Rego Expire Date <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity onPress={this.showRegoExpireDate}>
               <View style={styles.editTextContainer}>
@@ -908,7 +908,7 @@ export default class AddNewCar extends React.Component {
             )}
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Upload Insurance Photo *
+              Upload Insurance Photo <Text style={{color: Colors.red}}>*</Text>
             </Text>
 
             <TouchableOpacity

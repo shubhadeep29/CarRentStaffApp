@@ -111,13 +111,16 @@ export default class RentOutVehicleScreen extends React.Component {
   };
 
   willFocus = () => {
-    console.log('log to console');
     this.getRentOutList();
     this.getDriverListRentOut();
     this.getCompanyListRentOut();
     this.getPaymentMethod();
     this.getCarListRent();
   };
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
 
   getRentOutList() {
     try {
@@ -159,6 +162,10 @@ export default class RentOutVehicleScreen extends React.Component {
             responseJSON.hasOwnProperty('rentout_list') &&
             responseJSON.rentout_list != null
           ) {
+            // console.log(
+            //   'responseJSON.rentout_list ---',
+            //   responseJSON.rentout_list,
+            // );
             this.setState({data: responseJSON.rentout_list});
           }
         } else if (
@@ -496,7 +503,7 @@ export default class RentOutVehicleScreen extends React.Component {
     return (
       <SafeAreaView style={styles.container}>
         <AppBarWithMenu
-          title="Rent Out Vehicle"
+          title="List of Rent Out Vehicle"
           navigation={this.props.navigation}
         />
 

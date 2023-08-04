@@ -170,6 +170,7 @@ export default class AddRentOutVehicle extends React.Component {
       dishonor: true,
       perDebit: false,
       onChargedFees: [],
+      carNo: '',
     };
   }
 
@@ -425,7 +426,9 @@ export default class AddRentOutVehicle extends React.Component {
     console.log('this.state.bondPaymentMethod', value);
   }
 
-  onClickSubmitButton() {}
+  onClickSubmitButton() {
+    this.props.navigation.goBack();
+  }
 
   onClickDropdownItem(driver) {
     this.setState({
@@ -538,8 +541,6 @@ export default class AddRentOutVehicle extends React.Component {
     Keyboard.dismiss();
     if (this.state.driverId == '') {
       Toast.show('Please enter Driver', Toast.SHORT);
-    } else if (this.state.car == '') {
-      Toast.show('Please enter Car', Toast.SHORT);
     } else if (this.state.odometerReading == '') {
       Toast.show('Please enter Odometer Reading', Toast.SHORT);
     } else if (this.state.weeklyRent == '') {
@@ -576,13 +577,16 @@ export default class AddRentOutVehicle extends React.Component {
 
   callAddReturnInVehicleApi = async () => {
     this.setState({isLoading: true});
-
+    console.log(
+      'this.state.carIdthis.state.carNo =====',
+      this.state.carId + '#' + this.state.carNo,
+    );
     var formData = new FormData();
     formData.append('token_key', this.apiKey);
     formData.append('device_type', this.state.deviceType);
     formData.append('user_id', this.userId);
     formData.append('driver_id', this.state.driverId);
-    formData.append('car_id', this.state.carId);
+    formData.append('car_id', this.state.carId + '#' + this.state.carNo);
     formData.append('odometer_reading', this.state.odometerReading);
     formData.append('basic_excess', this.state.basicExcess);
     formData.append('age_excess', this.state.ageExcess);

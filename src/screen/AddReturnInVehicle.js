@@ -49,13 +49,16 @@ export default class AddReturnInVehicle extends React.Component {
       isDamageYes: false,
       isDamageNo: true,
       odometerReading: '',
-      damageAmount: '$',
-      fuelAmount: '$',
-      isBondRefundRequestYes: true,
-      isBondRefundRequestNo: false,
+      damageAmount: '',
+      fuelAmount: '',
+      isBondRefundRequestYes: false,
+      isBondRefundRequestNo: true,
       bondRefundDate: '',
+      noticeDate: '',
       isDisplayBondRefundDate: false,
-      bondRefundAmount: '$',
+      isDisplayNoticeDate: false,
+      bondRefundAmount: '',
+      referenceNumber: '',
       paymentMethod: '',
       isPaymentMethodDropdownVisible: false,
       isDropdownVisible: false,
@@ -96,6 +99,26 @@ export default class AddReturnInVehicle extends React.Component {
       fuelGuageImageName: '',
       fuelGuageImageSize: '',
       fuelGuageImageType: 'jpeg',
+
+      driverDetailsData: '',
+
+      refundType: [
+        {
+          id: 1,
+          key: 'Full',
+          value: 'FULL',
+        },
+        {
+          id: 2,
+          key: 'Partial',
+          value: 'PARTIAL',
+        },
+      ],
+      refundTypeValue: '',
+      refundAmount: '',
+      actual_bond_amount: '0.00',
+      actual_bond_amount_to_show: '0.00',
+      driverName: '',
     };
   }
 
@@ -104,6 +127,18 @@ export default class AddReturnInVehicle extends React.Component {
     this.setState({
       isDisplayBondRefundDate: false,
       bondRefundDate:
+        selectedDate.getDate() +
+        '/' +
+        (selectedDate.getMonth() + 1) +
+        '/' +
+        selectedDate.getFullYear(),
+    });
+  };
+  setNoticeDate = (event, selectedDate) => {
+    console.log('selectedDate' + selectedDate);
+    this.setState({
+      isDisplayNoticeDate: false,
+      noticeDate:
         selectedDate.getDate() +
         '/' +
         (selectedDate.getMonth() + 1) +
@@ -129,6 +164,11 @@ export default class AddReturnInVehicle extends React.Component {
       isDisplayBondRefundDate: true,
     });
   };
+  showNoticeDate = () => {
+    this.setState({
+      isDisplayNoticeDate: true,
+    });
+  };
   showRentOutDate = () => {
     this.setState({
       isDisplayRentOutDate: true,
@@ -140,7 +180,7 @@ export default class AddReturnInVehicle extends React.Component {
     this.apiKey = await AsyncStorage.getItem(Constants.STORAGE_KEY_API_KEY);
 
     if (this.state.item != null) {
-      console.log(this.state.item);
+      console.log('123 -----', this.state.item);
 
       this.setState({
         carNo: this.state.item.car_no,
@@ -148,18 +188,28 @@ export default class AddReturnInVehicle extends React.Component {
         rentOutNo: this.state.item.rent_out_no,
         isDamageYes: this.state.item.damage == 'Yes' ? true : false,
         isDamageNo: this.state.item.damage == 'No' ? true : false,
-        damageAmount: '$' + this.state.item.damage_amount,
+        damageAmount: this.state.item.damage_amount,
         driverId: this.state.item.driver_id,
         odometerReading: this.state.item.odometer_reading,
-        bondRefundAmount: '$' + this.state.item.bond_refund_amount,
+        bondRefundAmount: this.state.item.bond_refund_amount,
         bondRefundDate: this.state.item.bond_refund_date,
         isBondRefundRequestYes:
           this.state.item.bond_refund_request == 'Yes' ? true : false,
         isBondRefundRequestNo:
           this.state.item.bond_refund_request == 'No' ? true : false,
         notes: this.state.item.notes,
-        fuelAmount: '$' + this.state.item.fuel,
+        fuelAmount: this.state.item.fuel,
         notes: this.state.item.notes,
+
+        actual_bond_amount: this.state.item.bond_refund_amount ?? '',
+        actual_bond_amount_to_show: this.state.item.bond_refund_amount ?? '',
+        refundTypeValue: this.state.item.refund_type ?? '',
+        refundAmount: this.state.item.amount_want_to_refund ?? '',
+        paymentMethod: this.state.item.bond_payment_method ?? '',
+        noticeDate: this.state.item.notice_date ?? '',
+        bondRefundDate: this.state.item.bond_refund_due_date ?? '',
+        referenceNumber: this.state.item.bond_reference_no ?? '',
+        driverName: this.state.item.driverName ?? '',
       });
 
       if (
@@ -198,7 +248,7 @@ export default class AddReturnInVehicle extends React.Component {
       }
       if (
         this.state.item.odometer_img != null &&
-        this.state.item.odometer_img != ''
+        this.state.item.odometer_img !== ''
       ) {
         this.setState({
           odometerImageUri: Links.BASEURL + this.state.item.odometer_img,
@@ -222,7 +272,7 @@ export default class AddReturnInVehicle extends React.Component {
         });
       }
       if (this.state.item.rear_img != null && this.state.item.rear_img != '') {
-        this.setStafte({
+        this.setState({
           rearImageUri: Links.BASEURL + this.state.item.rear_img,
           rearImageName: this.state.item.rear_img.replace(/^.*[\\\/]/, ''),
         });
@@ -238,7 +288,7 @@ export default class AddReturnInVehicle extends React.Component {
       }
     } else {
       this.setState({
-        driverId: this.state.driverListRentOut[0].driver_id,
+        // driverId: this.state.driverListRentOut[0].driver_id,
         paymentMethod: this.state.paymentMethod[0],
       });
     }
@@ -263,10 +313,106 @@ export default class AddReturnInVehicle extends React.Component {
 
   async onValueChangeDriver(value) {
     this.setState({
-      driverId: value,
+      driverId: value.driver_id,
     });
-    console.log('this.state.driverId', value);
+    this.getDriverDetails(value);
   }
+
+  getDriverDetails(value) {
+    this.setState({isLoading: true});
+    try {
+      NetInfo.fetch().then(state => {
+        if (state.isConnected) {
+          this.callGetDriverDetailsApi(value);
+        } else {
+          Utils.showMessageAlert('No internet connection');
+        }
+      });
+    } catch (error) {
+      console.log('Error in api call : ' + error);
+    }
+  }
+
+  callGetDriverDetailsApi = async value => {
+    this.setState({isLoading: true});
+
+    var inputBody = JSON.stringify({
+      device_type: Platform.OS === 'android' ? 1 : 2,
+      user_id: this.userId,
+      token_key: this.apiKey,
+      rent_out_id: value.rent_out_id,
+    });
+
+    try {
+      // console.log(
+      //   'Call car list API Link ========>  ',
+      //   Links.getBondRefundList,
+      // );
+      // console.log(
+      //   'GetDriverDetails Input ========>  ',
+      //   JSON.stringify(inputBody),
+      // );
+      const res = await fetch(Links.getDriverDetailsRentIn, {
+        method: 'POST',
+        body: inputBody,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseJSON = await res.json();
+      this.state.data = [];
+
+      console.log(
+        'GetDriverDetails Response 123 ===========>  ',
+        JSON.stringify(responseJSON),
+      );
+      if (responseJSON) {
+        this.setState({isLoading: false});
+        if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
+          this.setState({driverDetailsData: responseJSON});
+          this.setState({
+            carNo: responseJSON.driver_details.car_no,
+            rentOutDate: responseJSON.driver_details.rent_out_date,
+            rentOutNo: responseJSON.driver_details.rent_out_no,
+            actual_bond_amount: responseJSON.actual_bond_amount,
+            actual_bond_amount_to_show: responseJSON.actual_bond_amount,
+          });
+        } else if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 0
+        ) {
+          if (responseJSON.hasOwnProperty('message') && responseJSON.message) {
+            Toast.show(responseJSON.message, Toast.SHORT);
+          } else {
+            Toast.show('something went wrong', Toast.SHORT);
+          }
+        } else if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 2
+        ) {
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_USER_ID, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_API_KEY, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_NAME, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_EMAIL, '');
+          await AsyncStorage.setItem(Constants.STORAGE_KEY_MOBILEL, '');
+
+          if (responseJSON.hasOwnProperty('message') && responseJSON.message) {
+            Toast.show(responseJSON.message, Toast.SHORT);
+          }
+
+          this.props.navigation.reset({
+            index: 0,
+            routes: [{name: 'LoginScreen'}],
+          });
+        }
+      }
+    } catch (error) {
+      this.setState({isLoading: false});
+      Toast.show('something went wrong', Toast.SHORT);
+      console.log('Exception in API call: ' + error);
+    }
+  };
 
   async onValueChangePayment(value) {
     this.setState({
@@ -275,7 +421,9 @@ export default class AddReturnInVehicle extends React.Component {
     console.log('this.state.paymentMethod', value);
   }
 
-  onClickSubmitButton() {}
+  onClickSubmitButton() {
+    this.props.navigation.goBack();
+  }
 
   onClickDropdownItem(driver) {
     this.setState({
@@ -379,8 +527,8 @@ export default class AddReturnInVehicle extends React.Component {
 
   callAddReturnInVehicleValidation() {
     Keyboard.dismiss();
-    if (this.state.driver == '') {
-      Toast.show('Please enter Driver', Toast.SHORT);
+    if (this.state.driverId == '') {
+      Toast.show('Please select a Driver', Toast.SHORT);
     } else if (this.state.rentOutDate == '') {
       Toast.show('Please enter Rent out Date', Toast.SHORT);
     } else if (this.state.rentOutNo == '') {
@@ -391,6 +539,13 @@ export default class AddReturnInVehicle extends React.Component {
       Toast.show('Please enter Odometer Reading', Toast.SHORT);
     } else if (this.state.paymentMethod == '') {
       Toast.show('Please enter Payment Method', Toast.SHORT);
+    } else if (this.state.notes == '') {
+      Toast.show('Please enter notes', Toast.SHORT);
+    } else if (
+      this.state.fuelGuageImageUri === '' &&
+      this.state.item === null
+    ) {
+      Toast.show('Select fuel guage image', Toast.SHORT);
     } else {
       try {
         NetInfo.fetch().then(state => {
@@ -415,24 +570,30 @@ export default class AddReturnInVehicle extends React.Component {
     formData.append('user_id', this.userId);
     formData.append(
       'driver_id',
-      this.state.driverId + '-' + this.state.rentOutNo,
+      this.state.driverId +
+        '-' +
+        this.state.driverDetailsData.driver_details.rent_out_id,
     );
     formData.append('car_no', this.state.carNo);
     formData.append('odometer_reading', this.state.odometerReading);
     formData.append('damage', this.state.isDamageYes ? 'Yes' : 'No');
-    formData.append('damage_amount', this.state.damageAmount.substring(1));
-    formData.append('fuel', this.state.fuelAmount.substring(1));
+    formData.append('damage_amount', this.state.damageAmount);
+    formData.append('fuel', this.state.fuelAmount);
     formData.append(
       'bond_refund_amount',
-      this.state.bondRefundAmount.substring(1),
+      this.state.actual_bond_amount_to_show,
     );
+    formData.append('amount_want_to_refund', this.state.refundAmount);
+    formData.append('refund_type', this.state.refundTypeValue);
+    formData.append('bond_payment_method', this.state.paymentMethod);
     formData.append(
       'bond_refund_request',
       this.state.isBondRefundRequestYes ? 'Yes' : 'No',
     );
+    formData.append('notice_date', this.state.noticeDate);
     formData.append('bond_refund_date', this.state.bondRefundDate);
-    formData.append('bond_reference_no', 'bondRef123');
-    formData.append('rent_in_id', '11');
+    formData.append('bond_reference_no', this.state.referenceNumber);
+    // formData.append('rent_in_id', '11');
     formData.append('notes', this.state.notes);
 
     if (this.state.damageImageUri != null && this.state.damageImageUri != '')
@@ -571,16 +732,37 @@ export default class AddReturnInVehicle extends React.Component {
     } catch (error) {
       this.setState({isLoading: false});
       Toast.show('something went wrong', Toast.SHORT);
-      console.log('Exception in API call: ' + error);
+      console.log('Exception in API call: 123' + error);
     }
   };
 
   renderDriver = item => {
     return (
       <View>
-        <Text style={styles.selectionListTextStyle}>{item.first_name}</Text>
+        <Text style={styles.selectionListTextStyle}>
+          {item.concat_driver_name}
+        </Text>
       </View>
     );
+  };
+
+  renderRefundType = item => {
+    return (
+      <View>
+        <Text style={styles.selectionListTextStyle}>{item.key}</Text>
+      </View>
+    );
+  };
+
+  setRefundType = (refundTypeValue, driver_bond_amount) => {
+    if (refundTypeValue === 'FULL' && driver_bond_amount) {
+      this.setState({
+        refundTypeValue: refundTypeValue,
+        refundAmount: driver_bond_amount,
+      });
+    } else {
+      this.setState({refundAmount: 0, refundTypeValue: refundTypeValue});
+    }
   };
 
   renderCar = item => {
@@ -606,6 +788,24 @@ export default class AddReturnInVehicle extends React.Component {
     );
   };
 
+  calculateActualBond = () => {
+    this.setState(
+      {
+        actual_bond_amount_to_show:
+          this.state.actual_bond_amount -
+          this.state.damageAmount -
+          this.state.fuelAmount,
+      },
+      () => {
+        if (this.state.refundTypeValue === 'FULL')
+          this.setRefundType(
+            'FULL',
+            this.state.actual_bond_amount_to_show ?? 0,
+          );
+      },
+    );
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -625,33 +825,52 @@ export default class AddReturnInVehicle extends React.Component {
         <ScrollView>
           <View style={styles.bottomViewContainer}>
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Driver *
+              Driver <Text style={{color: Colors.red}}>*</Text>
             </Text>
 
             <View style={styles.editTextContainer}>
-              <Dropdown
-                style={styles.dropdown}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={this.state.driverListRentOut}
-                placeholder="Select Driver"
-                maxHeight={300}
-                labelField="first_name"
-                valueField="driver_id"
-                value={this.state.driverId}
-                onChange={item => {
-                  this.onValueChangeDriver(item.driver_id);
-                }}
-                renderItem={this.renderDriver}
-              />
+              {this.state.item === null ? (
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={this.state.driverListRentOut}
+                  placeholder="Select Driver"
+                  maxHeight={300}
+                  labelField="concat_driver_name"
+                  valueField="driver_id"
+                  value={this.state.driverId}
+                  onChange={item => {
+                    this.onValueChangeDriver(item);
+                  }}
+                  renderItem={this.renderDriver}
+                />
+              ) : (
+                <TextInput
+                  style={styles.emailIdEditTextStyle}
+                  autoCapitalize="none"
+                  multiline={false}
+                  editable={false}
+                  placeholderTextColor={Colors.placeholderColor}
+                  // placeholder="Email Id"
+                  value={this.state.driverName}
+                />
+              )}
             </View>
+            <View
+              style={{
+                marginTop: 20,
+                borderBottomColor: 'black',
+                borderBottomWidth: StyleSheet.hairlineWidth,
+              }}
+            />
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Rent out Date *
+              Rent out Date <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <TouchableOpacity onPress={this.showRentOutDate}>
+            <TouchableOpacity onPress={this.showRentOutDate} disabled>
               <View style={styles.editTextContainer}>
                 <TextInput
                   style={styles.emailIdEditTextStyle}
@@ -668,6 +887,7 @@ export default class AddReturnInVehicle extends React.Component {
                     this.rentOutDateTextInput = input;
                   }}
                   blurOnSubmit={false}
+                  editable={false}
                 />
 
                 <Image
@@ -688,7 +908,7 @@ export default class AddReturnInVehicle extends React.Component {
             )}
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Rent Out No. *
+              Rent Out No. <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <TextInput
@@ -706,34 +926,42 @@ export default class AddReturnInVehicle extends React.Component {
                   this.rentOutNoTextInput = input;
                 }}
                 blurOnSubmit={false}
+                editable={false}
               />
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Car No. *
+              Car No. <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
-              <Dropdown
-                style={styles.dropdown}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={this.state.carListRent}
-                placeholder="Select Car"
-                maxHeight={300}
-                labelField="car_no"
-                valueField="car_id"
-                value={this.state.carId}
-                onChange={item => {
-                  this.onValueChangeCar(item);
+              <TextInput
+                style={styles.emailIdEditTextStyle}
+                autoCapitalize="none"
+                multiline={false}
+                placeholderTextColor={Colors.placeholderColor}
+                // placeholder="Email Id"
+                value={this.state.carNo}
+                onChangeText={value => this.setState({carNo: value})}
+                onSubmitEditing={() => {
+                  this.damageAmountTextInput.focus();
                 }}
-                renderItem={this.renderCar}
+                ref={input => {
+                  this.odometerReadingTextInput = input;
+                }}
+                editable={false}
               />
             </View>
 
+            <View
+              style={{
+                marginTop: 20,
+                borderBottomColor: 'black',
+                borderBottomWidth: StyleSheet.hairlineWidth,
+              }}
+            />
+
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Odometer Reading *
+              Odometer Reading <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <TextInput
@@ -800,58 +1028,78 @@ export default class AddReturnInVehicle extends React.Component {
               </Text>
             </View>
 
-            <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Damage Amount
-            </Text>
-            <View style={styles.editTextContainer}>
-              <TextInput
-                style={styles.emailIdEditTextStyle}
-                autoCapitalize="none"
-                multiline={false}
-                placeholderTextColor={Colors.placeholderColor}
-                // placeholder="Email Id"
-                value={this.state.damageAmount}
-                onChangeText={value => this.setState({damageAmount: value})}
-                onSubmitEditing={() => {
-                  this.fuelAmountTextInput.focus();
-                }}
-                ref={input => {
-                  this.damageAmountTextInput = input;
-                }}
-                blurOnSubmit={false}
-              />
-            </View>
-
-            <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Upload photo of Damage
-            </Text>
-            <TouchableOpacity
-              style={styles.addImageViewStyle}
-              onPress={() => this.openImageGallery('damageImageUri')}>
-              {this.state.damageImageUri != null &&
-              this.state.damageImageUri != '' ? (
-                <Image
-                  source={{uri: this.state.damageImageUri}}
-                  style={styles.logoIcon}
-                />
-              ) : (
-                <Image
-                  source={require('../images/ic_add_camera.png')}
-                  style={styles.logoIcon}
-                />
-              )}
-
-              {this.state.fileName != '' ? (
-                <Text numberOfLines={2} style={styles.uploadImageNameText}>
-                  {this.state.damageImageName}
+            {this.state.isDamageYes ? (
+              <>
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Damage Amount
                 </Text>
-              ) : (
-                <Text numberOfLines={1} style={styles.uploadPhotoText}>
-                  Upload Photo
-                </Text>
-              )}
-            </TouchableOpacity>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.emailIdEditTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    // placeholder="Email Id"
+                    value={this.state.damageAmount}
+                    onChangeText={value => {
+                      this.setState(
+                        {
+                          damageAmount: value,
+                        },
+                        () => {
+                          this.calculateActualBond();
+                        },
+                      );
+                    }}
+                    onSubmitEditing={() => {
+                      this.fuelAmountTextInput.focus();
+                    }}
+                    ref={input => {
+                      this.damageAmountTextInput = input;
+                    }}
+                    blurOnSubmit={false}
+                  />
+                </View>
 
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Upload photo of Damage
+                </Text>
+                <TouchableOpacity
+                  style={styles.addImageViewStyle}
+                  onPress={() => this.openImageGallery('damageImageUri')}>
+                  {this.state.damageImageUri != null &&
+                  this.state.damageImageUri != '' ? (
+                    <Image
+                      source={{uri: this.state.damageImageUri}}
+                      style={styles.logoIcon}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../images/ic_add_camera.png')}
+                      style={styles.logoIcon}
+                    />
+                  )}
+
+                  {this.state.fileName != '' ? (
+                    <Text numberOfLines={2} style={styles.uploadImageNameText}>
+                      {this.state.damageImageName}
+                    </Text>
+                  ) : (
+                    <Text numberOfLines={1} style={styles.uploadPhotoText}>
+                      Upload Photo
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </>
+            ) : null}
+
+            <View
+              style={{
+                marginTop: 20,
+                borderBottomColor: 'black',
+                borderBottomWidth: StyleSheet.hairlineWidth,
+              }}
+            />
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Fuel Amount
             </Text>
@@ -863,7 +1111,16 @@ export default class AddReturnInVehicle extends React.Component {
                 placeholderTextColor={Colors.placeholderColor}
                 // placeholder="Email Id"
                 value={this.state.fuelAmount}
-                onChangeText={value => this.setState({fuelAmount: value})}
+                onChangeText={value =>
+                  this.setState(
+                    {
+                      fuelAmount: value,
+                    },
+                    () => {
+                      this.calculateActualBond();
+                    },
+                  )
+                }
                 onSubmitEditing={() => {
                   this.yearTextInput.focus();
                 }}
@@ -873,9 +1130,15 @@ export default class AddReturnInVehicle extends React.Component {
                 blurOnSubmit={false}
               />
             </View>
-
-            <View style={styles.rowViewOptionStyle}>
-              <Text numberOfLines={1} style={styles.headingTextStyleThree}>
+            <View
+              style={{
+                marginTop: 20,
+                borderBottomColor: 'black',
+                borderBottomWidth: StyleSheet.hairlineWidth,
+              }}
+            />
+            <View style={[styles.rowViewOptionStyle]}>
+              <Text style={styles.headingTextStyleThree}>
                 Bond Refund Request
               </Text>
 
@@ -920,46 +1183,179 @@ export default class AddReturnInVehicle extends React.Component {
               </Text>
             </View>
 
-            <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Bond Refund Date
-            </Text>
-            <TouchableOpacity onPress={this.showBondRefundDate}>
-              <View style={styles.editTextContainer}>
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
-                  autoCapitalize="none"
-                  multiline={false}
-                  placeholderTextColor={Colors.placeholderColor}
-                  placeholder="DD/MM/YYYY"
-                  value={this.state.bondRefundDate}
-                  onChangeText={value => this.setState({bondRefundDate: value})}
-                  onSubmitEditing={() => {
-                    this.insuranceExpireDateTextInput.focus();
-                  }}
-                  ref={input => {
-                    this.bondRefundDateTextInput = input;
-                  }}
-                  blurOnSubmit={false}
-                />
+            {this.state.isBondRefundRequestYes ? (
+              <>
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Total Bond Amount <Text style={{color: Colors.red}}>*</Text>
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.remarksTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    editable={false}
+                    value={
+                      this.state.actual_bond_amount_to_show.toString() ?? '0.00'
+                    }
+                    onChangeText={value => this.setState({refundAmount: value})}
+                  />
+                </View>
 
-                <Image
-                  source={require('../images/calendar.png')}
-                  style={styles.calenderIcon}
-                />
-              </View>
-            </TouchableOpacity>
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Refund Type <Text style={{color: Colors.red}}>*</Text>
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={this.state.refundType}
+                    placeholder="Select Refund Type"
+                    maxHeight={300}
+                    labelField="key"
+                    valueField="value"
+                    value={this.state.refundTypeValue}
+                    onChange={item => {
+                      this.setRefundType(
+                        item.value,
+                        this.state.actual_bond_amount_to_show ?? 0,
+                      );
+                    }}
+                    renderItem={this.renderRefundType}
+                  />
+                </View>
 
-            {this.state.isDisplayBondRefundDate && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={new Date()}
-                mode="date"
-                display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
-                onChange={this.setBondRefundDate}
-              />
-            )}
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Amount Want to Refund{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.remarksTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    editable={
+                      this.state.refundTypeValue === 'FULL' ? false : true
+                    }
+                    value={this.state.refundAmount.toString()}
+                    onChangeText={value => this.setState({refundAmount: value})}
+                  />
+                </View>
 
-            <Text numberOfLines={1} style={styles.headingTextStyle}>
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Payment Method <Text style={{color: Colors.red}}>*</Text>
+                </Text>
+
+                <View style={styles.editTextContainer}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={this.state.paymentMethodList.filter(
+                      elm => elm.value !== 'Direct Debit',
+                    )}
+                    placeholder="Select Payment Method"
+                    maxHeight={300}
+                    labelField="value"
+                    valueField="value"
+                    value={this.state.paymentMethod}
+                    onChange={item => {
+                      this.onValueChangePayment(item);
+                    }}
+                    renderItem={this.renderPayment}
+                  />
+                </View>
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Notice Date <Text style={{color: Colors.red}}>*</Text>
+                </Text>
+                <TouchableOpacity onPress={this.showNoticeDate}>
+                  <View style={styles.editTextContainer}>
+                    <TextInput
+                      style={styles.emailIdEditTextStyle}
+                      autoCapitalize="none"
+                      multiline={false}
+                      placeholderTextColor={Colors.placeholderColor}
+                      placeholder="DD/MM/YYYY"
+                      value={this.state.noticeDate}
+                      onChangeText={value => this.setState({noticeDate: value})}
+                      onSubmitEditing={() => {
+                        this.insuranceExpireDateTextInput.focus();
+                      }}
+                      ref={input => {
+                        this.bondRefundDateTextInput = input;
+                      }}
+                      blurOnSubmit={false}
+                    />
+
+                    <Image
+                      source={require('../images/calendar.png')}
+                      style={styles.calenderIcon}
+                    />
+                  </View>
+                </TouchableOpacity>
+
+                {this.state.isDisplayNoticeDate && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    value={new Date()}
+                    mode="date"
+                    display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
+                    onChange={this.setNoticeDate}
+                    minimumDate={new Date()}
+                  />
+                )}
+
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Bond Refund Due Date{' '}
+                  <Text style={{color: Colors.red}}>*</Text>
+                </Text>
+                <TouchableOpacity onPress={this.showBondRefundDate}>
+                  <View style={styles.editTextContainer}>
+                    <TextInput
+                      style={styles.emailIdEditTextStyle}
+                      autoCapitalize="none"
+                      multiline={false}
+                      placeholderTextColor={Colors.placeholderColor}
+                      placeholder="DD/MM/YYYY"
+                      value={this.state.bondRefundDate}
+                      onChangeText={value =>
+                        this.setState({bondRefundDate: value})
+                      }
+                      onSubmitEditing={() => {
+                        this.insuranceExpireDateTextInput.focus();
+                      }}
+                      ref={input => {
+                        this.bondRefundDateTextInput = input;
+                      }}
+                      blurOnSubmit={false}
+                    />
+
+                    <Image
+                      source={require('../images/calendar.png')}
+                      style={styles.calenderIcon}
+                    />
+                  </View>
+                </TouchableOpacity>
+
+                {this.state.isDisplayBondRefundDate && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    value={new Date()}
+                    mode="date"
+                    display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
+                    onChange={this.setBondRefundDate}
+                    minimumDate={new Date()}
+                  />
+                )}
+
+                {/* <Text numberOfLines={1} style={styles.headingTextStyle}>
               Bond Refund Amount
             </Text>
             <View style={styles.editTextContainer}>
@@ -979,40 +1375,49 @@ export default class AddReturnInVehicle extends React.Component {
                 }}
                 blurOnSubmit={false}
               />
-            </View>
+            </View> */}
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Reference Number
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.remarksTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    value={this.state.referenceNumber}
+                    onChangeText={value =>
+                      this.setState({referenceNumber: value})
+                    }
+                  />
+                </View>
+              </>
+            ) : null}
 
-            <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Payment Method *
-            </Text>
-
-            <View style={styles.editTextContainer}>
-              <Dropdown
-                style={styles.dropdown}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={this.state.paymentMethodList}
-                placeholder="Select Payment Method"
-                maxHeight={300}
-                labelField="value"
-                valueField="value"
-                value={this.state.paymentMethod}
-                onChange={item => {
-                  this.onValueChangePayment(item);
-                }}
-                renderItem={this.renderPayment}
-              />
-            </View>
-
+            <View
+              style={{
+                marginTop: 20,
+                borderBottomColor: 'black',
+                borderBottomWidth: StyleSheet.hairlineWidth,
+              }}
+            />
             <Text
-              numberOfLines={1}
-              style={[styles.rowViewOptionStyle, styles.headingTextStyleThree]}>
+              style={[
+                styles.headingTextStyleThree,
+                {padding: 10, color: Colors.textColor1},
+              ]}>
               Upload 6 pictures of car being issued
             </Text>
+            <View
+              style={{
+                marginTop: 0,
+                borderBottomColor: 'black',
+                borderBottomWidth: StyleSheet.hairlineWidth,
+              }}
+            />
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Upload Photo of Front
+              Upload Photo of Front <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity
               style={styles.addImageViewStyle}
@@ -1042,7 +1447,7 @@ export default class AddReturnInVehicle extends React.Component {
             </TouchableOpacity>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Upload Photo of Rear
+              Upload Photo of Rear <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity
               style={styles.addImageViewStyle}
@@ -1072,7 +1477,8 @@ export default class AddReturnInVehicle extends React.Component {
             </TouchableOpacity>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Upload Photo of Driver Side
+              Upload Photo of Driver Side{' '}
+              <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity
               style={styles.addImageViewStyle}
@@ -1102,7 +1508,8 @@ export default class AddReturnInVehicle extends React.Component {
             </TouchableOpacity>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Upload Photo of Passenger Side
+              Upload Photo of Passenger Side{' '}
+              <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity
               style={styles.addImageViewStyle}
@@ -1132,7 +1539,8 @@ export default class AddReturnInVehicle extends React.Component {
             </TouchableOpacity>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Upload Photo of Odometer
+              Upload Photo of Odometer{' '}
+              <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity
               style={styles.addImageViewStyle}
@@ -1162,7 +1570,8 @@ export default class AddReturnInVehicle extends React.Component {
             </TouchableOpacity>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Upload Photo of Fuel Guage
+              Upload Photo of Fuel Guage{' '}
+              <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity
               style={styles.addImageViewStyle}
@@ -1192,7 +1601,7 @@ export default class AddReturnInVehicle extends React.Component {
             </TouchableOpacity>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Notes
+              Notes <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.remarksStyle}>
               <TextInput
@@ -1210,9 +1619,9 @@ export default class AddReturnInVehicle extends React.Component {
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.approveButtonContainer}
-                onPress={() => this.callAddReturnInVehicleApi()}>
+                onPress={() => this.callAddReturnInVehicleValidation()}>
                 <Text numberOfLines={1} style={styles.buttonText}>
-                  SUBMIT
+                  Submit
                 </Text>
               </TouchableOpacity>
               <View style={styles.boxGap} />
@@ -1221,7 +1630,7 @@ export default class AddReturnInVehicle extends React.Component {
                 style={styles.cancelButtonContainer}
                 onPress={() => this.onClickSubmitButton()}>
                 <Text numberOfLines={1} style={styles.buttonText}>
-                  CANCLE
+                  Cancel
                 </Text>
               </TouchableOpacity>
             </View>
@@ -1310,7 +1719,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   headingTextStyleThree: {
-    fontSize: 18,
+    fontSize: 16,
     // fontFamily: fontSelector("regular"),
     color: Colors.black,
     marginBottom: 5,
@@ -1387,7 +1796,6 @@ const styles = StyleSheet.create({
   rowViewOptionStyle: {
     flex: 1,
     flexDirection: 'row',
-    alignContent: 'center',
     alignItems: 'center',
     marginTop: 25,
     paddingHorizontal: 50,
@@ -1463,7 +1871,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   dropdown: {
-    height: 50,
+    height: 60,
     flex: 1,
     borderColor: 'gray',
     borderRadius: 8,
@@ -1486,7 +1894,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   selectedTextStyle: {
-    fontSize: 16,
+    fontSize: 14,
     color: Colors.black,
   },
   iconStyle: {

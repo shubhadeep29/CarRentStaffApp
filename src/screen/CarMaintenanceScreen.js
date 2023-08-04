@@ -295,10 +295,6 @@ export default class CarMaintenanceScreen extends React.Component {
             <View style={{flex: 1}}>
               <View style={styles.filterMainContainer}>
                 <View style={styles.searchEditTextContainer}>
-                  <Image
-                    source={require('../images/ic_search.png')}
-                    style={styles.searchIcon}
-                  />
                   <TextInput
                     numberOfLines={1}
                     style={styles.searchEditTextStyle}
@@ -309,6 +305,10 @@ export default class CarMaintenanceScreen extends React.Component {
                     value={this.state.searchText}
                     onChangeText={this.updateSearch}
                     blurOnSubmit={false}
+                  />
+                  <Image
+                    source={require('../images/ic_search.png')}
+                    style={styles.searchIcon}
                   />
                 </View>
               </View>
@@ -455,6 +455,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginHorizontal: 20,
     flexDirection: 'row',
+    paddingHorizontal: 18,
   },
   filterText: {
     fontSize: 12,
@@ -476,18 +477,13 @@ const styles = StyleSheet.create({
     height: 15,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginStart: 20,
+    marginStart: 10,
   },
   searchEditTextStyle: {
     fontSize: 13,
     // fontFamily: fontSelector("regular"),
     color: Colors.black,
     flex: 1,
-    backgroundColor: Colors.editTextBgColor,
-    borderRadius: 30,
-    marginHorizontal: 20,
-    flexDirection: 'row',
-    paddingVertical: Platform.OS == 'ios' ? 16 : 12,
   },
   flatListStyle: {
     marginBottom: 5,
