@@ -18,11 +18,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from '../utils/Constants';
 import NetInfo from '@react-native-community/netinfo';
 import Moment from 'moment';
+import CarDetailsViewModal from '../component/CarDetailsViewModal';
+import AuthorizeModal from '../component/AuthorizeModal';
 
 export default class RentOutVehicleScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      showModal: false,
       isNetworkAvailable: true,
       isLoading: false,
       searchText: '',
@@ -444,6 +447,13 @@ export default class RentOutVehicleScreen extends React.Component {
           </View>
 
           <TouchableOpacity
+            style={{marginRight: 4}}
+            onPress={() => this.setState({showModal: true})}>
+            <View style={styles.editContainer}>
+              <Text style={styles.editTextStyle}>Authorize</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() =>
               this.props.navigation.navigate('AddRentOutVehicle', {
                 item: item,
@@ -497,6 +507,14 @@ export default class RentOutVehicleScreen extends React.Component {
         <Text style={styles.noDataPlaceHolderTextStyle}>No Data Found</Text>
       </View>
     );
+  };
+
+  handleUpdateViewModalState = value => {
+    this.setState({showModal: value});
+  };
+
+  onPressViewModalConfirmButton = value => {
+    this.setState({showModal: value});
   };
 
   render() {
@@ -572,6 +590,17 @@ export default class RentOutVehicleScreen extends React.Component {
             ) : null}
           </View>
         </View>
+
+        {this.state.showModal ? (
+          <AuthorizeModal
+            isModalVisible={this.state.showModal}
+            title="Customer Authorization Required"
+            item={this.state.item}
+            buttonName="confirm"
+            updateModalState={this.handleUpdateViewModalState}
+            buttonOperation={this.onPressViewModalConfirmButton}
+          />
+        ) : null}
       </SafeAreaView>
     );
   }
