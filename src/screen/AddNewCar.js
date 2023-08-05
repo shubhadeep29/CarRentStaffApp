@@ -28,6 +28,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-element-dropdown';
 import AppBarWithMenu from '../component/AppBarWithMenu';
+import {Button} from 'react-native-paper';
 
 export default class AddNewCar extends React.Component {
   constructor(props) {
@@ -49,7 +50,9 @@ export default class AddNewCar extends React.Component {
       transmissionService: '',
       sparkPlug: '',
       regoExpireDate: '',
+      regoExpireDateShow: new Date(),
       insuranceExpireDate: '',
+      insuranceExpireDateShow: new Date(),
       carImage: null,
       carId: '',
       vehicleId: '',
@@ -88,6 +91,7 @@ export default class AddNewCar extends React.Component {
     console.log('selectedDate' + selectedDate);
     this.setState({
       isDisplayRegoExpireDate: false,
+      regoExpireDateShow: selectedDate,
       regoExpireDate:
         selectedDate.getDate() +
         '/' +
@@ -100,6 +104,7 @@ export default class AddNewCar extends React.Component {
     console.log('selectedDate' + selectedDate);
     this.setState({
       isDisplayInsuranceExpireDate: false,
+      insuranceExpireDateShow: selectedDate,
       insuranceExpireDate:
         selectedDate.getDate() +
         '/' +
@@ -183,38 +188,64 @@ export default class AddNewCar extends React.Component {
     });
   }
 
-  openImageGallery() {
+  openImageGallery(type) {
     let options = {
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
     };
-    // ImagePicker.launchImageLibrary(options, (res) => {
-    launchImageLibrary(options, res => {
-      console.log('Response = ', res);
-      if (res.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (res.error) {
-        console.log('ImagePicker Error: ', res.error);
-      } else if (res.customButton) {
-        console.log('User tapped custom button: ', res.customButton);
-        alert(res.customButton);
-      } else {
-        const source = {uri: res.uri};
-        console.log('response', JSON.stringify(res));
-        this.setState({
-          resourcePath: res,
-          imageUri: res.assets[0].uri,
-          imageName: res.assets[0].fileName,
-          imageSize: res.assets[0].fileSize,
-          imageType: res.assets[0].type,
-        });
+    if (type === 1) {
+      launchImageLibrary(options, res => {
+        console.log('Response = ', res);
+        if (res.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (res.error) {
+          console.log('ImagePicker Error: ', res.error);
+        } else if (res.customButton) {
+          console.log('User tapped custom button: ', res.customButton);
+          alert(res.customButton);
+        } else {
+          const source = {uri: res.uri};
+          console.log('response', JSON.stringify(res));
+          this.setState({
+            resourcePath: res,
+            imageUri: res.assets[0].uri,
+            imageName: res.assets[0].fileName,
+            imageSize: res.assets[0].fileSize,
+            imageType: res.assets[0].type,
+          });
 
-        console.log('fileData', JSON.stringify(res.assets[0].fileName));
-        console.log('fileUri', JSON.stringify(res.assets[0].uri));
-      }
-    });
+          console.log('fileData', JSON.stringify(res.assets[0].fileName));
+          console.log('fileUri', JSON.stringify(res.assets[0].uri));
+        }
+      });
+    } else {
+      launchCamera(options, res => {
+        console.log('Response = ', res);
+        if (res.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (res.error) {
+          console.log('ImagePicker Error: ', res.error);
+        } else if (res.customButton) {
+          console.log('User tapped custom button: ', res.customButton);
+          alert(res.customButton);
+        } else {
+          const source = {uri: res.uri};
+          console.log('response', JSON.stringify(res));
+          this.setState({
+            resourcePath: res,
+            imageUri: res.assets[0].uri,
+            imageName: res.assets[0].fileName,
+            imageSize: res.assets[0].fileSize,
+            imageType: res.assets[0].type,
+          });
+
+          console.log('fileData', JSON.stringify(res.assets[0].fileName));
+          console.log('fileUri', JSON.stringify(res.assets[0].uri));
+        }
+      });
+    }
   }
 
   openInsuranceImageGallery() {
@@ -624,9 +655,7 @@ export default class AddNewCar extends React.Component {
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Upload Car Photo <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <TouchableOpacity
-              style={styles.addImageViewStyle}
-              onPress={() => this.openImageGallery()}>
+            <View style={styles.addImageViewStyle}>
               {this.state.imageUri != null ? (
                 <Image
                   source={{uri: this.state.imageUri}}
@@ -648,7 +677,27 @@ export default class AddNewCar extends React.Component {
                   Upload Photo
                 </Text>
               )}
-            </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                marginTop: 4,
+                flexDirection: 'row',
+                marginHorizontal: 40,
+                justifyContent: 'space-between',
+              }}>
+              <Button
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(1)}>
+                Open gallery
+              </Button>
+              <Button
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(2)}>
+                Take Picture
+              </Button>
+            </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Company <Text style={{color: Colors.red}}>*</Text>
@@ -862,7 +911,7 @@ export default class AddNewCar extends React.Component {
             {this.state.isDisplayInsuranceExpireDate && (
               <DateTimePicker
                 testID="dateTimePicker"
-                value={new Date()}
+                value={this.state.insuranceExpireDateShow}
                 mode="date"
                 // maximumDate={new Date()}
                 minimumDate={new Date()}
@@ -898,7 +947,7 @@ export default class AddNewCar extends React.Component {
             {this.state.isDisplayRegoExpireDate && (
               <DateTimePicker
                 testID="dateTimePicker"
-                value={new Date()}
+                value={this.state.regoExpireDateShow}
                 mode="date"
                 display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
                 // maximumDate={new Date()}
@@ -911,7 +960,7 @@ export default class AddNewCar extends React.Component {
               Upload Insurance Photo <Text style={{color: Colors.red}}>*</Text>
             </Text>
 
-            <TouchableOpacity
+            <View
               style={styles.addImageViewStyle}
               onPress={() => this.openInsuranceImageGallery()}>
               {this.state.imageInsuranceUri != null ? (
@@ -935,7 +984,11 @@ export default class AddNewCar extends React.Component {
                   Upload Photo
                 </Text>
               )}
-            </TouchableOpacity>
+            </View>
+            <View style={{marginTop: 4}}>
+              <Button mode="contained">Open gallery</Button>
+              <Button mode="contained">Take Picture</Button>
+            </View>
 
             <View style={styles.rowViewOptionStyle}>
               <Text numberOfLines={1} style={styles.headingTextStyleTwo}>
