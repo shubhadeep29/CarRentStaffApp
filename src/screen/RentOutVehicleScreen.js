@@ -34,6 +34,7 @@ export default class RentOutVehicleScreen extends React.Component {
       driverListRentOut: [],
       carListRent: [],
       companyList: [],
+      direct_debit_response: {},
       // data: [
       //     {
       //         id: 1,
@@ -146,6 +147,7 @@ export default class RentOutVehicleScreen extends React.Component {
       device_type: '1',
       user_id: this.userId,
       token_key: this.apiKey,
+      search_text: this.state.searchText,
     });
 
     try {
@@ -431,7 +433,18 @@ export default class RentOutVehicleScreen extends React.Component {
     }
   };
 
+  openModal = () => {
+    if (
+      Object.keys(this.state.direct_debit_response).length &&
+      this.state.direct_debit_response?.AuthorisationLink?.Link
+    ) {
+      this.setState({showModal: true});
+    }
+  };
+
   setRenderItemView = ({item, index}) => {
+    const direct_debit_response = JSON.parse(item.direct_debit_status_response);
+    // console.log('item -----', direct_debit_response);
     return (
       <TouchableOpacity
         style={styles.listItemContainer}
@@ -446,13 +459,23 @@ export default class RentOutVehicleScreen extends React.Component {
             </Text>
           </View>
 
-          <TouchableOpacity
-            style={{marginRight: 4}}
-            onPress={() => this.setState({showModal: true})}>
-            <View style={styles.editContainer}>
-              <Text style={styles.editTextStyle}>Authorize</Text>
-            </View>
-          </TouchableOpacity>
+          {item.payment_method === 'Direct Debit' &&
+          Object.keys(direct_debit_response).length &&
+          direct_debit_response?.AuthorisationLink?.Link ? (
+            <TouchableOpacity
+              style={{marginRight: 8}}
+              onPress={() =>
+                this.setState(
+                  {direct_debit_response: direct_debit_response},
+                  this.openModal,
+                )
+              }>
+              <View style={styles.editContainer}>
+                <Text style={styles.editTextStyle}>Authorize</Text>
+              </View>
+            </TouchableOpacity>
+          ) : null}
+
           <TouchableOpacity
             onPress={() =>
               this.props.navigation.navigate('AddRentOutVehicle', {
@@ -497,6 +520,93 @@ export default class RentOutVehicleScreen extends React.Component {
             <Text style={styles.infoTextStyleTwo}>{item.bond_amount}</Text>
           </View>
         </View>
+        <View style={{}}>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoHeadingTextStyleTwo}>Payment Method</Text>
+            <Text style={styles.infoTextStyleTwo}>{item.payment_method}</Text>
+          </View>
+
+          {item.payment_method === 'Direct Debit' ? (
+            <View
+              style={[
+                {
+                  flexDirection: 'row',
+                  marginTop: 4,
+                },
+              ]}>
+              {item.is_deleted_direct_debit === '1' ? (
+                <View style={[styles.editContainer, {backgroundColor: 'red'}]}>
+                  <Text style={styles.editTextStyle}>Deleted</Text>
+                </View>
+              ) : item.is_authorised === '0' ? (
+                <View
+                  style={[styles.editContainer, {backgroundColor: '#2196F3'}]}>
+                  <Text style={styles.editTextStyle}>Draft</Text>
+                </View>
+              ) : item.is_authorised === '2' ? (
+                <>
+                  <View
+                    style={[
+                      styles.editContainer,
+                      {backgroundColor: '#2196F3', marginRight: 8},
+                    ]}>
+                    <Text style={styles.editTextStyle}>Draft</Text>
+                  </View>
+                  <Text
+                    style={{fontWeight: 'bold', fontSize: 16, marginRight: 8}}>
+                    {'➔'}
+                  </Text>
+                  <View
+                    style={[
+                      styles.editContainer,
+                      {backgroundColor: '#E8E752'},
+                    ]}>
+                    <Text style={styles.editTextStyle}>Pending</Text>
+                  </View>
+                </>
+              ) : item.is_authorised === '1' ? (
+                <>
+                  <View
+                    style={[
+                      styles.editContainer,
+                      {backgroundColor: '#2196F3', marginRight: 8},
+                    ]}>
+                    <Text style={styles.editTextStyle}>Draft</Text>
+                  </View>
+                  <Text
+                    style={{fontWeight: 'bold', fontSize: 16, marginRight: 8}}>
+                    {'➔'}
+                  </Text>
+                  <View
+                    style={[
+                      styles.editContainer,
+                      {backgroundColor: '#E8E752', marginRight: 8},
+                    ]}>
+                    <Text style={styles.editTextStyle}>Pending</Text>
+                  </View>
+                  <Text
+                    style={{fontWeight: 'bold', fontSize: 16, marginRight: 8}}>
+                    {'➔'}
+                  </Text>
+                  <View
+                    style={[
+                      styles.editContainer,
+                      {backgroundColor: '#5AB114'},
+                    ]}>
+                    <Text style={styles.editTextStyle}>Active</Text>
+                  </View>
+                </>
+              ) : null}
+
+              {/* <View style={styles.editContainer}>
+                <Text style={styles.editTextStyle}>Edit</Text>
+              </View>
+              <View style={styles.editContainer}>
+                <Text style={styles.editTextStyle}>Edit</Text>
+              </View> */}
+            </View>
+          ) : null}
+        </View>
       </TouchableOpacity>
     );
   };
@@ -534,9 +644,11 @@ export default class RentOutVehicleScreen extends React.Component {
                 autoCapitalize="none"
                 multiline={false}
                 placeholderTextColor={Colors.placeholderColor}
-                placeholder="Search by Date,Driver Name, Car no"
+                placeholder="Search by Driver Name, Car no"
                 value={this.state.searchText}
-                onChangeText={value => this.setState({searchText: value})}
+                onChangeText={value =>
+                  this.setState({searchText: value}, this.getRentOutList)
+                }
                 onSubmitEditing={() => {
                   this.passwordTextInput.focus();
                 }}
@@ -595,7 +707,7 @@ export default class RentOutVehicleScreen extends React.Component {
           <AuthorizeModal
             isModalVisible={this.state.showModal}
             title="Customer Authorization Required"
-            item={this.state.item}
+            item={this.state.direct_debit_response}
             buttonName="confirm"
             updateModalState={this.handleUpdateViewModalState}
             buttonOperation={this.onPressViewModalConfirmButton}
@@ -675,7 +787,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     borderRadius: 20,
     backgroundColor: Colors.textColor1,
-    alignSelf: 'baseline',
+    // alignSelf: 'baseline',
   },
   editTextStyle: {
     fontSize: 12,

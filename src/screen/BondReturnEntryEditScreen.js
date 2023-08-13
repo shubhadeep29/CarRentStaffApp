@@ -34,8 +34,10 @@ export default class BondReturnEntryEditScreen extends React.Component {
       amountWantToReturn: '',
       showNoticeDate: false,
       noticeDate: '',
+      noticeDateShow: new Date(),
       showBoundRefundDueDate: false,
       boundRefundDueDate: '',
+      boundRefundDueDateShow: new Date(),
       referenceNumber: '',
       remark: '',
       refundTypeValue: '',
@@ -277,6 +279,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
   setNoticeDate = (event, selectedDate) => {
     this.setState({
       showNoticeDate: false,
+      noticeDateShow: selectedDate,
       noticeDate:
         selectedDate.getDate() +
         '/' +
@@ -288,6 +291,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
   setBoundRefundDueDate = (event, selectedDate) => {
     this.setState({
       showBoundRefundDueDate: false,
+      boundRefundDueDateShow: selectedDate,
       boundRefundDueDate:
         selectedDate.getDate() +
         '/' +
@@ -421,7 +425,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
         <ScrollView>
           <View style={styles.bottomViewContainer}>
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Driver *
+              Driver <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <Dropdown
@@ -444,9 +448,14 @@ export default class BondReturnEntryEditScreen extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Total Bond Amount *
+              Total Bond Amount <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <View style={styles.editTextContainer}>
+            <View
+              style={[
+                styles.editTextContainer,
+                {flexDirection: 'row', alignItems: 'center'},
+              ]}>
+              <Text style={{marginRight: 4}}>$</Text>
               <Text
                 style={styles.emailIdEditTextStyle}
                 multiline={false}
@@ -466,7 +475,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Refund Type *
+              Refund Type <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <Dropdown
@@ -492,9 +501,14 @@ export default class BondReturnEntryEditScreen extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Amount Want to Refund *
+              Amount Want to Refund <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <View style={styles.editTextContainer}>
+            <View
+              style={[
+                styles.editTextContainer,
+                {flexDirection: 'row', alignItems: 'center'},
+              ]}>
+              <Text style={{marginRight: 4}}>$</Text>
               <TextInput
                 style={styles.remarksTextStyle}
                 autoCapitalize="none"
@@ -507,7 +521,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Payment Method *
+              Payment Method <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <Dropdown
@@ -530,7 +544,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Notice Date *
+              Notice Date <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity
               style={styles.editTextContainer}
@@ -554,7 +568,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
             {this.state.showNoticeDate && (
               <DateTimePicker
                 testID="dateTimePicker"
-                value={new Date()}
+                value={this.state.noticeDateShow}
                 minimumDate={new Date()}
                 mode="date"
                 display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
@@ -563,7 +577,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
             )}
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Bond Refund Due Date *
+              Bond Refund Due Date <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <TouchableOpacity
               style={styles.editTextContainer}
@@ -589,7 +603,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
             {this.state.showBoundRefundDueDate && (
               <DateTimePicker
                 testID="dateTimePicker"
-                value={new Date()}
+                value={this.state.boundRefundDueDateShow}
                 minimumDate={new Date()}
                 mode="date"
                 display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
@@ -608,7 +622,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
               />
             </View>
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Remark *
+              Remark <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.remarksStyle}>
               <TextInput

@@ -151,7 +151,11 @@ export default class AddNewCar extends React.Component {
         make: this.state.item.make,
         year: this.state.item.year,
         regoExpireDate: this.state.item.rego_expire_date,
+        regoExpireDateShow: Utils.getDate(this.state.item.rego_expire_date),
         insuranceExpireDate: this.state.item.insurance_expire_date,
+        insuranceExpireDateShow: Utils.getDate(
+          this.state.item.insurance_expire_date,
+        ),
         imageUri: Links.BASEURL + this.state.item.car_pic,
         imageInsuranceUri: Links.BASEURL + this.state.item.insurance_expire_pic,
         isHybridYes: this.state.item.is_hybrid === '0' ? true : false,
@@ -248,38 +252,64 @@ export default class AddNewCar extends React.Component {
     }
   }
 
-  openInsuranceImageGallery() {
+  openInsuranceImageGallery(type) {
     let options = {
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
     };
-    // ImagePicker.launchImageLibrary(options, (res) => {
-    launchImageLibrary(options, res => {
-      console.log('Response = ', res);
-      if (res.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (res.error) {
-        console.log('ImagePicker Error: ', res.error);
-      } else if (res.customButton) {
-        console.log('User tapped custom button: ', res.customButton);
-        alert(res.customButton);
-      } else {
-        const source = {uri: res.uri};
-        console.log('response', JSON.stringify(res));
-        this.setState({
-          resourcePath: res,
-          imageInsuranceUri: res.assets[0].uri,
-          imageInsuranceName: res.assets[0].fileName,
-          imageInsuranceSize: res.assets[0].fileSize,
-          imageInsuranceType: res.assets[0].type,
-        });
+    if (type === 1) {
+      launchImageLibrary(options, res => {
+        console.log('Response = ', res);
+        if (res.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (res.error) {
+          console.log('ImagePicker Error: ', res.error);
+        } else if (res.customButton) {
+          console.log('User tapped custom button: ', res.customButton);
+          alert(res.customButton);
+        } else {
+          const source = {uri: res.uri};
+          console.log('response', JSON.stringify(res));
+          this.setState({
+            resourcePath: res,
+            imageInsuranceUri: res.assets[0].uri,
+            imageInsuranceName: res.assets[0].fileName,
+            imageInsuranceSize: res.assets[0].fileSize,
+            imageInsuranceType: res.assets[0].type,
+          });
 
-        console.log('fileData', JSON.stringify(res.assets[0].fileName));
-        console.log('fileUri', JSON.stringify(res.assets[0].uri));
-      }
-    });
+          console.log('fileData', JSON.stringify(res.assets[0].fileName));
+          console.log('fileUri', JSON.stringify(res.assets[0].uri));
+        }
+      });
+    } else {
+      launchCamera(options, res => {
+        console.log('Response = ', res);
+        if (res.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (res.error) {
+          console.log('ImagePicker Error: ', res.error);
+        } else if (res.customButton) {
+          console.log('User tapped custom button: ', res.customButton);
+          alert(res.customButton);
+        } else {
+          const source = {uri: res.uri};
+          console.log('response', JSON.stringify(res));
+          this.setState({
+            resourcePath: res,
+            imageInsuranceUri: res.assets[0].uri,
+            imageInsuranceName: res.assets[0].fileName,
+            imageInsuranceSize: res.assets[0].fileSize,
+            imageInsuranceType: res.assets[0].type,
+          });
+
+          console.log('fileData', JSON.stringify(res.assets[0].fileName));
+          console.log('fileUri', JSON.stringify(res.assets[0].uri));
+        }
+      });
+    }
   }
 
   getCompanyList() {
@@ -363,12 +393,12 @@ export default class AddNewCar extends React.Component {
     } else if (this.state.year == '') {
       Toast.show('Please enter Year', Toast.SHORT);
     } else if (this.state.odometer == null || this.state.odometer == '') {
-      Toast.show('Please enter Odometer value', Toast.SHORT);
+      Toast.show('Please enter Odometer reading', Toast.SHORT);
     } else if (
       this.state.serviceKilometer == null ||
       this.state.serviceKilometer == ''
     ) {
-      Toast.show('Please enter Service Kilometers value', Toast.SHORT);
+      Toast.show('Please enter Engine Service value', Toast.SHORT);
     } else if (
       this.state.regoExpireDate == null ||
       this.state.regoExpireDate == ''
@@ -379,11 +409,14 @@ export default class AddNewCar extends React.Component {
       this.state.insuranceExpireDate == ''
     ) {
       Toast.show('Please enter Insurance Expire Date', Toast.SHORT);
-    }
-    // else if (this.state.carImage == null) {
-    //   Toast.show("Please enter Car Image", Toast.SHORT);
-    // }
-    else {
+    } else if (this.state.item === null && this.state.imageName === '') {
+      Toast.show('Please select a Car Photo', Toast.SHORT);
+    } else if (
+      this.state.item === null &&
+      this.state.imageInsuranceName === ''
+    ) {
+      Toast.show('Please select a Insurance Photo', Toast.SHORT);
+    } else {
       try {
         NetInfo.fetch().then(state => {
           if (state.isConnected) {
@@ -686,12 +719,14 @@ export default class AddNewCar extends React.Component {
                 justifyContent: 'space-between',
               }}>
               <Button
+                compact
                 mode="contained"
                 color={Colors.textColor1}
                 onPress={() => this.openImageGallery(1)}>
                 Open gallery
               </Button>
               <Button
+                compact
                 mode="contained"
                 color={Colors.textColor1}
                 onPress={() => this.openImageGallery(2)}>
@@ -756,7 +791,7 @@ export default class AddNewCar extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Odometer <Text style={{color: Colors.red}}>*</Text>
+              Odometer Reading <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.editTextContainer}>
               <TextInput
@@ -799,7 +834,7 @@ export default class AddNewCar extends React.Component {
             {this.state.isDisplayYear && (
               <DateTimePicker
                 testID="dateTimePicker"
-                value={new Date()}
+                value={this.state.year ? new Date(this.state.year) : new Date()}
                 mode="date"
                 display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
                 maximumDate={new Date()}
@@ -985,9 +1020,27 @@ export default class AddNewCar extends React.Component {
                 </Text>
               )}
             </View>
-            <View style={{marginTop: 4}}>
-              <Button mode="contained">Open gallery</Button>
-              <Button mode="contained">Take Picture</Button>
+            <View
+              style={{
+                marginTop: 4,
+                flexDirection: 'row',
+                marginHorizontal: 40,
+                justifyContent: 'space-between',
+              }}>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openInsuranceImageGallery(1)}>
+                Open gallery
+              </Button>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openInsuranceImageGallery(2)}>
+                Take Picture
+              </Button>
             </View>
 
             <View style={styles.rowViewOptionStyle}>

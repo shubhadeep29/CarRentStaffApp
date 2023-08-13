@@ -27,6 +27,7 @@ import DatePickerModel from '../component/DatePickerModel';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-element-dropdown';
+import {Button} from 'react-native-paper';
 
 export default class AddReturnInVehicle extends React.Component {
   constructor(props) {
@@ -43,6 +44,7 @@ export default class AddReturnInVehicle extends React.Component {
       carId: '',
       driver: '',
       rentOutDate: '',
+      rentOutDateShow: new Date(),
       rentOutNo: '',
       isDisplayRentOutDate: false,
       carNo: '',
@@ -54,7 +56,9 @@ export default class AddReturnInVehicle extends React.Component {
       isBondRefundRequestYes: false,
       isBondRefundRequestNo: true,
       bondRefundDate: '',
+      bondRefundDateShow: new Date(),
       noticeDate: '',
+      noticeDateShow: new Date(),
       isDisplayBondRefundDate: false,
       isDisplayNoticeDate: false,
       bondRefundAmount: '',
@@ -126,6 +130,7 @@ export default class AddReturnInVehicle extends React.Component {
     console.log('selectedDate' + selectedDate);
     this.setState({
       isDisplayBondRefundDate: false,
+      bondRefundDateShow: selectedDate,
       bondRefundDate:
         selectedDate.getDate() +
         '/' +
@@ -138,6 +143,7 @@ export default class AddReturnInVehicle extends React.Component {
     console.log('selectedDate' + selectedDate);
     this.setState({
       isDisplayNoticeDate: false,
+      noticeDateShow: selectedDate,
       noticeDate:
         selectedDate.getDate() +
         '/' +
@@ -150,6 +156,7 @@ export default class AddReturnInVehicle extends React.Component {
     console.log('selectedDate' + selectedDate);
     this.setState({
       isDisplayRentOutDate: false,
+      rentOutDateShow: selectedDate,
       rentOutDate:
         selectedDate.getDate() +
         '/' +
@@ -185,6 +192,7 @@ export default class AddReturnInVehicle extends React.Component {
       this.setState({
         carNo: this.state.item.car_no,
         rentOutDate: this.state.item.rent_out_date,
+        rentOutDateShow: Utils.getDate(this.state.item.rent_out_date),
         rentOutNo: this.state.item.rent_out_no,
         isDamageYes: this.state.item.damage == 'Yes' ? true : false,
         isDamageNo: this.state.item.damage == 'No' ? true : false,
@@ -207,7 +215,10 @@ export default class AddReturnInVehicle extends React.Component {
         refundAmount: this.state.item.amount_want_to_refund ?? '',
         paymentMethod: this.state.item.bond_payment_method ?? '',
         noticeDate: this.state.item.notice_date ?? '',
+        noticeDateShow: Utils.getDate(this.state.item.notice_date) ?? '',
         bondRefundDate: this.state.item.bond_refund_due_date ?? '',
+        bondRefundDateShow:
+          Utils.getDate(this.state.item.bond_refund_due_date) ?? '',
         referenceNumber: this.state.item.bond_reference_no ?? '',
         driverName: this.state.item.driverName ?? '',
       });
@@ -439,90 +450,169 @@ export default class AddReturnInVehicle extends React.Component {
     });
   }
 
-  openImageGallery(openImageGalleryFor) {
+  openImageGallery(type, openImageGalleryFor) {
     let options = {
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
     };
-    // ImagePicker.launchImageLibrary(options, (res) => {
-    launchImageLibrary(options, res => {
-      console.log('Response = ', res);
-      if (res.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (res.error) {
-        console.log('ImagePicker Error: ', res.error);
-      } else if (res.customButton) {
-        console.log('User tapped custom button: ', res.customButton);
-        alert(res.customButton);
-      } else {
-        const source = {uri: res.uri};
-        console.log('response', JSON.stringify(res));
 
-        if (openImageGalleryFor == 'damageImageUri') {
-          this.setState({
-            resourcePath: res,
-            damageImageUri: res.assets[0].uri,
-            damageImageName: res.assets[0].fileName,
-            damageImageSize: res.assets[0].fileSize,
-            damageImageType: res.assets[0].type,
-          });
-        } else if (openImageGalleryFor == 'frontImageUri') {
-          this.setState({
-            resourcePath: res,
-            frontImageUri: res.assets[0].uri,
-            frontImageName: res.assets[0].fileName,
-            frontImageSize: res.assets[0].fileSize,
-            frontImageType: res.assets[0].type,
-          });
-        } else if (openImageGalleryFor == 'rearImageUri') {
-          this.setState({
-            resourcePath: res,
-            rearImageUri: res.assets[0].uri,
-            rearImageName: res.assets[0].fileName,
-            rearImageSize: res.assets[0].fileSize,
-            rearImageType: res.assets[0].type,
-          });
-        } else if (openImageGalleryFor == 'driverSideImageUri') {
-          this.setState({
-            resourcePath: res,
-            driverSideImageUri: res.assets[0].uri,
-            driverSideImageName: res.assets[0].fileName,
-            driverSideImageSize: res.assets[0].fileSize,
-            driverSideImageType: res.assets[0].type,
-          });
-        } else if (openImageGalleryFor == 'passengerSideImageUri') {
-          this.setState({
-            resourcePath: res,
-            passengerSideImageUri: res.assets[0].uri,
-            passengerSideImageName: res.assets[0].fileName,
-            passengerSideImageSize: res.assets[0].fileSize,
-            passengerSideImageType: res.assets[0].type,
-          });
-        } else if (openImageGalleryFor == 'odometerImageUri') {
-          this.setState({
-            resourcePath: res,
-            odometerImageUri: res.assets[0].uri,
-            odometerImageName: res.assets[0].fileName,
-            odometerImageSize: res.assets[0].fileSize,
-            odometerImageType: res.assets[0].type,
-          });
-        } else if (openImageGalleryFor == 'fuelGuageImageUri') {
-          this.setState({
-            resourcePath: res,
-            fuelGuageImageUri: res.assets[0].uri,
-            fuelGuageImageName: res.assets[0].fileName,
-            fuelGuageImageSize: res.assets[0].fileSize,
-            fuelGuageImageType: res.assets[0].type,
-          });
+    if (type === 1) {
+      launchImageLibrary(options, res => {
+        console.log('Response = ', res);
+        if (res.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (res.error) {
+          console.log('ImagePicker Error: ', res.error);
+        } else if (res.customButton) {
+          console.log('User tapped custom button: ', res.customButton);
+          alert(res.customButton);
+        } else {
+          const source = {uri: res.uri};
+          console.log('response', JSON.stringify(res));
+
+          if (openImageGalleryFor == 'damageImageUri') {
+            this.setState({
+              resourcePath: res,
+              damageImageUri: res.assets[0].uri,
+              damageImageName: res.assets[0].fileName,
+              damageImageSize: res.assets[0].fileSize,
+              damageImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'frontImageUri') {
+            this.setState({
+              resourcePath: res,
+              frontImageUri: res.assets[0].uri,
+              frontImageName: res.assets[0].fileName,
+              frontImageSize: res.assets[0].fileSize,
+              frontImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'rearImageUri') {
+            this.setState({
+              resourcePath: res,
+              rearImageUri: res.assets[0].uri,
+              rearImageName: res.assets[0].fileName,
+              rearImageSize: res.assets[0].fileSize,
+              rearImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'driverSideImageUri') {
+            this.setState({
+              resourcePath: res,
+              driverSideImageUri: res.assets[0].uri,
+              driverSideImageName: res.assets[0].fileName,
+              driverSideImageSize: res.assets[0].fileSize,
+              driverSideImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'passengerSideImageUri') {
+            this.setState({
+              resourcePath: res,
+              passengerSideImageUri: res.assets[0].uri,
+              passengerSideImageName: res.assets[0].fileName,
+              passengerSideImageSize: res.assets[0].fileSize,
+              passengerSideImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'odometerImageUri') {
+            this.setState({
+              resourcePath: res,
+              odometerImageUri: res.assets[0].uri,
+              odometerImageName: res.assets[0].fileName,
+              odometerImageSize: res.assets[0].fileSize,
+              odometerImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'fuelGuageImageUri') {
+            this.setState({
+              resourcePath: res,
+              fuelGuageImageUri: res.assets[0].uri,
+              fuelGuageImageName: res.assets[0].fileName,
+              fuelGuageImageSize: res.assets[0].fileSize,
+              fuelGuageImageType: res.assets[0].type,
+            });
+          }
+
+          console.log('fileData', JSON.stringify(res.assets[0].fileName));
+          console.log('fileUri', JSON.stringify(res.assets[0].uri));
+          console.log('fileType', JSON.stringify(res.assets[0].type));
         }
+      });
+    } else {
+      launchCamera(options, res => {
+        console.log('Response = ', res);
+        if (res.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (res.error) {
+          console.log('ImagePicker Error: ', res.error);
+        } else if (res.customButton) {
+          console.log('User tapped custom button: ', res.customButton);
+          alert(res.customButton);
+        } else {
+          const source = {uri: res.uri};
+          console.log('response', JSON.stringify(res));
 
-        console.log('fileData', JSON.stringify(res.assets[0].fileName));
-        console.log('fileUri', JSON.stringify(res.assets[0].uri));
-        console.log('fileType', JSON.stringify(res.assets[0].type));
-      }
-    });
+          if (openImageGalleryFor == 'damageImageUri') {
+            this.setState({
+              resourcePath: res,
+              damageImageUri: res.assets[0].uri,
+              damageImageName: res.assets[0].fileName,
+              damageImageSize: res.assets[0].fileSize,
+              damageImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'frontImageUri') {
+            this.setState({
+              resourcePath: res,
+              frontImageUri: res.assets[0].uri,
+              frontImageName: res.assets[0].fileName,
+              frontImageSize: res.assets[0].fileSize,
+              frontImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'rearImageUri') {
+            this.setState({
+              resourcePath: res,
+              rearImageUri: res.assets[0].uri,
+              rearImageName: res.assets[0].fileName,
+              rearImageSize: res.assets[0].fileSize,
+              rearImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'driverSideImageUri') {
+            this.setState({
+              resourcePath: res,
+              driverSideImageUri: res.assets[0].uri,
+              driverSideImageName: res.assets[0].fileName,
+              driverSideImageSize: res.assets[0].fileSize,
+              driverSideImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'passengerSideImageUri') {
+            this.setState({
+              resourcePath: res,
+              passengerSideImageUri: res.assets[0].uri,
+              passengerSideImageName: res.assets[0].fileName,
+              passengerSideImageSize: res.assets[0].fileSize,
+              passengerSideImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'odometerImageUri') {
+            this.setState({
+              resourcePath: res,
+              odometerImageUri: res.assets[0].uri,
+              odometerImageName: res.assets[0].fileName,
+              odometerImageSize: res.assets[0].fileSize,
+              odometerImageType: res.assets[0].type,
+            });
+          } else if (openImageGalleryFor == 'fuelGuageImageUri') {
+            this.setState({
+              resourcePath: res,
+              fuelGuageImageUri: res.assets[0].uri,
+              fuelGuageImageName: res.assets[0].fileName,
+              fuelGuageImageSize: res.assets[0].fileSize,
+              fuelGuageImageType: res.assets[0].type,
+            });
+          }
+
+          console.log('fileData', JSON.stringify(res.assets[0].fileName));
+          console.log('fileUri', JSON.stringify(res.assets[0].uri));
+          console.log('fileType', JSON.stringify(res.assets[0].type));
+        }
+      });
+    }
   }
 
   callAddReturnInVehicleValidation() {
@@ -535,17 +625,61 @@ export default class AddReturnInVehicle extends React.Component {
       Toast.show('Please enter Rent out No', Toast.SHORT);
     } else if (this.state.carNo == '') {
       Toast.show('Please enter Car No', Toast.SHORT);
-    } else if (this.state.odometerReading == '') {
-      Toast.show('Please enter Odometer Reading', Toast.SHORT);
+    } else if (
+      this.state.odometerReading == '' ||
+      this.state.odometerReading < 1
+    ) {
+      Toast.show('Please enter valid Odometer Reading', Toast.SHORT);
     } else if (this.state.paymentMethod == '') {
       Toast.show('Please enter Payment Method', Toast.SHORT);
     } else if (this.state.notes == '') {
       Toast.show('Please enter notes', Toast.SHORT);
+    } else if (this.state.frontImageUri === '' && this.state.item === null) {
+      Toast.show('Select front image', Toast.SHORT);
+    } else if (this.state.rearImageUri === '' && this.state.item === null) {
+      Toast.show('Select rear image', Toast.SHORT);
+    } else if (
+      this.state.driverSideImageUri === '' &&
+      this.state.item === null
+    ) {
+      Toast.show('Select driver side image', Toast.SHORT);
+    } else if (
+      this.state.passengerSideImageUri === '' &&
+      this.state.item === null
+    ) {
+      Toast.show('Select passenger side image', Toast.SHORT);
+    } else if (this.state.odometerImageUri === '' && this.state.item === null) {
+      Toast.show('Select odometer image', Toast.SHORT);
     } else if (
       this.state.fuelGuageImageUri === '' &&
       this.state.item === null
     ) {
       Toast.show('Select fuel guage image', Toast.SHORT);
+    } else if (
+      this.state.isBondRefundRequestYes &&
+      this.state.refundAmount === ''
+    ) {
+      Toast.show('Please enter amount want to refund', Toast.SHORT);
+    } else if (
+      this.state.isBondRefundRequestYes &&
+      this.state.refundTypeValue === ''
+    ) {
+      Toast.show('Please select refund type', Toast.SHORT);
+    } else if (
+      this.state.isBondRefundRequestYes &&
+      this.state.paymentMethod === ''
+    ) {
+      Toast.show('Please select refund payment method', Toast.SHORT);
+    } else if (
+      this.state.isBondRefundRequestYes &&
+      this.state.noticeDate === ''
+    ) {
+      Toast.show('Please select refund notice date', Toast.SHORT);
+    } else if (
+      this.state.isBondRefundRequestYes &&
+      this.state.bondRefundDate === ''
+    ) {
+      Toast.show('Please select refund due date', Toast.SHORT);
     } else {
       try {
         NetInfo.fetch().then(state => {
@@ -900,7 +1034,7 @@ export default class AddReturnInVehicle extends React.Component {
             {this.state.isDisplayRentOutDate && (
               <DateTimePicker
                 testID="dateTimePicker"
-                value={new Date()}
+                value={this.state.rentOutDateShow}
                 mode="date"
                 display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
                 onChange={this.setRentOutDate}
@@ -979,6 +1113,7 @@ export default class AddReturnInVehicle extends React.Component {
                   this.odometerReadingTextInput = input;
                 }}
                 blurOnSubmit={false}
+                keyboardType="number-pad"
               />
             </View>
 
@@ -1033,7 +1168,12 @@ export default class AddReturnInVehicle extends React.Component {
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
                   Damage Amount
                 </Text>
-                <View style={styles.editTextContainer}>
+                <View
+                  style={[
+                    styles.editTextContainer,
+                    {flexDirection: 'row', alignItems: 'center'},
+                  ]}>
+                  <Text style={{marginRight: 4}}>$</Text>
                   <TextInput
                     style={styles.emailIdEditTextStyle}
                     autoCapitalize="none"
@@ -1090,6 +1230,32 @@ export default class AddReturnInVehicle extends React.Component {
                     </Text>
                   )}
                 </TouchableOpacity>
+                <View
+                  style={{
+                    marginTop: 4,
+                    flexDirection: 'row',
+                    marginHorizontal: 40,
+                    justifyContent: 'space-between',
+                  }}>
+                  <Button
+                    compact
+                    mode="contained"
+                    color={Colors.textColor1}
+                    onPress={() =>
+                      this.openImageGallery(1, 'fuelGuageImageUri')
+                    }>
+                    Open gallery
+                  </Button>
+                  <Button
+                    compact
+                    mode="contained"
+                    color={Colors.textColor1}
+                    onPress={() =>
+                      this.openImageGallery(2, 'fuelGuageImageUri')
+                    }>
+                    Take Picture
+                  </Button>
+                </View>
               </>
             ) : null}
 
@@ -1103,7 +1269,12 @@ export default class AddReturnInVehicle extends React.Component {
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Fuel Amount
             </Text>
-            <View style={styles.editTextContainer}>
+            <View
+              style={[
+                styles.editTextContainer,
+                {flexDirection: 'row', alignItems: 'center'},
+              ]}>
+              <Text style={{marginRight: 4}}>$</Text>
               <TextInput
                 style={styles.emailIdEditTextStyle}
                 autoCapitalize="none"
@@ -1188,9 +1359,14 @@ export default class AddReturnInVehicle extends React.Component {
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
                   Total Bond Amount <Text style={{color: Colors.red}}>*</Text>
                 </Text>
-                <View style={styles.editTextContainer}>
+                <View
+                  style={[
+                    styles.editTextContainer,
+                    {flexDirection: 'row', alignItems: 'center'},
+                  ]}>
+                  <Text style={{marginRight: 4}}>$</Text>
                   <TextInput
-                    style={styles.remarksTextStyle}
+                    style={styles.emailIdEditTextStyle}
                     autoCapitalize="none"
                     multiline={false}
                     placeholderTextColor={Colors.placeholderColor}
@@ -1229,12 +1405,16 @@ export default class AddReturnInVehicle extends React.Component {
                 </View>
 
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
-                  Amount Want to Refund{' '}
-                  <Text style={{color: Colors.red}}>*</Text>
+                  Amount Want to Refund
                 </Text>
-                <View style={styles.editTextContainer}>
+                <View
+                  style={[
+                    styles.editTextContainer,
+                    {flexDirection: 'row', alignItems: 'center'},
+                  ]}>
+                  <Text style={{marginRight: 4}}>$</Text>
                   <TextInput
-                    style={styles.remarksTextStyle}
+                    style={styles.emailIdEditTextStyle}
                     autoCapitalize="none"
                     multiline={false}
                     placeholderTextColor={Colors.placeholderColor}
@@ -1292,6 +1472,7 @@ export default class AddReturnInVehicle extends React.Component {
                         this.bondRefundDateTextInput = input;
                       }}
                       blurOnSubmit={false}
+                      editable={false}
                     />
 
                     <Image
@@ -1304,11 +1485,15 @@ export default class AddReturnInVehicle extends React.Component {
                 {this.state.isDisplayNoticeDate && (
                   <DateTimePicker
                     testID="dateTimePicker"
-                    value={new Date()}
+                    value={this.state.noticeDateShow}
                     mode="date"
                     display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
                     onChange={this.setNoticeDate}
-                    minimumDate={new Date()}
+                    minimumDate={
+                      this.state.item != null
+                        ? this.state.noticeDateShow
+                        : new Date()
+                    }
                   />
                 )}
 
@@ -1335,6 +1520,7 @@ export default class AddReturnInVehicle extends React.Component {
                         this.bondRefundDateTextInput = input;
                       }}
                       blurOnSubmit={false}
+                      editable={false}
                     />
 
                     <Image
@@ -1347,11 +1533,15 @@ export default class AddReturnInVehicle extends React.Component {
                 {this.state.isDisplayBondRefundDate && (
                   <DateTimePicker
                     testID="dateTimePicker"
-                    value={new Date()}
+                    value={this.state.bondRefundDateShow}
                     mode="date"
                     display={Platform.OS == 'android' ? 'calendar' : 'spinner'}
                     onChange={this.setBondRefundDate}
-                    minimumDate={new Date()}
+                    minimumDate={
+                      this.state.item != null
+                        ? this.state.bondRefundDateShow
+                        : new Date()
+                    }
                   />
                 )}
 
@@ -1419,9 +1609,10 @@ export default class AddReturnInVehicle extends React.Component {
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Upload Photo of Front <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <TouchableOpacity
+            <View
               style={styles.addImageViewStyle}
-              onPress={() => this.openImageGallery('frontImageUri')}>
+              // onPress={() => this.openImageGallery('frontImageUri')}
+            >
               {this.state.frontImageUri != null &&
               this.state.frontImageUri != '' ? (
                 <Image
@@ -1444,14 +1635,37 @@ export default class AddReturnInVehicle extends React.Component {
                   Upload Photo of Front
                 </Text>
               )}
-            </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                marginTop: 4,
+                flexDirection: 'row',
+                marginHorizontal: 40,
+                justifyContent: 'space-between',
+              }}>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(1, 'frontImageUri')}>
+                Open gallery
+              </Button>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(2, 'frontImageUri')}>
+                Take Picture
+              </Button>
+            </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Upload Photo of Rear <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <TouchableOpacity
+            <View
               style={styles.addImageViewStyle}
-              onPress={() => this.openImageGallery('rearImageUri')}>
+              // onPress={() => this.openImageGallery('rearImageUri')}
+            >
               {this.state.rearImageUri != null &&
               this.state.rearImageUri != '' ? (
                 <Image
@@ -1474,15 +1688,38 @@ export default class AddReturnInVehicle extends React.Component {
                   Upload Photo of Rear
                 </Text>
               )}
-            </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                marginTop: 4,
+                flexDirection: 'row',
+                marginHorizontal: 40,
+                justifyContent: 'space-between',
+              }}>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(1, 'rearImageUri')}>
+                Open gallery
+              </Button>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(2, 'rearImageUri')}>
+                Take Picture
+              </Button>
+            </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Upload Photo of Driver Side{' '}
               <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <TouchableOpacity
+            <View
               style={styles.addImageViewStyle}
-              onPress={() => this.openImageGallery('driverSideImageUri')}>
+              // onPress={() => this.openImageGallery('driverSideImageUri')}
+            >
               {this.state.driverSideImageUri != null &&
               this.state.driverSideImageUri != '' ? (
                 <Image
@@ -1505,15 +1742,38 @@ export default class AddReturnInVehicle extends React.Component {
                   Upload Photo of Driver Side
                 </Text>
               )}
-            </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                marginTop: 4,
+                flexDirection: 'row',
+                marginHorizontal: 40,
+                justifyContent: 'space-between',
+              }}>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(1, 'driverSideImageUri')}>
+                Open gallery
+              </Button>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(2, 'driverSideImageUri')}>
+                Take Picture
+              </Button>
+            </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Upload Photo of Passenger Side{' '}
               <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <TouchableOpacity
+            <View
               style={styles.addImageViewStyle}
-              onPress={() => this.openImageGallery('passengerSideImageUri')}>
+              // onPress={() => this.openImageGallery('passengerSideImageUri')}
+            >
               {this.state.passengerSideImageUri != null &&
               this.state.passengerSideImageUri != '' ? (
                 <Image
@@ -1536,15 +1796,42 @@ export default class AddReturnInVehicle extends React.Component {
                   Upload Photo of Passenger Side
                 </Text>
               )}
-            </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                marginTop: 4,
+                flexDirection: 'row',
+                marginHorizontal: 40,
+                justifyContent: 'space-between',
+              }}>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() =>
+                  this.openImageGallery(1, 'passengerSideImageUri')
+                }>
+                Open gallery
+              </Button>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() =>
+                  this.openImageGallery(2, 'passengerSideImageUri')
+                }>
+                Take Picture
+              </Button>
+            </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Upload Photo of Odometer{' '}
               <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <TouchableOpacity
+            <View
               style={styles.addImageViewStyle}
-              onPress={() => this.openImageGallery('odometerImageUri')}>
+              // onPress={() => this.openImageGallery('odometerImageUri')}
+            >
               {this.state.odometerImageUri != null &&
               this.state.odometerImageUri != '' ? (
                 <Image
@@ -1567,15 +1854,38 @@ export default class AddReturnInVehicle extends React.Component {
                   Upload Photo of Odometer
                 </Text>
               )}
-            </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                marginTop: 4,
+                flexDirection: 'row',
+                marginHorizontal: 40,
+                justifyContent: 'space-between',
+              }}>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(1, 'odometerImageUri')}>
+                Open gallery
+              </Button>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(2, 'odometerImageUri')}>
+                Take Picture
+              </Button>
+            </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Upload Photo of Fuel Guage{' '}
               <Text style={{color: Colors.red}}>*</Text>
             </Text>
-            <TouchableOpacity
+            <View
               style={styles.addImageViewStyle}
-              onPress={() => this.openImageGallery('fuelGuageImageUri')}>
+              // onPress={() => this.openImageGallery('fuelGuageImageUri')}
+            >
               {this.state.fuelGuageImageUri != null &&
               this.state.fuelGuageImageUri != '' ? (
                 <Image
@@ -1598,7 +1908,29 @@ export default class AddReturnInVehicle extends React.Component {
                   Upload Photo of Fuel Guage
                 </Text>
               )}
-            </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                marginTop: 4,
+                flexDirection: 'row',
+                marginHorizontal: 40,
+                justifyContent: 'space-between',
+              }}>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(1, 'fuelGuageImageUri')}>
+                Open gallery
+              </Button>
+              <Button
+                compact
+                mode="contained"
+                color={Colors.textColor1}
+                onPress={() => this.openImageGallery(2, 'fuelGuageImageUri')}>
+                Take Picture
+              </Button>
+            </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
               Notes <Text style={{color: Colors.red}}>*</Text>

@@ -339,24 +339,12 @@ export default class BondReturnEntryScreen extends React.Component {
     return (
       <SafeAreaView style={styles.container}>
         <AppBarWithMenu
-          title="Bond Refund"
+          title="List of Bond Refund"
           navigation={this.props.navigation}
         />
 
         <View style={styles.bottomViewContainer}>
           <View style={styles.filterMainContainer}>
-            <Button
-              onPress={this.goToBondReturnEntryEditScreen}
-              mode="contained"
-              color={Colors.textColor1}
-              uppercase={false}
-              style={{
-                borderRadius: 20,
-                marginHorizontal: 20,
-                marginBottom: 16,
-              }}>
-              Add new refund
-            </Button>
             <View style={styles.searchEditTextContainer}>
               <TextInput
                 numberOfLines={1}
@@ -374,6 +362,18 @@ export default class BondReturnEntryScreen extends React.Component {
                 style={styles.searchIcon}
               />
             </View>
+            <Button
+              onPress={this.goToBondReturnEntryEditScreen}
+              mode="contained"
+              color={Colors.textColor1}
+              uppercase={false}
+              style={{
+                borderRadius: 20,
+                marginHorizontal: 20,
+                marginTop: 16,
+              }}>
+              Add new refund
+            </Button>
           </View>
 
           <View style={styles.mainContainer}>

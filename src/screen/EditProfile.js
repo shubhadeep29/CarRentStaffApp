@@ -38,11 +38,7 @@ export default class MyProfile extends React.Component {
       imageUrl: '',
       imageName: 'No choosen file',
       address: '',
-      genderList: [
-        {value: 'Male'},
-        {value: 'Female'},
-        {value: 'Others Gender'},
-      ],
+      genderList: [{value: 'Male'}, {value: 'Female'}, {value: 'Other'}],
       abnList: [
         {value: 'Petrol'},
         {value: 'Diesel'},
@@ -98,12 +94,16 @@ export default class MyProfile extends React.Component {
       Toast.show('Email can not be empty', Toast.SHORT);
       return;
     }
-    if (!this.state.mobile) {
-      Toast.show('Phone can not be empty', Toast.SHORT);
+    if (!this.state.mobile || this.state.mobile.length < 10) {
+      Toast.show('Please enter a valid phone number', Toast.SHORT);
       return;
     }
     if (!this.state.gender) {
       Toast.show('Gender can not be empty', Toast.SHORT);
+      return;
+    }
+    if (!this.state.address) {
+      Toast.show('Address can not be empty', Toast.SHORT);
       return;
     }
 
@@ -311,6 +311,7 @@ export default class MyProfile extends React.Component {
                 multiline={false}
                 placeholderTextColor={Colors.placeholderColor}
                 blurOnSubmit={false}
+                keyboardType="phone-pad"
               />
             </View>
 
@@ -337,7 +338,7 @@ export default class MyProfile extends React.Component {
             </View>
 
             <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Full Address
+              Full Address <Text style={{color: Colors.red}}>*</Text>
             </Text>
             <View style={styles.largeTextContainer}>
               <TextInput

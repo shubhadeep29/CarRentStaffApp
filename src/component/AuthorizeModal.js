@@ -10,6 +10,7 @@ import {
   Image,
   Linking,
   Alert,
+  Share,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Constants from '../utils/Constants';
@@ -70,7 +71,28 @@ export default class AuthorizeModal extends Component {
     }
   };
 
+  onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: this.props.item?.AuthorisationLink?.Link,
+      });
+      console.log('result  share ---', result);
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   render() {
+    console.log('test ----', this.props.item?.AuthorisationLink?.Link);
     return (
       <Modal
         visible={this.props.isModalVisible}
@@ -111,7 +133,7 @@ export default class AuthorizeModal extends Component {
 
               <TouchableOpacity
                 onPress={() => {
-                  this.OpenURLButton('https://quantum.syscentricdev.com/');
+                  this.OpenURLButton(this.props.item?.AuthorisationLink?.Link);
                 }}
                 style={{
                   flexDirection: 'row',
@@ -129,12 +151,15 @@ export default class AuthorizeModal extends Component {
                   <Text style={{fontWeight: '700', color: 'black'}}>
                     Customer is with you now
                   </Text>
-                  <Text>And can authorize on your device.</Text>
+                  <Text style={{fontSize: 12, color: 'black'}}>
+                    And can authorize on your device.
+                  </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  this.OpenURLButton('whatsapp://app');
+                  Clipboard.setString(this.props.item?.AuthorisationLink?.Link);
+                  this.onShare('whatsapp://app');
                 }}
                 style={{
                   flexDirection: 'row',
@@ -152,7 +177,9 @@ export default class AuthorizeModal extends Component {
                   <Text style={{fontWeight: '700', color: 'black'}}>
                     You send an Authorization Link
                   </Text>
-                  <Text>Using your own mobile, Sharing via Whatsapp.</Text>
+                  <Text style={{fontSize: 12, color: 'black'}}>
+                    Using your own mobile, Sharing via Whatsapp.
+                  </Text>
                 </View>
               </TouchableOpacity>
               <View
@@ -172,12 +199,14 @@ export default class AuthorizeModal extends Component {
                   <Text style={{fontWeight: '700', color: 'black'}}>
                     We send an Authorization Link
                   </Text>
-                  <Text>To the Customer's email or mobile on your behalf.</Text>
+                  <Text style={{fontSize: 12, color: 'black'}}>
+                    To the Customer's email or mobile on your behalf.
+                  </Text>
                 </View>
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  Clipboard.setString('hello world');
+                  Clipboard.setString(this.props.item?.AuthorisationLink?.Link);
                 }}
                 style={{
                   flexDirection: 'row',
@@ -195,7 +224,7 @@ export default class AuthorizeModal extends Component {
                   <Text style={{fontWeight: '700', color: 'black'}}>
                     Copy Authorization Link
                   </Text>
-                  <Text>
+                  <Text style={{fontSize: 12, color: 'black'}}>
                     Copy authorization link & you can send it to customer from
                     anywhere
                   </Text>

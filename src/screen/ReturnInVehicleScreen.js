@@ -129,11 +129,12 @@ export default class ReturnInVehicleScreen extends React.Component {
       device_type: '1',
       user_id: this.userId,
       token_key: this.apiKey,
+      search_text: this.state.searchText,
     });
 
     try {
-      console.log('Call Rent In list API Link ========>  ', Links.RENT_IN_LIST);
-      console.log('Rent In list Input ========>  ', JSON.stringify(inputBody));
+      // console.log('Call Rent In list API Link ========>  ', Links.RENT_IN_LIST);
+      // console.log('Rent In list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.RENT_IN_LIST, {
         method: 'POST',
         body: inputBody,
@@ -199,10 +200,10 @@ export default class ReturnInVehicleScreen extends React.Component {
 
     try {
       console.log(
-        'Call Rent Out list API Link ========>  ',
+        'Call Rent in list API Link ========>  ',
         Links.getDriverListRentIn,
       );
-      console.log('Rent Out list Input ========>  ', JSON.stringify(inputBody));
+      console.log('Rent in list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.getDriverListRentIn, {
         method: 'POST',
         body: inputBody,
@@ -213,7 +214,7 @@ export default class ReturnInVehicleScreen extends React.Component {
       });
       const responseJSON = await res.json();
       console.log(
-        'Rent Out list Response ===========>  ',
+        'Rent in list Response ===========>  ',
         JSON.stringify(responseJSON),
       );
       if (responseJSON) {
@@ -267,11 +268,6 @@ export default class ReturnInVehicleScreen extends React.Component {
     });
 
     try {
-      console.log(
-        'Call Rent Out list API Link ========>  ',
-        Links.getPaymentMethod,
-      );
-      console.log('Rent Out list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.getPaymentMethod, {
         method: 'POST',
         body: inputBody,
@@ -281,10 +277,10 @@ export default class ReturnInVehicleScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log(
-        'Rent Out list Response ===========>  ',
-        JSON.stringify(responseJSON),
-      );
+      // console.log(
+      //   'Rent in list Response ===========>  ',
+      //   JSON.stringify(responseJSON),
+      // );
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
@@ -338,11 +334,11 @@ export default class ReturnInVehicleScreen extends React.Component {
     });
 
     try {
-      console.log(
-        'Call Rent Out list API Link ========>  ',
-        Links.getCarListRent,
-      );
-      console.log('Rent Out list Input ========>  ', JSON.stringify(inputBody));
+      // console.log(
+      //   'Call Rent Out list API Link ========>  ',
+      //   Links.getCarListRent,
+      // );
+      // console.log('Rent Out list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.getCarListRent, {
         method: 'POST',
         body: inputBody,
@@ -352,10 +348,10 @@ export default class ReturnInVehicleScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log(
-        'Rent Out list Response ===========>  ',
-        JSON.stringify(responseJSON),
-      );
+      // console.log(
+      //   'Rent Out list Response ===========>  ',
+      //   JSON.stringify(responseJSON),
+      // );
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
@@ -469,7 +465,7 @@ export default class ReturnInVehicleScreen extends React.Component {
     return (
       <SafeAreaView style={styles.container}>
         <AppBarWithMenu
-          title="Return In Vehicle"
+          title="List of Return In Vehicle"
           navigation={this.props.navigation}
         />
 
@@ -482,13 +478,11 @@ export default class ReturnInVehicleScreen extends React.Component {
                 autoCapitalize="none"
                 multiline={false}
                 placeholderTextColor={Colors.placeholderColor}
-                placeholder="Search by Date,Driver Name, Car no"
+                placeholder="Search by Driver Name, Car no"
                 value={this.state.searchText}
-                onChangeText={value => this.setState({searchText: value})}
-                onSubmitEditing={() => {
-                  this.passwordTextInput.focus();
-                }}
-                blurOnSubmit={false}
+                onChangeText={value =>
+                  this.setState({searchText: value}, this.getRentInList)
+                }
               />
 
               <Image
