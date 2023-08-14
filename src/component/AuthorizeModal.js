@@ -92,7 +92,7 @@ export default class AuthorizeModal extends Component {
   };
 
   render() {
-    console.log('test ----', this.props.item?.AuthorisationLink?.Link);
+    console.log('test ----', this.props.item);
     return (
       <Modal
         visible={this.props.isModalVisible}
@@ -182,7 +182,10 @@ export default class AuthorizeModal extends Component {
                   </Text>
                 </View>
               </TouchableOpacity>
-              <View
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.sendAuth();
+                }}
                 style={{
                   flexDirection: 'row',
                   backgroundColor: 'white',
@@ -203,7 +206,7 @@ export default class AuthorizeModal extends Component {
                     To the Customer's email or mobile on your behalf.
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
                   Clipboard.setString(this.props.item?.AuthorisationLink?.Link);

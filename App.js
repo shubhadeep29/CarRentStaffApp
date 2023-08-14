@@ -31,6 +31,7 @@ import ValidateStepFourScreen from './src/screen/ValidateStepFourScreen';
 import AddRentOutVehicle from './src/screen/AddRentOutVehicle';
 import AddReturnInVehicle from './src/screen/AddReturnInVehicle';
 import CarMaintenanceScreen from './src/screen/CarMaintenanceScreen';
+import PdfViewer from './src/component/PdfViewer';
 
 const Stack = createStackNavigator();
 const screenOptionStyle = {
@@ -71,6 +72,7 @@ const MainStackNavigator = () => {
             name="ReturnInVehicleScreen"
             component={ReturnInVehicleScreen}
           />
+          <Stack.Screen name="PdfViewer" component={PdfViewer} />
           <Stack.Screen name="MainDrawerScreen" component={MainDrawerScreen} />
           <Stack.Screen
             name="HamburgerMenuScreen"

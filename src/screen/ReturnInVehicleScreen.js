@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   TextInput,
 } from 'react-native';
+import Toast from 'react-native-simple-toast';
 import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
@@ -144,10 +145,10 @@ export default class ReturnInVehicleScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log(
-        'Rent In list Response ===========>  ',
-        JSON.stringify(responseJSON),
-      );
+      // console.log(
+      //   'Rent In list Response ===========>  ',
+      //   JSON.stringify(responseJSON),
+      // );
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
@@ -199,10 +200,10 @@ export default class ReturnInVehicleScreen extends React.Component {
     });
 
     try {
-      console.log(
-        'Call Rent in list API Link ========>  ',
-        Links.getDriverListRentIn,
-      );
+      // console.log(
+      //   'Call Rent in list API Link ========>  ',
+      //   Links.getDriverListRentIn,
+      // );
       console.log('Rent in list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.getDriverListRentIn, {
         method: 'POST',
@@ -213,10 +214,10 @@ export default class ReturnInVehicleScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log(
-        'Rent in list Response ===========>  ',
-        JSON.stringify(responseJSON),
-      );
+      // console.log(
+      //   'Rent in list Response ===========>  ',
+      //   JSON.stringify(responseJSON),
+      // );
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
@@ -378,6 +379,77 @@ export default class ReturnInVehicleScreen extends React.Component {
       console.log('Exception in API call: ' + error);
     }
   };
+  generatePdf(rent_out_id) {
+    try {
+      NetInfo.fetch().then(state => {
+        if (state.isConnected) {
+          this.generatePdfApi(rent_out_id);
+        } else {
+          Utils.showMessageAlert('No internet connection');
+        }
+      });
+    } catch (error) {
+      console.log('Error in webservice call : ' + error);
+    }
+  }
+
+  generatePdfApi = async rent_out_id => {
+    this.setState({isLoading: true});
+
+    var inputBody = JSON.stringify({
+      device_type: '1',
+      user_id: this.userId,
+      token_key: this.apiKey,
+      rent_out_id: rent_out_id,
+    });
+
+    try {
+      // console.log(
+      //   'Call Rent Out list API Link ========>  ',
+      //   Links.getCarListRent,
+      // );
+      // console.log('Rent Out list Input ========>  ', JSON.stringify(inputBody));
+      const res = await fetch(Links.generatePdf, {
+        method: 'POST',
+        body: inputBody,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseJSON = await res.json();
+      // console.log(
+      //   'generate pdf Response ===========>  ',
+      //   JSON.stringify(responseJSON),
+      // );
+      if (responseJSON) {
+        this.setState({isLoading: false});
+        if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 1 &&
+          responseJSON.rental_pdf_link !== ''
+        ) {
+          this.props.navigation.navigate(
+            'PdfViewer',
+            Links.BASEURL + responseJSON.rental_pdf_link,
+          );
+        } else if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 0
+        ) {
+          if (responseJSON.hasOwnProperty('message') && responseJSON.message) {
+            Toast.show(responseJSON.message, Toast.SHORT);
+          } else {
+            Toast.show('something went wrong', Toast.SHORT);
+          }
+        }
+      }
+    } catch (error) {
+      this.setState({isLoading: false});
+      Toast.show('something went wrong', Toast.SHORT);
+      console.log('Exception in API call: ' + error);
+    }
+  };
 
   setRenderItemView = ({item, index}) => {
     return (
@@ -407,10 +479,12 @@ export default class ReturnInVehicleScreen extends React.Component {
             </View>
           </TouchableOpacity>
 
-          <Image
-            source={require('../images/ic_download.png')}
-            style={styles.downloadIcon}
-          />
+          <TouchableOpacity onPress={() => this.generatePdf(item.rent_out_id)}>
+            <Image
+              source={require('../images/ic_download.png')}
+              style={styles.downloadIcon}
+            />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.nameAndRentUniqueIdContainer}>
@@ -516,8 +590,8 @@ export default class ReturnInVehicleScreen extends React.Component {
                     renderItem={(item, index) =>
                       this.setRenderItemView(item, index)
                     }
-                    listKey={(item, index) => 'LC' + item.id}
-                    keyExtractor={(item, index) => item.id}
+                    listKey={(item, index) => item.rent_in_id}
+                    keyExtractor={(item, index) => item.rent_in_id}
                     style={styles.flatListStyle}
                     showsVerticalScrollIndicator={false}
                   />

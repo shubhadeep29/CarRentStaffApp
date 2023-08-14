@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   TextInput,
 } from 'react-native';
+import Toast from 'react-native-simple-toast';
 import * as Colors from '../utils/Colors';
 import AdaptiveStatusBar from '../component/AdaptiveStatusBar';
 import Loader from '../component/Loader';
@@ -20,6 +21,7 @@ import NetInfo from '@react-native-community/netinfo';
 import Moment from 'moment';
 import CarDetailsViewModal from '../component/CarDetailsViewModal';
 import AuthorizeModal from '../component/AuthorizeModal';
+import Utils from '../utils/Utils';
 
 export default class RentOutVehicleScreen extends React.Component {
   constructor(props) {
@@ -35,6 +37,7 @@ export default class RentOutVehicleScreen extends React.Component {
       carListRent: [],
       companyList: [],
       direct_debit_response: {},
+      rent_out_id: '',
       // data: [
       //     {
       //         id: 1,
@@ -125,6 +128,73 @@ export default class RentOutVehicleScreen extends React.Component {
   componentWillUnmount() {
     this._unsubscribe();
   }
+
+  sendAuth = () => {
+    try {
+      NetInfo.fetch().then(state => {
+        if (state.isConnected) {
+          this.sendAuthApi();
+        } else {
+          Utils.showMessageAlert('No internet connection');
+        }
+      });
+    } catch (error) {
+      console.log('Error in webservice call : ' + error);
+    }
+  };
+
+  sendAuthApi = async () => {
+    this.setState({isLoading: true, showModal: false});
+
+    var inputBody = JSON.stringify({
+      device_type: '1',
+      user_id: this.userId,
+      token_key: this.apiKey,
+      rent_out_id: this.state.rent_out_id,
+    });
+
+    try {
+      // console.log(
+      //   'Call Rent Out list API Link ========>  ',
+      //   Links.getCarListRent,
+      // );
+      console.log('sendAuth Input ========>  ', JSON.stringify(inputBody));
+      const res = await fetch(Links.sendAuth, {
+        method: 'POST',
+        body: inputBody,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseJSON = await res.json();
+      console.log(
+        'sendAuth Response ===========>  ',
+        JSON.stringify(responseJSON),
+      );
+      if (responseJSON) {
+        this.setState({isLoading: false});
+        if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
+          Utils.showMessageAlert(
+            'Direct debit authorization mail has been sent successfully',
+          );
+        } else if (
+          responseJSON.hasOwnProperty('status') &&
+          responseJSON.status == 0
+        ) {
+          if (responseJSON.hasOwnProperty('message') && responseJSON.message) {
+            Toast.show(responseJSON.message, Toast.SHORT);
+          } else {
+            Toast.show('something went wrong', Toast.SHORT);
+          }
+        }
+      }
+    } catch (error) {
+      this.setState({isLoading: false});
+      Toast.show('something went wrong', Toast.SHORT);
+      console.log('Exception in API call: ' + error);
+    }
+  };
 
   getRentOutList() {
     try {
@@ -466,7 +536,10 @@ export default class RentOutVehicleScreen extends React.Component {
               style={{marginRight: 8}}
               onPress={() =>
                 this.setState(
-                  {direct_debit_response: direct_debit_response},
+                  {
+                    direct_debit_response: direct_debit_response,
+                    rent_out_id: item.rent_out_id,
+                  },
                   this.openModal,
                 )
               }>
@@ -711,6 +784,7 @@ export default class RentOutVehicleScreen extends React.Component {
             buttonName="confirm"
             updateModalState={this.handleUpdateViewModalState}
             buttonOperation={this.onPressViewModalConfirmButton}
+            sendAuth={this.sendAuth}
           />
         ) : null}
       </SafeAreaView>
