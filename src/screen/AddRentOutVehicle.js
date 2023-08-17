@@ -689,8 +689,7 @@ export default class AddRentOutVehicle extends React.Component {
       try {
         NetInfo.fetch().then(state => {
           if (state.isConnected) {
-            // this.callAddReturnInVehicleApi();
-            Utils.showMessageAlert('call');
+            this.callAddReturnInVehicleApi();
           } else {
             Utils.showMessageAlert('No internet connection');
           }
@@ -703,10 +702,6 @@ export default class AddRentOutVehicle extends React.Component {
 
   callAddReturnInVehicleApi = async () => {
     this.setState({isLoading: true});
-    console.log(
-      'this.state.carIdthis.state.carNo =====',
-      this.state.carId + '#' + this.state.carNo,
-    );
     var formData = new FormData();
     formData.append('token_key', this.apiKey);
     formData.append('device_type', this.state.deviceType);

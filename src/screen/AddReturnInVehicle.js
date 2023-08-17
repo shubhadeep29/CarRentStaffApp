@@ -657,11 +657,6 @@ export default class AddReturnInVehicle extends React.Component {
       Toast.show('Select fuel guage image', Toast.SHORT);
     } else if (
       this.state.isBondRefundRequestYes &&
-      this.state.refundAmount === ''
-    ) {
-      Toast.show('Please enter amount want to refund', Toast.SHORT);
-    } else if (
-      this.state.isBondRefundRequestYes &&
       this.state.refundTypeValue === ''
     ) {
       Toast.show('Please select refund type', Toast.SHORT);
@@ -681,6 +676,12 @@ export default class AddReturnInVehicle extends React.Component {
     ) {
       Toast.show('Please select refund due date', Toast.SHORT);
     } else {
+      // else if (
+      //   this.state.isBondRefundRequestYes &&
+      //   this.state.refundAmount === ''
+      // ) {
+      //   Toast.show('Please enter amount want to refund', Toast.SHORT);
+      // }
       try {
         NetInfo.fetch().then(state => {
           if (state.isConnected) {
@@ -923,12 +924,18 @@ export default class AddReturnInVehicle extends React.Component {
   };
 
   calculateActualBond = () => {
+    const actual_bond_amount =
+      this.state.actual_bond_amount > 0 ? this.state.actual_bond_amount : 0;
+    const damageAmount =
+      this.state.damageAmount > 0 ? this.state.damageAmount : 0;
+    const fuelAmount = this.state.fuelAmount > 0 ? this.state.fuelAmount : 0;
+
     this.setState(
       {
         actual_bond_amount_to_show:
-          this.state.actual_bond_amount -
-          this.state.damageAmount -
-          this.state.fuelAmount,
+          actual_bond_amount - damageAmount - fuelAmount > 0
+            ? actual_bond_amount - damageAmount - fuelAmount
+            : 0,
       },
       () => {
         if (this.state.refundTypeValue === 'FULL')
@@ -1204,9 +1211,10 @@ export default class AddReturnInVehicle extends React.Component {
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
                   Upload photo of Damage
                 </Text>
-                <TouchableOpacity
+                <View
                   style={styles.addImageViewStyle}
-                  onPress={() => this.openImageGallery('damageImageUri')}>
+                  // onPress={() => this.openImageGallery('damageImageUri')}
+                >
                   {this.state.damageImageUri != null &&
                   this.state.damageImageUri != '' ? (
                     <Image
@@ -1229,7 +1237,7 @@ export default class AddReturnInVehicle extends React.Component {
                       Upload Photo
                     </Text>
                   )}
-                </TouchableOpacity>
+                </View>
                 <View
                   style={{
                     marginTop: 4,
@@ -1241,18 +1249,14 @@ export default class AddReturnInVehicle extends React.Component {
                     compact
                     mode="contained"
                     color={Colors.textColor1}
-                    onPress={() =>
-                      this.openImageGallery(1, 'fuelGuageImageUri')
-                    }>
+                    onPress={() => this.openImageGallery(1, 'damageImageUri')}>
                     Open gallery
                   </Button>
                   <Button
                     compact
                     mode="contained"
                     color={Colors.textColor1}
-                    onPress={() =>
-                      this.openImageGallery(2, 'fuelGuageImageUri')
-                    }>
+                    onPress={() => this.openImageGallery(2, 'damageImageUri')}>
                     Take Picture
                   </Button>
                 </View>

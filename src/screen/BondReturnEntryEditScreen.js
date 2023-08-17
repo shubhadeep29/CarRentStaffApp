@@ -23,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from '../utils/Constants';
 import NetInfo from '@react-native-community/netinfo';
 import Toast from 'react-native-simple-toast';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 export default class BondReturnEntryEditScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -132,9 +133,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
     return (
       <View>
         <Text style={styles.selectionListTextStyle}>
-          {item.first_name}
-          {item.middle_name ? ' ' + item.middle_name : ''}
-          {item.last_name ? ' ' + item.last_name : ''} - {item.mobile}
+          {item.concat_driver_name}
         </Text>
       </View>
     );
@@ -437,7 +436,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
                 data={this.state.driverData}
                 placeholder="Select Driver"
                 maxHeight={300}
-                labelField="first_name"
+                labelField="concat_driver_name"
                 valueField="driver_id"
                 value={this.state.driverId}
                 onChange={item => {
@@ -510,7 +509,7 @@ export default class BondReturnEntryEditScreen extends React.Component {
               ]}>
               <Text style={{marginRight: 4}}>$</Text>
               <TextInput
-                style={styles.remarksTextStyle}
+                style={styles.emailIdEditTextStyle}
                 autoCapitalize="none"
                 multiline={false}
                 placeholderTextColor={Colors.placeholderColor}
@@ -802,7 +801,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   selectedTextStyle: {
-    fontSize: 16,
+    fontSize: 15,
     color: Colors.black,
   },
   iconStyle: {

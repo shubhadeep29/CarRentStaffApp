@@ -18,6 +18,7 @@ import Constants from '../utils/Constants';
 import * as Colors from '../utils/Colors';
 import Links from '../utils/Links';
 // import Utils from '../utils/Utils';
+import Toast from 'react-native-simple-toast';
 
 export default class AuthorizeModal extends Component {
   constructor(props) {
@@ -209,7 +210,9 @@ export default class AuthorizeModal extends Component {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
+                  this.setStateUpdateMethod(false);
                   Clipboard.setString(this.props.item?.AuthorisationLink?.Link);
+                  Toast.show('Link copied to clipboard', Toast.SHORT);
                 }}
                 style={{
                   flexDirection: 'row',
