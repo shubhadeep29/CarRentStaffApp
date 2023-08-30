@@ -616,6 +616,7 @@ export default class AddReturnInVehicle extends React.Component {
   }
 
   callAddReturnInVehicleValidation() {
+    console.log('this.state.paymentMethod ------', this.state.paymentMethod);
     Keyboard.dismiss();
     if (this.state.driverId == '') {
       Toast.show('Please select a Driver', Toast.SHORT);
@@ -630,8 +631,23 @@ export default class AddReturnInVehicle extends React.Component {
       this.state.odometerReading < 1
     ) {
       Toast.show('Please enter valid Odometer Reading', Toast.SHORT);
-    } else if (this.state.paymentMethod == '') {
-      Toast.show('Please enter Payment Method', Toast.SHORT);
+    } else if (
+      this.state.isBondRefundRequestYes &&
+      this.state.refundTypeValue === ''
+    ) {
+      Toast.show('Please select refund type', Toast.SHORT);
+    } else if (this.state.isBondRefundRequestYes && !this.state.paymentMethod) {
+      Toast.show('Please select refund payment method', Toast.SHORT);
+    } else if (
+      this.state.isBondRefundRequestYes &&
+      this.state.noticeDate === ''
+    ) {
+      Toast.show('Please select refund notice date', Toast.SHORT);
+    } else if (
+      this.state.isBondRefundRequestYes &&
+      this.state.bondRefundDate === ''
+    ) {
+      Toast.show('Please select refund due date', Toast.SHORT);
     } else if (this.state.notes == '') {
       Toast.show('Please enter notes', Toast.SHORT);
     } else if (this.state.frontImageUri === '' && this.state.item === null) {
@@ -655,26 +671,6 @@ export default class AddReturnInVehicle extends React.Component {
       this.state.item === null
     ) {
       Toast.show('Select fuel guage image', Toast.SHORT);
-    } else if (
-      this.state.isBondRefundRequestYes &&
-      this.state.refundTypeValue === ''
-    ) {
-      Toast.show('Please select refund type', Toast.SHORT);
-    } else if (
-      this.state.isBondRefundRequestYes &&
-      this.state.paymentMethod === ''
-    ) {
-      Toast.show('Please select refund payment method', Toast.SHORT);
-    } else if (
-      this.state.isBondRefundRequestYes &&
-      this.state.noticeDate === ''
-    ) {
-      Toast.show('Please select refund notice date', Toast.SHORT);
-    } else if (
-      this.state.isBondRefundRequestYes &&
-      this.state.bondRefundDate === ''
-    ) {
-      Toast.show('Please select refund due date', Toast.SHORT);
     } else {
       // else if (
       //   this.state.isBondRefundRequestYes &&
@@ -989,15 +985,17 @@ export default class AddReturnInVehicle extends React.Component {
                   renderItem={this.renderDriver}
                 />
               ) : (
-                <TextInput
-                  style={styles.emailIdEditTextStyle}
+                <Text
+                  style={[styles.emailIdEditTextStyle]}
                   autoCapitalize="none"
                   multiline={false}
                   editable={false}
                   placeholderTextColor={Colors.placeholderColor}
                   // placeholder="Email Id"
-                  value={this.state.driverName}
-                />
+                  // value={this.state.driverName}
+                >
+                  {this.state.driverName}
+                </Text>
               )}
             </View>
             <View

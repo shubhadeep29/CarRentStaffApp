@@ -637,24 +637,28 @@ export default class AddRentOutVehicle extends React.Component {
 
   callAddReturnInVehicleValidation() {
     Keyboard.dismiss();
-    // if (this.state.driverId == '') {
-    //   Toast.show('Please enter Driver', Toast.SHORT);
-    // } else if (this.state.odometerReading == '') {
-    //   Toast.show('Please enter Odometer Reading', Toast.SHORT);
-    // } else if (this.state.weeklyRent == '') {
-    //   Toast.show('Please enter Weekly Rent', Toast.SHORT);
-    // } else if (this.state.paymentMethod == '') {
-    //   Toast.show('Please enter Payment Method', Toast.SHORT);
-    // } else if (this.state.insurance_company === '') {
-    //   Toast.show('Please enter Company Name', Toast.SHORT);
-    // } else if (this.state.insurance_username === '') {
-    //   Toast.show('Please enter insurance username', Toast.SHORT);
-    // } else if (this.state.insurance_password === '') {
-    //   Toast.show('Please enter insurance password', Toast.SHORT);
-    // } else if (this.state.expire == '') {
-    //   Toast.show('Please enter expire', Toast.SHORT);
-    // } else
-    if (this.state.coverNoteImageName === '' && this.state.item === null) {
+    if (this.state.driverId == '') {
+      Toast.show('Please enter Driver', Toast.SHORT);
+    } else if (this.state.odometerReading == '') {
+      Toast.show('Please enter Odometer Reading', Toast.SHORT);
+    } else if (this.state.weeklyRent == '') {
+      Toast.show('Please enter Weekly Rent', Toast.SHORT);
+    } else if (this.state.paymentMethod == '') {
+      Toast.show('Please enter Payment Method', Toast.SHORT);
+    } else if (this.state.insurance_company === '') {
+      Toast.show('Please enter Company Name', Toast.SHORT);
+    } else if (this.state.insurance_username === '') {
+      Toast.show('Please enter insurance username', Toast.SHORT);
+    } else if (this.state.bondPaymentMethod === '') {
+      Toast.show('Please select bond payment method', Toast.SHORT);
+    } else if (this.state.insurance_password === '') {
+      Toast.show('Please enter insurance password', Toast.SHORT);
+    } else if (this.state.expire == '') {
+      Toast.show('Please enter expire', Toast.SHORT);
+    } else if (
+      this.state.coverNoteImageName === '' &&
+      this.state.item === null
+    ) {
       Toast.show('Select cover note image', Toast.SHORT);
     } else if (this.state.frontImageName === '' && this.state.item === null) {
       Toast.show('Select front image', Toast.SHORT);
@@ -1209,6 +1213,10 @@ export default class AddRentOutVehicle extends React.Component {
   };
 
   render() {
+    console.log(
+      'this.state.directDebitUpfrontDate ----',
+      this.state.directDebitUpfrontDate,
+    );
     return (
       <SafeAreaView style={styles.container}>
         {this.state.isLoading && <LoaderView />}
