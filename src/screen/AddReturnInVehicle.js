@@ -46,6 +46,8 @@ export default class AddReturnInVehicle extends React.Component {
       rentOutDate: '',
       rentOutDateShow: new Date(),
       rentOutNo: '',
+      rentOutID: '',
+      rentInID: '',
       isDisplayRentOutDate: false,
       carNo: '',
       isDamageYes: false,
@@ -63,6 +65,7 @@ export default class AddReturnInVehicle extends React.Component {
       isDisplayNoticeDate: false,
       bondRefundAmount: '',
       referenceNumber: '',
+      bondRemarks: '',
       paymentMethod: '',
       isPaymentMethodDropdownVisible: false,
       isDropdownVisible: false,
@@ -191,9 +194,12 @@ export default class AddReturnInVehicle extends React.Component {
 
       this.setState({
         carNo: this.state.item.car_no,
+        carId: this.state.item.car_id,
         rentOutDate: this.state.item.rent_out_date,
         rentOutDateShow: Utils.getDate(this.state.item.rent_out_date),
         rentOutNo: this.state.item.rent_out_no,
+        rentOutID: this.state.item.rent_out_id,
+        rentInID: this.state.item.rent_in_id,
         isDamageYes: this.state.item.damage == 'Yes' ? true : false,
         isDamageNo: this.state.item.damage == 'No' ? true : false,
         damageAmount: this.state.item.damage_amount,
@@ -220,6 +226,7 @@ export default class AddReturnInVehicle extends React.Component {
         bondRefundDateShow:
           Utils.getDate(this.state.item.bond_refund_due_date) ?? '',
         referenceNumber: this.state.item.bond_reference_no ?? '',
+        bondRemarks: this.state.item.remarks ?? '',
         driverName: this.state.item.driverName ?? '',
       });
 
@@ -326,7 +333,9 @@ export default class AddReturnInVehicle extends React.Component {
     this.setState({
       driverId: value.driver_id,
     });
-    this.getDriverDetails(value);
+    if (this.state.item === null) {
+      this.getDriverDetails(value);
+    }
   }
 
   getDriverDetails(value) {
@@ -345,6 +354,7 @@ export default class AddReturnInVehicle extends React.Component {
   }
 
   callGetDriverDetailsApi = async value => {
+    console.log('value ------', value);
     this.setState({isLoading: true});
 
     var inputBody = JSON.stringify({
@@ -384,6 +394,7 @@ export default class AddReturnInVehicle extends React.Component {
           this.setState({driverDetailsData: responseJSON});
           this.setState({
             carNo: responseJSON.driver_details.car_no,
+            carId: value.car_id,
             rentOutDate: responseJSON.driver_details.rent_out_date,
             rentOutNo: responseJSON.driver_details.rent_out_no,
             actual_bond_amount: responseJSON.actual_bond_amount,
@@ -616,7 +627,11 @@ export default class AddReturnInVehicle extends React.Component {
   }
 
   callAddReturnInVehicleValidation() {
-    console.log('this.state.paymentMethod ------', this.state.paymentMethod);
+    console.log(
+      'this.state.remarks ------',
+      this.state.isBondRefundRequestYes,
+      this.state.bondRemarks,
+    );
     Keyboard.dismiss();
     if (this.state.driverId == '') {
       Toast.show('Please select a Driver', Toast.SHORT);
@@ -636,6 +651,8 @@ export default class AddReturnInVehicle extends React.Component {
       this.state.refundTypeValue === ''
     ) {
       Toast.show('Please select refund type', Toast.SHORT);
+    } else if (this.state.isBondRefundRequestYes && !this.state.bondRemarks) {
+      Toast.show('Please add remarks', Toast.SHORT);
     } else if (this.state.isBondRefundRequestYes && !this.state.paymentMethod) {
       Toast.show('Please select refund payment method', Toast.SHORT);
     } else if (
@@ -695,17 +712,22 @@ export default class AddReturnInVehicle extends React.Component {
   callAddReturnInVehicleApi = async () => {
     this.setState({isLoading: true});
 
+    const rentOutID =
+      this.state.item === null
+        ? this.state.driverDetailsData.driver_details.rent_out_id
+        : this.state.rentOutID;
+    const rentInID =
+      this.state.item === null
+        ? this.state.driverDetailsData.driver_details.rent_in_id
+        : this.state.rentInID;
+
     var formData = new FormData();
     formData.append('token_key', this.apiKey);
     formData.append('device_type', this.state.deviceType);
     formData.append('user_id', this.userId);
-    formData.append(
-      'driver_id',
-      this.state.driverId +
-        '-' +
-        this.state.driverDetailsData.driver_details.rent_out_id,
-    );
+    formData.append('driver_id', this.state.driverId + '-' + rentOutID);
     formData.append('car_no', this.state.carNo);
+    formData.append('car_id', this.state.carId);
     formData.append('odometer_reading', this.state.odometerReading);
     formData.append('damage', this.state.isDamageYes ? 'Yes' : 'No');
     formData.append('damage_amount', this.state.damageAmount);
@@ -722,12 +744,13 @@ export default class AddReturnInVehicle extends React.Component {
       this.state.isBondRefundRequestYes ? 'Yes' : 'No',
     );
     formData.append('notice_date', this.state.noticeDate);
-    formData.append('bond_refund_date', this.state.bondRefundDate);
+    formData.append('bond_refund_due_date', this.state.bondRefundDate);
     formData.append('bond_reference_no', this.state.referenceNumber);
-    // formData.append('rent_in_id', '11');
+    formData.append('remarks', this.state.bondRemarks);
+    formData.append('rent_in_id', rentInID);
     formData.append('notes', this.state.notes);
 
-    if (this.state.damageImageUri != null && this.state.damageImageUri != '')
+    if (this.state.damageImageSize != null && this.state.damageImageSize != '')
       formData.append('damage_img', {
         uri:
           Platform.OS === 'ios'
@@ -736,7 +759,7 @@ export default class AddReturnInVehicle extends React.Component {
         name: this.state.damageImageName,
         type: this.state.damageImageType,
       });
-    if (this.state.frontImageUri != null && this.state.frontImageUri != '')
+    if (this.state.frontImageSize != null && this.state.frontImageSize != '')
       formData.append('front_img', {
         uri:
           Platform.OS === 'ios'
@@ -745,7 +768,7 @@ export default class AddReturnInVehicle extends React.Component {
         name: this.state.frontImageName,
         type: this.state.frontImageType,
       });
-    if (this.state.rearImageUri != null && this.state.rearImageUri != '')
+    if (this.state.rearImageSize != null && this.state.rearImageSize != '')
       formData.append('rear_img', {
         uri:
           Platform.OS === 'ios'
@@ -755,8 +778,8 @@ export default class AddReturnInVehicle extends React.Component {
         type: this.state.rearImageType,
       });
     if (
-      this.state.driverSideImageUri != null &&
-      this.state.driverSideImageUri != ''
+      this.state.driverSideImageSize != null &&
+      this.state.driverSideImageSize != ''
     )
       formData.append('driver_side_img', {
         uri:
@@ -767,8 +790,8 @@ export default class AddReturnInVehicle extends React.Component {
         type: this.state.driverSideImageType,
       });
     if (
-      this.state.passengerSideImageUri != null &&
-      this.state.passengerSideImageUri != ''
+      this.state.passengerSideImageSize != null &&
+      this.state.passengerSideImageSize != ''
     )
       formData.append('passenger_side_img', {
         uri:
@@ -779,8 +802,8 @@ export default class AddReturnInVehicle extends React.Component {
         type: this.state.passengerSideImageType,
       });
     if (
-      this.state.odometerImageUri != null &&
-      this.state.odometerImageUri != ''
+      this.state.odometerImageSize != null &&
+      this.state.odometerImageSize != ''
     )
       formData.append('odometer_img', {
         uri:
@@ -791,8 +814,8 @@ export default class AddReturnInVehicle extends React.Component {
         type: this.state.odometerImageType,
       });
     if (
-      this.state.fuelGuageImageUri != null &&
-      this.state.fuelGuageImageUri != ''
+      this.state.fuelGuageImageSize != null &&
+      this.state.fuelGuageImageSize != ''
     )
       formData.append('fuel_guage_img', {
         uri:
@@ -861,6 +884,7 @@ export default class AddReturnInVehicle extends React.Component {
         }
       }
     } catch (error) {
+      console.log('error', error);
       this.setState({isLoading: false});
       Toast.show('something went wrong', Toast.SHORT);
       console.log('Exception in API call: 123' + error);
@@ -974,7 +998,12 @@ export default class AddReturnInVehicle extends React.Component {
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
                   data={this.state.driverListRentOut}
-                  placeholder="Select Driver"
+                  disable={!this.state.driverListRentOut.length}
+                  placeholder={
+                    this.state.driverListRentOut.length
+                      ? 'Select Driver'
+                      : 'No driver found'
+                  }
                   maxHeight={300}
                   labelField="concat_driver_name"
                   valueField="driver_id"
@@ -1448,7 +1477,7 @@ export default class AddReturnInVehicle extends React.Component {
                     valueField="value"
                     value={this.state.paymentMethod}
                     onChange={item => {
-                      this.onValueChangePayment(item);
+                      this.onValueChangePayment(item.value);
                     }}
                     renderItem={this.renderPayment}
                   />
@@ -1546,28 +1575,6 @@ export default class AddReturnInVehicle extends React.Component {
                     }
                   />
                 )}
-
-                {/* <Text numberOfLines={1} style={styles.headingTextStyle}>
-              Bond Refund Amount
-            </Text>
-            <View style={styles.editTextContainer}>
-              <TextInput
-                style={styles.emailIdEditTextStyle}
-                autoCapitalize="none"
-                multiline={false}
-                placeholderTextColor={Colors.placeholderColor}
-                // placeholder="Email Id"
-                value={this.state.bondRefundAmount}
-                onChangeText={value => this.setState({bondRefundAmount: value})}
-                onSubmitEditing={() => {
-                  this.yearTextInput.focus();
-                }}
-                ref={input => {
-                  this.bondRefundAmountTextInput = input;
-                }}
-                blurOnSubmit={false}
-              />
-            </View> */}
                 <Text numberOfLines={1} style={styles.headingTextStyle}>
                   Reference Number
                 </Text>
@@ -1581,6 +1588,19 @@ export default class AddReturnInVehicle extends React.Component {
                     onChangeText={value =>
                       this.setState({referenceNumber: value})
                     }
+                  />
+                </View>
+                <Text numberOfLines={1} style={styles.headingTextStyle}>
+                  Remarks <Text style={{color: Colors.red}}>*</Text>
+                </Text>
+                <View style={styles.editTextContainer}>
+                  <TextInput
+                    style={styles.remarksTextStyle}
+                    autoCapitalize="none"
+                    multiline={false}
+                    placeholderTextColor={Colors.placeholderColor}
+                    value={this.state.bondRemarks}
+                    onChangeText={value => this.setState({bondRemarks: value})}
                   />
                 </View>
               </>

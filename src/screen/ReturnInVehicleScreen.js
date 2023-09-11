@@ -214,10 +214,10 @@ export default class ReturnInVehicleScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      // console.log(
-      //   'Rent in list Response ===========>  ',
-      //   JSON.stringify(responseJSON),
-      // );
+      console.log(
+        'Rent in list Response ===========>  ',
+        JSON.stringify(responseJSON),
+      );
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {

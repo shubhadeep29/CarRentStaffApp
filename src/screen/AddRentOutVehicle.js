@@ -670,6 +670,12 @@ export default class AddRentOutVehicle extends React.Component {
     ) {
       Toast.show('Select driver side image', Toast.SHORT);
     } else if (
+      this.state.paymentMethod === 'Direct Debit' &&
+      this.state.item === null &&
+      this.state.driverCountryCode === ''
+    ) {
+      Toast.show('Select country code', Toast.SHORT);
+    } else if (
       this.state.passengerSideImageName === '' &&
       this.state.item === null
     ) {
@@ -959,7 +965,6 @@ export default class AddRentOutVehicle extends React.Component {
     );
   };
   renderCountry = item => {
-    console.log('country', item);
     return (
       <View>
         <Text style={styles.selectionListTextStyle}>
@@ -1247,7 +1252,7 @@ export default class AddRentOutVehicle extends React.Component {
                   iconStyle={styles.iconStyle}
                   data={this.state.driverListRentOut}
                   placeholder="Select Driver"
-                  maxHeight={300}
+                  // maxHeight={300}
                   labelField="concat_driver_name"
                   valueField="driver_id"
                   value={this.state.driverId}
@@ -3118,7 +3123,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   dropdown: {
-    height: 50,
+    height: 55,
     flex: 1,
     borderColor: 'gray',
     borderRadius: 8,
@@ -3141,7 +3146,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   selectedTextStyle: {
-    fontSize: 16,
+    fontSize: 15,
     color: Colors.black,
   },
   iconStyle: {
