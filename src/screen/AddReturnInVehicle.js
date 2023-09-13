@@ -215,8 +215,8 @@ export default class AddReturnInVehicle extends React.Component {
         fuelAmount: this.state.item.fuel,
         notes: this.state.item.notes,
 
-        actual_bond_amount: this.state.item.bond_refund_amount ?? '',
-        actual_bond_amount_to_show: this.state.item.bond_refund_amount ?? '',
+        actual_bond_amount: this.state.item.total_bond_amount ?? '',
+        actual_bond_amount_to_show: this.state.item.total_bond_amount ?? '',
         refundTypeValue: this.state.item.refund_type ?? '',
         refundAmount: this.state.item.amount_want_to_refund ?? '',
         paymentMethod: this.state.item.bond_payment_method ?? '',
@@ -1405,7 +1405,7 @@ export default class AddReturnInVehicle extends React.Component {
                     value={
                       this.state.actual_bond_amount_to_show.toString() ?? '0.00'
                     }
-                    onChangeText={value => this.setState({refundAmount: value})}
+                    // onChangeText={value => this.setState({refundAmount: value})}
                   />
                 </View>
 

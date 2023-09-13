@@ -1442,7 +1442,12 @@ export default class AddRentOutVehicle extends React.Component {
                     placeholderTextColor={Colors.placeholderColor}
                     // placeholder="Email Id"
                     value={this.state.weeklyRent}
-                    onChangeText={value => this.setState({weeklyRent: value})}
+                    onChangeText={value => {
+                      this.setState({
+                        weeklyRent: value,
+                        directDebitRecurringAmount: value,
+                      });
+                    }}
                     onSubmitEditing={() => {
                       this.yearTextInput.focus();
                     }}
@@ -2059,11 +2064,11 @@ export default class AddRentOutVehicle extends React.Component {
                           placeholderTextColor={Colors.placeholderColor}
                           // placeholder="Email Id"
                           value={this.state.directDebitRecurringAmount}
-                          onChangeText={value =>
-                            this.setState({directDebitRecurringAmount: value})
-                          }
+                          // onChangeText={value =>
+                          //   this.setState({directDebitRecurringAmount: value})
+                          // }
                           blurOnSubmit={false}
-                          editable={this.state.item === null}
+                          editable={false}
                         />
                       </View>
                       <Text numberOfLines={1} style={styles.headingTextStyle}>
