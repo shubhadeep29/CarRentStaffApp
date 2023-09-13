@@ -42,11 +42,11 @@ export default class Utils {
   static getDate(date) {
     if (date) {
       const splittedDate = date.split('/');
-      console.log(
-        'splittedDate --- 123',
-        splittedDate,
-        new Date(`${splittedDate[2]}-${splittedDate[1]}-${splittedDate[0]}`),
-      );
+      // console.log(
+      //   'splittedDate --- 123',
+      //   splittedDate,
+      //   new Date(`${splittedDate[2]}-${splittedDate[1]}-${splittedDate[0]}`),
+      // );
       return new Date(
         `${splittedDate[2]}-${splittedDate[1]}-${splittedDate[0]}`,
       );

@@ -145,10 +145,10 @@ export default class ReturnInVehicleScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      // console.log(
-      //   'Rent In list Response ===========>  ',
-      //   JSON.stringify(responseJSON),
-      // );
+      console.log(
+        'Rent In list Response ===========>  ',
+        JSON.stringify(responseJSON),
+      );
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
@@ -204,7 +204,7 @@ export default class ReturnInVehicleScreen extends React.Component {
       //   'Call Rent in list API Link ========>  ',
       //   Links.getDriverListRentIn,
       // );
-      console.log('Rent in list Input ========>  ', JSON.stringify(inputBody));
+      // console.log('Rent in list Input ========>  ', JSON.stringify(inputBody));
       const res = await fetch(Links.getDriverListRentIn, {
         method: 'POST',
         body: inputBody,
@@ -214,10 +214,10 @@ export default class ReturnInVehicleScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log(
-        'Rent in list Response ===========>  ',
-        JSON.stringify(responseJSON),
-      );
+      // console.log(
+      //   'Rent in list Response ===========>  ',
+      //   JSON.stringify(responseJSON),
+      // );
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
@@ -516,12 +516,12 @@ export default class ReturnInVehicleScreen extends React.Component {
 
         <View style={styles.infoContainer}>
           <Text style={styles.infoHeadingTextStyle}>Bond Refund Amt. :</Text>
-          <Text style={styles.infoTextStyle}>{item.bond_refund_amount}</Text>
+          <Text style={styles.infoTextStyle}>{item.amount_want_to_refund}</Text>
         </View>
 
         <View style={styles.infoContainerTwo}>
           <Text style={styles.infoHeadingTextStyle}>Refund Date :</Text>
-          <Text style={styles.infoTextStyle}>{item.bond_refund_date}</Text>
+          <Text style={styles.infoTextStyle}>{item.bond_refund_due_date}</Text>
         </View>
       </TouchableOpacity>
     );

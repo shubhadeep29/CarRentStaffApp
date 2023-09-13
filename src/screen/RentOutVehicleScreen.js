@@ -230,6 +230,7 @@ export default class RentOutVehicleScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
+      console.log('responseJSON.rentout_list ---', responseJSON);
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
@@ -237,10 +238,6 @@ export default class RentOutVehicleScreen extends React.Component {
             responseJSON.hasOwnProperty('rentout_list') &&
             responseJSON.rentout_list != null
           ) {
-            // console.log(
-            //   'responseJSON.rentout_list ---',
-            //   responseJSON.rentout_list,
-            // );
             this.setState({data: responseJSON.rentout_list});
           }
         } else if (
