@@ -117,7 +117,7 @@ export default class CarDetailsViewModal extends Component {
               </View>
 
               <View style={styles.infoContainer}>
-                <Text style={styles.infoHeadingTextStyle}>Fule Type :</Text>
+                <Text style={styles.infoHeadingTextStyle}>Fuel Type :</Text>
                 <Text style={styles.infoTextStyle}>
                   {this.props.item.fuel_type}
                 </Text>

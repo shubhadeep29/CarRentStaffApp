@@ -396,7 +396,9 @@ export default class AddReturnInVehicle extends React.Component {
             carNo: responseJSON.driver_details.car_no,
             carId: value.car_id,
             rentOutDate: responseJSON.driver_details.rent_out_date,
-            rentOutNo: responseJSON.driver_details.rent_out_no,
+            rentOutNo:
+              responseJSON.driver_details.rent_out_no +
+              responseJSON.driver_details.car_no,
             actual_bond_amount: responseJSON.actual_bond_amount,
             actual_bond_amount_to_show: responseJSON.actual_bond_amount,
           });

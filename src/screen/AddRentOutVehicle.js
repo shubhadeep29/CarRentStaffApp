@@ -711,6 +711,10 @@ export default class AddRentOutVehicle extends React.Component {
   }
 
   callAddReturnInVehicleApi = async () => {
+    console.log(
+      "this.state.carId + '$#' + this.state.carNo ----",
+      this.state.carId + '$#' + this.state.carNo,
+    );
     this.setState({isLoading: true});
     var formData = new FormData();
     formData.append('token_key', this.apiKey);

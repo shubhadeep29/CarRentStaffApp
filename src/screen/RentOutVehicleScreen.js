@@ -230,7 +230,7 @@ export default class RentOutVehicleScreen extends React.Component {
         },
       });
       const responseJSON = await res.json();
-      console.log('responseJSON.rentout_list ---', responseJSON);
+      // console.log('responseJSON.rentout_list ---', responseJSON);
       if (responseJSON) {
         this.setState({isLoading: false});
         if (responseJSON.hasOwnProperty('status') && responseJSON.status == 1) {
@@ -760,8 +760,8 @@ export default class RentOutVehicleScreen extends React.Component {
                     renderItem={(item, index) =>
                       this.setRenderItemView(item, index)
                     }
-                    listKey={(item, index) => 'LC' + item.id}
-                    keyExtractor={(item, index) => item.id}
+                    listKey={(item, index) => 'LC' + item.rent_out_id}
+                    keyExtractor={(item, index) => item.rent_out_id}
                     style={styles.flatListStyle}
                     showsVerticalScrollIndicator={false}
                   />
