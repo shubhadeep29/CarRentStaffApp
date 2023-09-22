@@ -93,6 +93,7 @@ export default class BondReturnEntryScreen extends React.Component {
   };
 
   setRenderItemView = ({item, index}) => {
+    console.log('item', item);
     return (
       <View
         style={styles.listItemContainer}
@@ -157,7 +158,7 @@ export default class BondReturnEntryScreen extends React.Component {
 
         <View style={styles.infoContainer}>
           <Text style={styles.infoHeadingTextStyle}>Refund due date</Text>
-          <Text style={styles.infoTextStyle}>{item.notice_date}</Text>
+          <Text style={styles.infoTextStyle}>{item.bond_refund_due_date}</Text>
         </View>
         {item.settle_date ? (
           <View style={styles.infoContainer}>
@@ -372,7 +373,7 @@ export default class BondReturnEntryScreen extends React.Component {
                 marginHorizontal: 20,
                 marginTop: 16,
               }}>
-              Add new refund
+              Add New Refund
             </Button>
           </View>
 

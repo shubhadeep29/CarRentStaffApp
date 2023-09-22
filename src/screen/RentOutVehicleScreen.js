@@ -586,7 +586,7 @@ export default class RentOutVehicleScreen extends React.Component {
           </View>
 
           <View style={styles.infoContainerTwo}>
-            <Text style={styles.infoHeadingTextStyleTwo}>Bond</Text>
+            <Text style={styles.infoHeadingTextStyleTwo}>Bond Amount</Text>
             <Text style={styles.infoTextStyleTwo}>{item.bond_amount}</Text>
           </View>
         </View>
